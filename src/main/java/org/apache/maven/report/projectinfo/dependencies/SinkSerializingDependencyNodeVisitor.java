@@ -43,12 +43,12 @@ public class SinkSerializingDependencyNodeVisitor
     {
         private final Sink sink;
 
-        public TreeTokens( Sink sink )
+        TreeTokens( Sink sink )
         {
             this.sink = sink;
         }
 
-        public void addNodeIndent( boolean last )
+        void addNodeIndent( boolean last )
         {
             if ( last )
             {
@@ -62,7 +62,7 @@ public class SinkSerializingDependencyNodeVisitor
             }
         }
 
-        public void fillIndent( boolean last )
+        void fillIndent( boolean last )
         {
             if ( last )
             {

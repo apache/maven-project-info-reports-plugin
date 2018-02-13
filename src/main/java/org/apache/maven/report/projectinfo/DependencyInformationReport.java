@@ -109,7 +109,7 @@ public final class DependencyInformationReport
 
         private final String packaging;
 
-        public DependencyInformationRenderer( Sink sink, I18N i18n, Locale locale, String groupId, String artifactId,
+        DependencyInformationRenderer( Sink sink, I18N i18n, Locale locale, String groupId, String artifactId,
                                               String version, String packaging )
         {
             super( sink, i18n, locale );
