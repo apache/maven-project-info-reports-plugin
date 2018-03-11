@@ -1580,7 +1580,7 @@ public class DependenciesRenderer
          * @param i18n
          * @param locale
          */
-        public FileDecimalFormat( I18N i18n, Locale locale )
+        FileDecimalFormat( I18N i18n, Locale locale )
         {
             super( "###0.#" );
 
