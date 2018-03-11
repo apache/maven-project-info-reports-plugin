@@ -453,7 +453,7 @@ public abstract class AbstractProjectInfoReport
 
         private static final Object[] NO_ARGS = new Object[0];
 
-        public CustomI18N( MavenProject project, Settings settings, File customBundleFile, Locale locale,
+        CustomI18N( MavenProject project, Settings settings, File customBundleFile, Locale locale,
                            I18N i18nOriginal )
         {
             super();
