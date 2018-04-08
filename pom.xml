@@ -120,7 +120,6 @@ under the License.
     <doxiaVersion>1.6</doxiaVersion>
     <doxia-sitetoolsVersion>1.6</doxia-sitetoolsVersion>
     <mavenVersion>2.2.1</mavenVersion>
-    <wagonVersion>2.10</wagonVersion>
     <scmVersion>1.9.5</scmVersion>
     <sitePluginVersion>3.5.1</sitePluginVersion>
   </properties>
@@ -198,31 +197,6 @@ under the License.
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
       <version>1.4</version>
-    </dependency>
-
-    <!-- Wagon -->
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-      <version>${wagonVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-ssh</artifactId>
-      <version>${wagonVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-file</artifactId>
-      <version>${wagonVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http-lightweight</artifactId>
-      <version>${wagonVersion}</version>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- SCM -->

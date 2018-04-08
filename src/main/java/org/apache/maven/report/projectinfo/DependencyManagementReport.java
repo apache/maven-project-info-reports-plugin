@@ -20,7 +20,6 @@ package org.apache.maven.report.projectinfo;
  */
 
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.plugins.annotations.Component;
@@ -69,14 +68,6 @@ public class DependencyManagementReport
     private ArtifactFactory artifactFactory;
 
     /**
-     * Wagon manager component.
-     *
-     * @since 2.3
-     */
-    @Component
-    private WagonManager wagonManager;
-
-    /**
      * Repository metadata component.
      *
      * @since 2.3
@@ -113,7 +104,7 @@ public class DependencyManagementReport
     public void executeReport( Locale locale )
     {
         @SuppressWarnings( "unchecked" ) RepositoryUtils repoUtils =
-            new RepositoryUtils( getLog(), wagonManager, settings, mavenProjectBuilder, factory, resolver,
+            new RepositoryUtils( getLog(), mavenProjectBuilder, factory, resolver,
                                  project.getRemoteArtifactRepositories(), project.getPluginArtifactRepositories(),
                                  localRepository, repositoryMetadataManager );
 

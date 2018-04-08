@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
@@ -44,7 +42,6 @@ import java.util.TreeSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.doxia.sink.Sink;
@@ -61,7 +58,6 @@ import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
-import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.i18n.I18N;
@@ -94,8 +90,6 @@ public class DependenciesRenderer
     private final DependenciesReportConfiguration configuration;
 
     private final Log log;
-
-    private final Settings settings;
 
     private final RepositoryUtils repoUtils;
 
@@ -160,7 +154,6 @@ public class DependenciesRenderer
      * @param locale {@link Locale}
      * @param i18n {@link I18N}
      * @param log {@link Log}
-     * @param settings {@link Settings}
      * @param dependencies {@link Dependencies}
      * @param dependencyTreeNode {@link DependencyNode}
      * @param config {@link DependenciesReportConfiguration}
@@ -170,7 +163,7 @@ public class DependenciesRenderer
      * @param remoteRepositories {@link ArtifactRepository}
      * @param localRepository {@link ArtifactRepository}
      */
-    public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log, Settings settings,
+    public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log, 
                                  Dependencies dependencies, DependencyNode dependencyTreeNode,
                                  DependenciesReportConfiguration config, RepositoryUtils repoUtils,
                                  ArtifactFactory artifactFactory, MavenProjectBuilder mavenProjectBuilder,
@@ -179,7 +172,6 @@ public class DependenciesRenderer
         super( sink, i18n, locale );
 
         this.log = log;
-        this.settings = settings;
         this.dependencies = dependencies;
         this.dependencyNode = dependencyTreeNode;
         this.repoUtils = repoUtils;
@@ -238,12 +230,6 @@ public class DependenciesRenderer
         {
             // === Section: Dependency File Details.
             renderSectionDependencyFileDetails();
-        }
-
-        if ( configuration.getDependencyLocationsEnabled() )
-        {
-            // === Section: Dependency Repository Locations.
-            renderSectionDependencyRepositoryLocations();
         }
     }
 
@@ -732,94 +718,6 @@ public class DependenciesRenderer
             "", "", "" } );
     }
 
-    private void populateRepositoryMap( Map<String, ArtifactRepository> repos, List<ArtifactRepository> rowRepos )
-    {
-        for ( ArtifactRepository repo : rowRepos )
-        {
-            repos.put( repo.getId(), repo );
-        }
-    }
-
-    private void blacklistRepositoryMap( Map<String, ArtifactRepository> repos, List<String> repoUrlBlackListed )
-    {
-        for ( ArtifactRepository repo : repos.values() )
-        {
-            // ping repo
-            if ( repo.isBlacklisted() )
-            {
-                repoUrlBlackListed.add( repo.getUrl() );
-            }
-            else
-            {
-                if ( repoUrlBlackListed.contains( repo.getUrl() ) )
-                {
-                    repo.setBlacklisted( true );
-                }
-                else
-                {
-                    try
-                    {
-                        URL repoUrl = new URL( repo.getUrl() );
-                        if ( ProjectInfoReportUtils.getContent( repoUrl, settings ) == null )
-                        {
-                            log.warn( "The repository url '" + repoUrl + "' has no stream - Repository '"
-                                + repo.getId() + "' will be blacklisted." );
-                            repo.setBlacklisted( true );
-                            repoUrlBlackListed.add( repo.getUrl() );
-                        }
-                    }
-                    catch ( IOException e )
-                    {
-                        log.warn( "The repository url '" + repo.getUrl() + "' is invalid - Repository '" + repo.getId()
-                            + "' will be blacklisted." );
-                        repo.setBlacklisted( true );
-                        repoUrlBlackListed.add( repo.getUrl() );
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings( "unchecked" )
-    private void renderSectionDependencyRepositoryLocations()
-    {
-        startSection( getI18nString( "repo.locations.title" ) );
-
-        // Collect Alphabetical Dependencies
-        List<Artifact> alldeps = dependencies.getAllDependencies();
-        Collections.sort( alldeps, getArtifactComparator() );
-
-        // Collect Repositories
-        Map<String, ArtifactRepository> repoMap = new HashMap<String, ArtifactRepository>();
-
-        populateRepositoryMap( repoMap, repoUtils.getRemoteArtifactRepositories() );
-        for ( Artifact artifact : alldeps )
-        {
-            try
-            {
-                MavenProject artifactProject = repoUtils.getMavenProjectFromRepository( artifact );
-                populateRepositoryMap( repoMap, artifactProject.getRemoteArtifactRepositories() );
-            }
-            catch ( ProjectBuildingException e )
-            {
-                log.warn( "Unable to create Maven project from repository for artifact " + artifact.getId(), e );
-            }
-        }
-
-        List<String> repoUrlBlackListed = new ArrayList<String>();
-        blacklistRepositoryMap( repoMap, repoUrlBlackListed );
-
-        // Render Repository List
-
-        printRepositories( repoMap, repoUrlBlackListed );
-
-        // Render Artifacts locations
-
-        printArtifactsLocations( repoMap, repoUrlBlackListed, alldeps );
-
-        endSection();
-    }
-
     private void renderSectionDependencyLicenseListing()
     {
         startSection( getI18nString( "graph.tables.licenses" ) );
@@ -1161,102 +1059,6 @@ public class DependenciesRenderer
         }
     }
 
-    private void printRepositories( Map<String, ArtifactRepository> repoMap, List<String> repoUrlBlackListed )
-    {
-        // i18n
-        String repoid = getI18nString( "repo.locations.column.repoid" );
-        String url = getI18nString( "repo.locations.column.url" );
-        String release = getI18nString( "repo.locations.column.release" );
-        String snapshot = getI18nString( "repo.locations.column.snapshot" );
-        String blacklisted = getI18nString( "repo.locations.column.blacklisted" );
-        String releaseEnabled = getI18nString( "repo.locations.cell.release.enabled" );
-        String releaseDisabled = getI18nString( "repo.locations.cell.release.disabled" );
-        String snapshotEnabled = getI18nString( "repo.locations.cell.snapshot.enabled" );
-        String snapshotDisabled = getI18nString( "repo.locations.cell.snapshot.disabled" );
-        String blacklistedEnabled = getI18nString( "repo.locations.cell.blacklisted.enabled" );
-        String blacklistedDisabled = getI18nString( "repo.locations.cell.blacklisted.disabled" );
-
-        // Table header
-
-        String[] tableHeader;
-        int[] justificationRepo;
-        if ( repoUrlBlackListed.isEmpty() )
-        {
-            tableHeader = new String[] { repoid, url, release, snapshot };
-            justificationRepo =
-                new int[] { Sink.JUSTIFY_LEFT, Sink.JUSTIFY_LEFT, Sink.JUSTIFY_CENTER, Sink.JUSTIFY_CENTER };
-        }
-        else
-        {
-            tableHeader = new String[] { repoid, url, release, snapshot, blacklisted };
-            justificationRepo =
-                new int[] { Sink.JUSTIFY_LEFT, Sink.JUSTIFY_LEFT, Sink.JUSTIFY_CENTER, Sink.JUSTIFY_CENTER,
-                    Sink.JUSTIFY_CENTER };
-        }
-
-        startTable( justificationRepo, false );
-
-        tableHeader( tableHeader );
-
-        // Table rows
-
-        for ( ArtifactRepository repo : repoMap.values() )
-        {
-            List<ArtifactRepository> mirroredRepos = getMirroredRepositories( repo );
-
-            sink.tableRow();
-            sink.tableCell();
-            boolean addLineBreak = false;
-            for ( ArtifactRepository r : mirroredRepos )
-            {
-                if ( addLineBreak )
-                {
-                    sink.lineBreak();
-                }
-                addLineBreak = true;
-                sink.text( r.getId() );
-            }
-            sink.tableCell_();
-
-            sink.tableCell();
-            addLineBreak = false;
-            for ( ArtifactRepository r : mirroredRepos )
-            {
-                if ( addLineBreak )
-                {
-                    sink.lineBreak();
-                }
-                addLineBreak = true;
-                if ( repo.isBlacklisted() )
-                {
-                    sink.text( r.getUrl() );
-                }
-                else
-                {
-                    sink.link( r.getUrl() );
-                    sink.text( r.getUrl() );
-                    sink.link_();
-                }
-            }
-            sink.tableCell_();
-
-            ArtifactRepositoryPolicy releasePolicy = repo.getReleases();
-            tableCell( releasePolicy.isEnabled() ? releaseEnabled : releaseDisabled );
-
-            ArtifactRepositoryPolicy snapshotPolicy = repo.getSnapshots();
-            tableCell( snapshotPolicy.isEnabled() ? snapshotEnabled : snapshotDisabled );
-
-            if ( !repoUrlBlackListed.isEmpty() )
-            {
-                tableCell( repoUrlBlackListed.contains( repo.getUrl() ) ? blacklistedEnabled : blacklistedDisabled );
-            }
-
-            sink.tableRow_();
-        }
-
-        endTable();
-    }
-
     /**
      * Resolves all given artifacts with {@link RepositoryUtils}.
      *
@@ -1306,191 +1108,6 @@ public class DependenciesRenderer
                 }
             }
         }
-    }
-
-    private Object invoke( Object object, String method )
-        throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
-    {
-        return object.getClass().getMethod( method ).invoke( object );
-    }
-
-    /**
-     * Get the repos that can be hidden behind a mirror.
-     *
-     * @param repo the repo used to download artifacts
-     * @return the mirrored repositories or a singleton with actual repo if it is not a mirror
-     */
-    private List<ArtifactRepository> getMirroredRepositories( ArtifactRepository repo )
-    {
-        try
-        {
-            @SuppressWarnings( "unchecked" )
-            List<ArtifactRepository> mirroredRepos =
-                (List<ArtifactRepository>) invoke( repo, "getMirroredRepositories" );
-
-            if ( ( mirroredRepos != null ) && ( !mirroredRepos.isEmpty() ) )
-            {
-                return mirroredRepos;
-            }
-        }
-        catch ( IllegalArgumentException e )
-        {
-            // ignore: API not available before Maven 3.0.3
-        }
-        catch ( SecurityException e )
-        {
-            // ignore: API not available before Maven 3.0.3
-        }
-        catch ( IllegalAccessException e )
-        {
-            // ignore: API not available before Maven 3.0.3
-        }
-        catch ( InvocationTargetException e )
-        {
-            // ignore: API not available before Maven 3.0.3
-        }
-        catch ( NoSuchMethodException e )
-        {
-            // ignore: API not available before Maven 3.0.3
-        }
-        // before Maven 3.0.3, we can't do anything: Maven 3.0-alpha to 3.0.2 will show the mirror
-        return Collections.singletonList( repo );
-    }
-
-    private void printArtifactsLocations( Map<String, ArtifactRepository> repoMap, List<String> repoUrlBlackListed,
-                                          List<Artifact> alldeps )
-    {
-        // i18n
-        String artifact = getI18nString( "repo.locations.column.artifact" );
-
-        sink.paragraph();
-        sink.text( getI18nString( "repo.locations.artifact.breakdown" ) );
-        sink.paragraph_();
-
-        List<String> repoIdList = new ArrayList<String>();
-        // removed blacklisted repo
-        for ( Map.Entry<String, ArtifactRepository> entry : repoMap.entrySet() )
-        {
-            String repokey = entry.getKey();
-            ArtifactRepository repo = entry.getValue();
-            if ( !( repo.isBlacklisted() || repoUrlBlackListed.contains( repo.getUrl() ) ) )
-            {
-                repoIdList.add( repokey );
-            }
-        }
-
-        String[] tableHeader = new String[repoIdList.size() + 1];
-        int[] justificationRepo = new int[repoIdList.size() + 1];
-
-        tableHeader[0] = artifact;
-        justificationRepo[0] = Sink.JUSTIFY_LEFT;
-
-        int idnum = 1;
-        for ( String id : repoIdList )
-        {
-            tableHeader[idnum] = id;
-            justificationRepo[idnum] = Sink.JUSTIFY_CENTER;
-            idnum++;
-        }
-
-        Map<String, Integer> totalByRepo = new HashMap<String, Integer>();
-        TotalCell totaldeps = new TotalCell( DEFAULT_DECIMAL_FORMAT );
-
-        startTable( justificationRepo, false );
-
-        tableHeader( tableHeader );
-
-        for ( Artifact dependency : alldeps )
-        {
-            totaldeps.incrementTotal( dependency.getScope() );
-
-            sink.tableRow();
-
-            tableCell( dependency.getId() );
-
-            if ( Artifact.SCOPE_SYSTEM.equals( dependency.getScope() ) )
-            {
-                for ( @SuppressWarnings( "unused" )
-                String repoId : repoIdList )
-                {
-                    tableCell( "-" );
-                }
-            }
-            else
-            {
-                for ( String repokey : repoIdList )
-                {
-                    ArtifactRepository repo = repoMap.get( repokey );
-
-                    String depUrl = repoUtils.getDependencyUrlFromRepository( dependency, repo );
-
-                    Integer old = totalByRepo.get( repokey );
-                    if ( old == null )
-                    {
-                        old = 0;
-                        totalByRepo.put( repokey, old );
-                    }
-
-                    boolean dependencyExists = false;
-                    // check snapshots in snapshots repository only and releases in release repositories...
-                    if ( ( dependency.isSnapshot() && repo.getSnapshots().isEnabled() )
-                        || ( !dependency.isSnapshot() && repo.getReleases().isEnabled() ) )
-                    {
-                        dependencyExists = repoUtils.dependencyExistsInRepo( repo, dependency );
-                    }
-
-                    if ( dependencyExists )
-                    {
-                        sink.tableCell();
-                        if ( StringUtils.isNotEmpty( depUrl ) )
-                        {
-                            sink.link( depUrl );
-                        }
-                        else
-                        {
-                            sink.text( depUrl );
-                        }
-
-                        sink.figure();
-                        sink.figureCaption();
-                        // TODO Translate me!
-                        sink.text( "Found at " + repo.getUrl() );
-                        sink.figureCaption_();
-                        sink.figureGraphics( "images/icon_success_sml.gif" );
-                        sink.figure_();
-
-                        sink.link_();
-                        sink.tableCell_();
-
-                        totalByRepo.put( repokey, old.intValue() + 1 );
-                    }
-                    else
-                    {
-                        tableCell( "-" );
-                    }
-                }
-            }
-
-            sink.tableRow_();
-        }
-
-        // Total row
-
-        // reused key
-        tableHeader[0] = getI18nString( "file.details.total" );
-        tableHeader( tableHeader );
-        String[] totalRow = new String[repoIdList.size() + 1];
-        totalRow[0] = totaldeps.toString();
-        idnum = 1;
-        for ( String repokey : repoIdList )
-        {
-            Integer deps = totalByRepo.get( repokey );
-            totalRow[idnum++] = deps != null ? deps.toString() : "0";
-        }
-
-        tableRow( totalRow );
-
-        endTable();
     }
 
     /**

@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.util.Locale;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
@@ -85,14 +84,6 @@ public class DependenciesReport
     protected ArtifactMetadataSource artifactMetadataSource;
 
     /**
-     * Wagon manager component.
-     *
-     * @since 2.1
-     */
-    @Component
-    private WagonManager wagonManager;
-
-    /**
      * Dependency graph builder component.
      *
      * @since 2.5
@@ -137,15 +128,6 @@ public class DependenciesReport
     @Parameter( property = "dependency.details.enabled", defaultValue = "true" )
     private boolean dependencyDetailsEnabled;
 
-    /**
-     * Display the repository locations of the dependencies. If Maven is configured to be offline, this parameter
-     * will be ignored.
-     *
-     * @since 2.1
-     */
-    @Parameter( property = "dependency.locations.enabled", defaultValue = "true" )
-    private boolean dependencyLocationsEnabled;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -168,12 +150,6 @@ public class DependenciesReport
     @Override
     public void executeReport( Locale locale )
     {
-        if ( settings.isOffline() && dependencyLocationsEnabled )
-        {
-            getLog().warn( "The parameter 'dependencyLocationsEnabled' is ignored in offline mode." );
-            dependencyLocationsEnabled = false;
-        }
-
         try
         {
             copyResources( new File( getOutputDirectory() ) );
@@ -184,7 +160,7 @@ public class DependenciesReport
         }
 
         @SuppressWarnings( "unchecked" ) RepositoryUtils repoUtils =
-            new RepositoryUtils( getLog(), wagonManager, settings, mavenProjectBuilder, factory, resolver,
+            new RepositoryUtils( getLog(), mavenProjectBuilder, factory, resolver,
                                  project.getRemoteArtifactRepositories(), project.getPluginArtifactRepositories(),
                                  localRepository, repositoryMetadataManager );
 
@@ -193,10 +169,10 @@ public class DependenciesReport
         Dependencies dependencies = new Dependencies( project, dependencyNode, classesAnalyzer );
 
         DependenciesReportConfiguration config =
-            new DependenciesReportConfiguration( dependencyDetailsEnabled, dependencyLocationsEnabled );
+            new DependenciesReportConfiguration( dependencyDetailsEnabled );
 
         DependenciesRenderer r =
-            new DependenciesRenderer( getSink(), locale, getI18N( locale ), getLog(), settings, dependencies,
+            new DependenciesRenderer( getSink(), locale, getI18N( locale ), getLog(), dependencies,
                                       dependencyNode, config, repoUtils, artifactFactory, mavenProjectBuilder,
                                       remoteRepositories, localRepository );
         r.render();

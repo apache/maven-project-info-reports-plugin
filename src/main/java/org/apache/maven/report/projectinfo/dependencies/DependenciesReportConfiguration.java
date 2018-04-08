@@ -29,16 +29,12 @@ public class DependenciesReportConfiguration
 {
     private boolean dependencyDetailsEnabled;
 
-    private boolean dependencyLocationsEnabled;
-
     /**
      * @param detailsEnabled whether details is enabled.
-     * @param locationEnabled whether location is enabled.
      */
-    public DependenciesReportConfiguration( boolean detailsEnabled, boolean locationEnabled )
+    public DependenciesReportConfiguration( boolean detailsEnabled )
     {
         this.dependencyDetailsEnabled = detailsEnabled;
-        this.dependencyLocationsEnabled = locationEnabled;
     }
 
     /**
@@ -47,13 +43,5 @@ public class DependenciesReportConfiguration
     public boolean getDependencyDetailsEnabled()
     {
         return dependencyDetailsEnabled;
-    }
-
-    /**
-     * @return value of Mojo dependencyLocationsEnabled parameter.
-     */
-    public boolean getDependencyLocationsEnabled()
-    {
-        return dependencyLocationsEnabled;
     }
 }

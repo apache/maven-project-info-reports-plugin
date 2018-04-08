@@ -19,15 +19,12 @@ package org.apache.maven.report.projectinfo.dependencies;
  * under the License.
  */
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.manager.WagonConfigurationException;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -41,18 +38,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.settings.Proxy;
-import org.apache.maven.settings.Settings;
-import org.apache.maven.wagon.ConnectionException;
-import org.apache.maven.wagon.TransferFailedException;
-import org.apache.maven.wagon.UnsupportedProtocolException;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.authentication.AuthenticationException;
-import org.apache.maven.wagon.authentication.AuthenticationInfo;
-import org.apache.maven.wagon.authorization.AuthorizationException;
-import org.apache.maven.wagon.observers.Debug;
-import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -63,13 +48,7 @@ import org.codehaus.plexus.util.StringUtils;
  */
 public class RepositoryUtils
 {
-    private static final List<String> UNKNOWN_HOSTS = new ArrayList<String>();
-
     private final Log log;
-
-    private final WagonManager wagonManager;
-
-    private final Settings settings;
 
     private final MavenProjectBuilder mavenProjectBuilder;
 
@@ -85,8 +64,6 @@ public class RepositoryUtils
 
     /**
      * @param log {@link Log}
-     * @param wagonManager {@link WagonManager}
-     * @param settings {@link Settings}
      * @param mavenProjectBuilder {@link MavenProjectBuilder}
      * @param factory {@link ArtifactFactory}
      * @param resolver {@link ArtifactResolver}
@@ -95,15 +72,12 @@ public class RepositoryUtils
      * @param localRepository {@link ArtifactRepository}
      * @param repositoryMetadataManager {@link RepositoryMetadataManager}
      */
-    public RepositoryUtils( Log log, WagonManager wagonManager, Settings settings,
-                            MavenProjectBuilder mavenProjectBuilder, ArtifactFactory factory,
+    public RepositoryUtils( Log log, MavenProjectBuilder mavenProjectBuilder, ArtifactFactory factory,
                             ArtifactResolver resolver, List<ArtifactRepository> remoteRepositories,
                             List<ArtifactRepository> pluginRepositories, ArtifactRepository localRepository,
                             RepositoryMetadataManager repositoryMetadataManager )
     {
         this.log = log;
-        this.wagonManager = wagonManager;
-        this.settings = settings;
         this.mavenProjectBuilder = mavenProjectBuilder;
         this.factory = factory;
         this.resolver = resolver;
@@ -151,127 +125,6 @@ public class RepositoryUtils
         repos.addAll( remoteRepositories );
 
         resolver.resolve( artifact, repos, localRepository );
-    }
-
-    /**
-     * @param repo not null
-     * @param artifact not null
-     * @return <code>true</code> if the artifact exists in the given repo, <code>false</code> otherwise or if
-     * the repo is blacklisted.
-     */
-    public boolean dependencyExistsInRepo( ArtifactRepository repo, Artifact artifact )
-    {
-        if ( repo.isBlacklisted() )
-        {
-            if ( log.isDebugEnabled() )
-            {
-                log.debug( "The repo '" + repo.getId() + "' is black listed - Ignored it" );
-            }
-            return false;
-        }
-
-        if ( UNKNOWN_HOSTS.contains( repo.getUrl() ) )
-        {
-            if ( log.isDebugEnabled() )
-            {
-                log.debug( "The repo url '" + repo.getUrl() + "' is unknown - Ignored it" );
-            }
-            return false;
-        }
-
-        repo = wagonManager.getMirrorRepository( repo );
-
-        String id = repo.getId();
-        Repository repository = new Repository( id, repo.getUrl() );
-
-        Wagon wagon;
-        try
-        {
-            wagon = wagonManager.getWagon( repository );
-        }
-        catch ( UnsupportedProtocolException e )
-        {
-            logError( "Unsupported protocol: '" + repo.getProtocol() + "'", e );
-            return false;
-        }
-        catch ( WagonConfigurationException e )
-        {
-            logError( "Unsupported protocol: '" + repo.getProtocol() + "'", e );
-            return false;
-        }
-
-        wagon.setTimeout( 1000 );
-
-        if ( log.isDebugEnabled() )
-        {
-            Debug debug = new Debug();
-
-            wagon.addSessionListener( debug );
-            wagon.addTransferListener( debug );
-        }
-
-        try
-        {
-            // FIXME when upgrading to maven 3.x : this must be changed.
-            AuthenticationInfo auth = wagonManager.getAuthenticationInfo( repo.getId() );
-
-            ProxyInfo proxyInfo = getProxyInfo();
-            if ( proxyInfo != null )
-            {
-                wagon.connect( repository, auth, proxyInfo );
-            }
-            else
-            {
-                wagon.connect( repository, auth );
-            }
-
-            return wagon.resourceExists( StringUtils.replace( getDependencyUrlFromRepository( artifact, repo ),
-                                                              repo.getUrl(), "" ) );
-        }
-        catch ( ConnectionException e )
-        {
-            logError( "Unable to connect to: " + repo.getUrl(), e );
-            return false;
-        }
-        catch ( AuthenticationException e )
-        {
-            logError( "Unable to connect to: " + repo.getUrl(), e );
-            return false;
-        }
-        catch ( TransferFailedException e )
-        {
-            if ( e.getCause() instanceof UnknownHostException )
-            {
-                log.error( "Unknown host " + e.getCause().getMessage() + " - ignored it" );
-                UNKNOWN_HOSTS.add( repo.getUrl() );
-            }
-            else
-            {
-                logError( "Unable to determine if resource " + artifact + " exists in " + repo.getUrl(), e );
-            }
-            return false;
-        }
-        catch ( AuthorizationException e )
-        {
-            logError( "Unable to connect to: " + repo.getUrl(), e );
-            return false;
-        }
-        catch ( AbstractMethodError e )
-        {
-            log.error( "Wagon " + wagon.getClass().getName() + " does not support the resourceExists method" );
-            return false;
-        }
-        finally
-        {
-            try
-            {
-                wagon.disconnect();
-            }
-            catch ( ConnectionException e )
-            {
-                logError( "Error disconnecting wagon - ignored", e );
-            }
-        }
     }
 
     /**
@@ -362,53 +215,5 @@ public class RepositoryUtils
         }
 
         return repo.getUrl() + "/" + repo.pathOf( copyArtifact );
-    }
-
-    // ----------------------------------------------------------------------
-    // Private methods
-    // ----------------------------------------------------------------------
-
-    /**
-     * Convenience method to map a <code>Proxy</code> object from the user system settings to a <code>ProxyInfo</code>
-     * object.
-     *
-     * @return a proxyInfo object instanced or null if no active proxy is define in the settings.xml
-     */
-    private ProxyInfo getProxyInfo()
-    {
-        if ( settings == null || settings.getActiveProxy() == null )
-        {
-            return null;
-        }
-
-        Proxy settingsProxy = settings.getActiveProxy();
-
-        ProxyInfo proxyInfo = new ProxyInfo();
-        proxyInfo.setHost( settingsProxy.getHost() );
-        proxyInfo.setType( settingsProxy.getProtocol() );
-        proxyInfo.setPort( settingsProxy.getPort() );
-        proxyInfo.setNonProxyHosts( settingsProxy.getNonProxyHosts() );
-        proxyInfo.setUserName( settingsProxy.getUsername() );
-        proxyInfo.setPassword( settingsProxy.getPassword() );
-
-        return proxyInfo;
-    }
-
-    /**
-     * Log an error, adding the stacktrace only is debug is enabled.
-     * 
-     * @param message the error message
-     * @param e the cause
-     */
-    private void logError( String message, Exception e )
-    {
-        if ( log.isDebugEnabled() )
-        {
-            log.error( message, e );
-        }
-        else
-        {
-            log.error( message );
-        }
     }
 }
