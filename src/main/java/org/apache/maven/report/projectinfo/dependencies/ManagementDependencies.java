@@ -29,7 +29,6 @@ import org.apache.maven.model.Dependency;
 
 /**
  * @author Nick Stolwijk
- * @version $Id$
  * @since 2.1
  */
 public class ManagementDependencies

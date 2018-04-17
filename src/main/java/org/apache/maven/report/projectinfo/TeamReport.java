@@ -41,7 +41,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Generates the Project Team report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "project-team" )
@@ -135,8 +134,6 @@ public class TeamReport
 
         private final Model model;
 
-        private final Log log;
-
         private final boolean showAvatarImages;
 
         private final String protocol;
@@ -146,7 +143,6 @@ public class TeamReport
             super( sink, i18n, locale );
 
             this.model = model;
-            this.log = log;
             this.showAvatarImages = showAvatarImages;
 
             // prepare protocol for gravatar

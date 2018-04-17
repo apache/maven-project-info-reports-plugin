@@ -37,7 +37,6 @@ import java.util.Locale;
  * Generates the Project Summary report.
  *
  * @author Edwin Punzalan
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "summary" )

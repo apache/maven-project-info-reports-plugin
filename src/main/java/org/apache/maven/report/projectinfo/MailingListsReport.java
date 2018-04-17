@@ -24,7 +24,6 @@ import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -38,23 +37,12 @@ import java.util.Locale;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter </a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "mailing-list" )
 public class MailingListsReport
     extends AbstractProjectInfoReport
 {
-
-    /**
-     * This can override the header text of the mailing list(s) report
-     *
-     * @since 2.2
-     * @deprecated since 2.3, you should use a custom bundle.
-     */
-    @Parameter
-    protected String introduction;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -75,8 +63,7 @@ public class MailingListsReport
     public void executeReport( Locale locale )
     {
         MailingListsRenderer r =
-            new MailingListsRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale, introduction,
-                                      getLog() );
+            new MailingListsRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale, getLog() );
 
         r.render();
     }
@@ -105,21 +92,15 @@ public class MailingListsReport
     protected static class MailingListsRenderer
         extends AbstractProjectInfoRenderer
     {
-        private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
         private final Model model;
-
-        private final String introduction;
 
         private final Log log;
 
-        MailingListsRenderer( Sink sink, Model model, I18N i18n, Locale locale, String introduction, Log log )
+        MailingListsRenderer( Sink sink, Model model, I18N i18n, Locale locale, Log log )
         {
             super( sink, i18n, locale );
 
             this.model = model;
-
-            this.introduction = introduction;
 
             this.log = log;
         }
@@ -148,16 +129,7 @@ public class MailingListsReport
 
             startSection( getTitle() );
 
-            if ( StringUtils.isNotBlank( introduction ) )
-            {
-                log.warn( "Since 2.3, the <introduction/> parameter is deprecated. Please use a <customBundle/>"
-                    + " parameter to configure a custom bundle." );
-                paragraph( introduction );
-            }
-            else
-            {
-                paragraph( getI18nString( "intro" ) );
-            }
+            paragraph( getI18nString( "intro" ) );
 
             startTable();
 

@@ -37,8 +37,8 @@ public class ModulesStub
     }
 
     @Override
-    public List getModules()
+    public List<String> getModules()
     {
-        return Arrays.<String>asList( "subproject1", "subproject2" );
+        return Arrays.asList( "subproject1", "subproject2" );
     }
 }

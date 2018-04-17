@@ -19,7 +19,20 @@ package org.apache.maven.report.projectinfo;
  * under the License.
  */
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.isA;
+
+import java.io.File;
 import java.net.URL;
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuildingResult;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
@@ -30,7 +43,6 @@ import com.meterware.httpunit.WebTable;
 
 /**
  * @author Nick Stolwijk
- * @version $Id$
  * @since 2.1
  */
 public class PluginManagementReportTest
@@ -41,6 +53,33 @@ public class PluginManagementReportTest
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
 
+    
+    
+    @Override
+    protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )
+        throws Exception
+    {
+        AbstractProjectInfoReport mojo = super.createReportMojo( goal, pluginXmlFile );
+        
+        ProjectBuilder builder = mock( ProjectBuilder.class );
+        
+        when( builder.build( isA( Artifact.class ),
+                             isA( ProjectBuildingRequest.class ) ) ).thenAnswer( new Answer<ProjectBuildingResult>()
+                             {
+                                 @Override
+                                 public ProjectBuildingResult answer( InvocationOnMock invocation )
+                                     throws Throwable
+                                 {
+                                     return createProjectBuildingResult( (Artifact) invocation.getArgument( 0 ), 
+                                                                         "http://m.a.o/" );
+                                 }
+                             } );
+
+        setVariableValueToObject( mojo, "projectBuilder", builder );
+        
+        return mojo;
+    }
+    
     /**
      * Test report
      *
@@ -78,5 +117,19 @@ public class PluginManagementReportTest
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals( getString( "report.plugin-management.title" ), textBlocks[0].getText() );
+    }
+    
+    private static ProjectBuildingResult createProjectBuildingResult( Artifact artifact, String url )
+    {
+        ProjectBuildingResult result = mock( ProjectBuildingResult.class );
+        MavenProjectStub stub = new MavenProjectStub();
+        stub.setGroupId( artifact.getGroupId() );
+        stub.setArtifactId( artifact.getArtifactId() );
+        stub.setVersion( artifact.getVersion() );
+        stub.setUrl( url );
+
+        when( result.getProject() ).thenReturn( stub );
+
+        return result;
     }
 }

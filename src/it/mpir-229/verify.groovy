@@ -17,4 +17,4 @@
  * under the License.
  */
 File modulesPage = new File( basedir, 'target/site/modules.html' )
-assert modulesPage.text.contains( '<a href="mpir-229-module1-1.0-SNAPSHOT/index.html">mpir-229-module1</a>' )
+assert modulesPage.text.contains( '<a href="mpir-229-module1-1.0-SNAPSHOT/index.html" title="mpir-229-module1">mpir-229-module1</a>' )

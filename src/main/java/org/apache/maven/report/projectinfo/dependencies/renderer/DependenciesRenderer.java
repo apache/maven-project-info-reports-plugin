@@ -40,10 +40,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributeSet;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
@@ -51,13 +47,16 @@ import org.apache.maven.doxia.util.HtmlTools;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.i18n.I18N;
@@ -126,13 +125,11 @@ public class DependenciesRenderer
         }
     };
 
-    private final ArtifactFactory artifactFactory;
+    private final RepositorySystem repositorySystem;
 
-    private final MavenProjectBuilder mavenProjectBuilder;
+    private final ProjectBuilder projectBuilder;
 
-    private final List<ArtifactRepository> remoteRepositories;
-
-    private final ArtifactRepository localRepository;
+    private final ProjectBuildingRequest buildingRequest;
 
     static
     {
@@ -148,6 +145,8 @@ public class DependenciesRenderer
     }
 
     /**
+     * 
+    /**
      * Default constructor.
      *
      * @param sink {@link Sink}
@@ -158,16 +157,15 @@ public class DependenciesRenderer
      * @param dependencyTreeNode {@link DependencyNode}
      * @param config {@link DependenciesReportConfiguration}
      * @param repoUtils {@link RepositoryUtils}
-     * @param artifactFactory {@link ArtifactFactory}
-     * @param mavenProjectBuilder {@link MavenProjectBuilder}
-     * @param remoteRepositories {@link ArtifactRepository}
-     * @param localRepository {@link ArtifactRepository}
+     * @param repositorySystem {@link RepositorySystem}
+     * @param projectBuilder {@link ProjectBuilder}
+     * @param buildingRequest {@link ProjectBuildingRequest}
      */
     public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log, 
                                  Dependencies dependencies, DependencyNode dependencyTreeNode,
                                  DependenciesReportConfiguration config, RepositoryUtils repoUtils,
-                                 ArtifactFactory artifactFactory, MavenProjectBuilder mavenProjectBuilder,
-                                 List<ArtifactRepository> remoteRepositories, ArtifactRepository localRepository )
+                                 RepositorySystem repositorySystem, ProjectBuilder projectBuilder,
+                                 ProjectBuildingRequest buildingRequest )
     {
         super( sink, i18n, locale );
 
@@ -176,10 +174,9 @@ public class DependenciesRenderer
         this.dependencyNode = dependencyTreeNode;
         this.repoUtils = repoUtils;
         this.configuration = config;
-        this.artifactFactory = artifactFactory;
-        this.mavenProjectBuilder = mavenProjectBuilder;
-        this.remoteRepositories = remoteRepositories;
-        this.localRepository = localRepository;
+        this.repositorySystem = repositorySystem;
+        this.projectBuilder = projectBuilder;
+        this.buildingRequest = buildingRequest;
 
         // Using the right set of symbols depending of the locale
         DEFAULT_DECIMAL_FORMAT.setDecimalFormatSymbols( new DecimalFormatSymbols( locale ) );
@@ -790,8 +787,7 @@ public class DependenciesRenderer
             artifact.isOptional() ? getI18nString( "column.isOptional" ) : getI18nString( "column.isNotOptional" );
 
         String url =
-            ProjectInfoReportUtils.getArtifactUrl( artifactFactory, artifact, mavenProjectBuilder, remoteRepositories,
-                                                   localRepository );
+            ProjectInfoReportUtils.getArtifactUrl( repositorySystem, artifact, projectBuilder, buildingRequest );
         String artifactIdCell = ProjectInfoReportUtils.getArtifactIdCell( artifact.getArtifactId(), url );
 
         MavenProject artifactProject;
@@ -799,7 +795,7 @@ public class DependenciesRenderer
         try
         {
             artifactProject = repoUtils.getMavenProjectFromRepository( artifact );
-            @SuppressWarnings( "unchecked" )
+
             List<License> licenses = artifactProject.getLicenses();
             for ( License license : licenses )
             {
@@ -893,7 +889,7 @@ public class DependenciesRenderer
                 String artifactDescription = artifactProject.getDescription();
                 String artifactUrl = artifactProject.getUrl();
                 String artifactName = artifactProject.getName();
-                @SuppressWarnings( "unchecked" )
+
                 List<License> licenses = artifactProject.getLicenses();
 
                 sink.tableRow();
@@ -1081,24 +1077,9 @@ public class DependenciesRenderer
                 {
                     repoUtils.resolve( artifact );
                 }
-                catch ( ArtifactResolutionException e )
+                catch ( ArtifactResolverException e )
                 {
                     log.error( "Artifact " + artifact.getId() + " can't be resolved.", e );
-                    continue;
-                }
-                catch ( ArtifactNotFoundException e )
-                {
-                    if ( ( dependencies.getProject().getGroupId().equals( artifact.getGroupId() ) )
-                        && ( dependencies.getProject().getArtifactId().equals( artifact.getArtifactId() ) )
-                        && ( dependencies.getProject().getVersion().equals( artifact.getVersion() ) ) )
-                    {
-                        log.warn( "The artifact of this project has never been deployed." );
-                    }
-                    else
-                    {
-                        log.error( "Artifact " + artifact.getId() + " not found.", e );
-                    }
-
                     continue;
                 }
 

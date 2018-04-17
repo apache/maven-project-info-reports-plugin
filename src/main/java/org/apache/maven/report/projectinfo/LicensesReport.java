@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
  * Generates the Project Licenses report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "license" )

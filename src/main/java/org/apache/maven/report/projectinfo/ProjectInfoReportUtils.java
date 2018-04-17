@@ -29,8 +29,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
@@ -41,18 +39,17 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.validator.routines.RegexValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingRequest;
 // CHECKSTYLE_OFF: UnusedImports
 import org.apache.maven.reporting.AbstractMavenReportRenderer;
+import org.apache.maven.repository.RepositorySystem;
 // CHECKSTYLE_ON: UnusedImports
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
@@ -214,16 +211,12 @@ public class ProjectInfoReportUtils
     /**
      * @param factory not null
      * @param artifact not null
-     * @param mavenProjectBuilder not null
-     * @param remoteRepositories not null
-     * @param localRepository not null
+     * @param projectBuilder not null
+     * @param buildingRequest not null
      * @return the artifact url or null if an error occurred.
      */
-    // CHECKSTYLE_OFF: LineLength
-    public static String getArtifactUrl( ArtifactFactory factory, Artifact artifact,
-                                         MavenProjectBuilder mavenProjectBuilder,
-                                         List<ArtifactRepository> remoteRepositories, ArtifactRepository localRepository )
-    // CHECKSTYLE_ON: LineLength
+    public static String getArtifactUrl( RepositorySystem repositorySystem, Artifact artifact,
+                                         ProjectBuilder projectBuilder, ProjectBuildingRequest buildingRequest )
     {
         if ( Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) )
         {
@@ -234,15 +227,12 @@ public class ProjectInfoReportUtils
         if ( !"pom".equals( copyArtifact.getType() ) )
         {
             copyArtifact =
-                factory.createProjectArtifact( copyArtifact.getGroupId(), copyArtifact.getArtifactId(),
-                                               copyArtifact.getVersion(), copyArtifact.getScope() );
+                repositorySystem.createProjectArtifact( copyArtifact.getGroupId(), copyArtifact.getArtifactId(),
+                                                        copyArtifact.getVersion() );
         }
         try
         {
-            MavenProject pluginProject =
-                mavenProjectBuilder.buildFromRepository( copyArtifact,
-                                                         remoteRepositories == null ? Collections.EMPTY_LIST
-                                                                         : remoteRepositories, localRepository );
+            MavenProject pluginProject = projectBuilder.build( copyArtifact, buildingRequest ).getProject();
 
             if ( isArtifactUrlValid( pluginProject.getUrl() ) )
             {
@@ -388,34 +378,5 @@ public class ProjectInfoReportUtils
         }
 
         return conn;
-    }
-
-    /**
-     * @param str The string to be checked.
-     * @return true if is number false otherwise.
-     */
-    @Deprecated
-    public static boolean isNumber( String str )
-    {
-        if ( str.startsWith( "+" ) )
-        {
-            str = str.substring( 1 );
-        }
-        return NumberUtils.isNumber( str );
-    }
-
-    /**
-     * @param str The string which should be converted.
-     * @param defaultValue The default value.
-     * @return Converted string.
-     */
-    @Deprecated
-    public static float toFloat( String str, float defaultValue )
-    {
-        if ( str.startsWith( "+" ) )
-        {
-            str = str.substring( 1 );
-        }
-        return NumberUtils.toFloat( str, defaultValue );
     }
 }

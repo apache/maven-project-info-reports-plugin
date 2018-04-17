@@ -107,6 +107,16 @@ try
         System.err.println( "MPIR-216: dependency-management doesn't contain doxia-sink-api url http://maven.apache.org/doxia/doxia/doxia-sink-api/" );
         return false;
     }
+    
+    File dependencyConvergence = new File( siteDir, "dependency-convergence.html");
+    content = FileUtils.fileRead( dependencyConvergence, "UTF-8" );
+    
+    if ( !content.contains( "You do not have 100% convergence." ) )
+    {
+        System.err.println( "dependency-convergence not rendered correctly" );
+        return false;
+    }
+    
 }
 catch ( Throwable t )
 {

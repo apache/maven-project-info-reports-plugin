@@ -32,16 +32,17 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Site;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
  * Generates the Project Modules report.
  *
  * @author ltheussl
- * @version $Id$
  * @since 2.2
  */
 @Mojo( name = "modules" )
@@ -67,7 +68,7 @@ public class ModulesReport
     @Override
     public void executeReport( Locale locale )
     {
-        new ModulesRenderer( getSink(), getProject(), getReactorProjects(), mavenProjectBuilder, localRepository,
+        new ModulesRenderer( getSink(), getProject(), getReactorProjects(), projectBuilder, localRepository,
                              getI18N( locale ), locale, getLog(), siteTool ).render();
     }
 
@@ -100,21 +101,21 @@ public class ModulesReport
 
         protected List<MavenProject> reactorProjects;
 
-        protected MavenProjectBuilder mavenProjectBuilder;
+        protected ProjectBuilder projectBuilder;
 
         protected ArtifactRepository localRepository;
 
         protected SiteTool siteTool;
 
         ModulesRenderer( Sink sink, MavenProject project, List<MavenProject> reactorProjects,
-                         MavenProjectBuilder mavenProjectBuilder, ArtifactRepository localRepository, I18N i18n,
+                         ProjectBuilder projectBuilder, ArtifactRepository localRepository, I18N i18n,
                          Locale locale, Log log, SiteTool siteTool )
         {
             super( sink, i18n, locale );
 
             this.project = project;
             this.reactorProjects = reactorProjects;
-            this.mavenProjectBuilder = mavenProjectBuilder;
+            this.projectBuilder = projectBuilder;
             this.localRepository = localRepository;
             this.siteTool = siteTool;
             this.log = log;
@@ -154,6 +155,9 @@ public class ModulesReport
 
             final String baseUrl = getDistMgmntSiteUrl( project );
 
+            ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
+            buildingRequest.setLocalRepository( localRepository );
+            
             for ( String module : modules )
             {
                 MavenProject moduleProject = getModuleFromReactor( project, reactorProjects, module );
@@ -167,7 +171,7 @@ public class ModulesReport
                     {
                         try
                         {
-                            moduleProject = mavenProjectBuilder.build( f, localRepository, null );
+                            moduleProject = projectBuilder.build( f, buildingRequest ).getProject();
                         }
                         catch ( ProjectBuildingException e )
                         {

@@ -24,8 +24,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -131,16 +129,16 @@ public class ProjectInfoReportUtilsTest
 
         String content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
                                                             "ISO-8859-1" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
 
         // file
         url = new File( getBasedir(), "/src/test/resources/iso-8859-5-encoded.txt" ).toURI().toURL();
 
         content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
                                                             "ISO-8859-5" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Свобода всем народам!" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Свобода всем народам!" ) );
 
         // http + no auth
         startJetty( false, false );
@@ -149,8 +147,8 @@ public class ProjectInfoReportUtilsTest
 
         content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
                                                      "ISO-8859-1" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
 
         stopJetty();
 
@@ -161,8 +159,8 @@ public class ProjectInfoReportUtilsTest
 
         content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
                                                      "ISO-8859-1" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
 
         stopJetty();
 
@@ -173,8 +171,8 @@ public class ProjectInfoReportUtilsTest
 
         content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( true ), settingsStub,
                                                      "ISO-8859-1" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
 
         stopJetty();
 
@@ -185,8 +183,8 @@ public class ProjectInfoReportUtilsTest
 
         content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( true ), settingsStub,
                                                      "ISO-8859-1" );
-        Assert.assertNotNull( content );
-        Assert.assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        assertNotNull( content );
+        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
 
         stopJetty();
 

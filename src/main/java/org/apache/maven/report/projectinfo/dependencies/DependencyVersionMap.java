@@ -30,7 +30,6 @@ import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 
 /**
  * @author Simon Wang
- * @version $Id$
  * @since 2.8
  */
 public class DependencyVersionMap

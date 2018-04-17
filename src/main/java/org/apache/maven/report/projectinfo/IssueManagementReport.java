@@ -32,7 +32,6 @@ import java.util.Locale;
  * Generates the Project Issue Management report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "issue-tracking" )

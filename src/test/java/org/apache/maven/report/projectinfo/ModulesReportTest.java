@@ -22,8 +22,10 @@ package org.apache.maven.report.projectinfo;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.report.projectinfo.stubs.SubProject1Stub;
 import org.codehaus.plexus.util.ReflectionUtils;
 
@@ -32,8 +34,6 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author ltheussl
@@ -46,6 +46,17 @@ public class ModulesReportTest
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
+    
+    @Override
+    protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )
+        throws Exception
+    {
+        AbstractProjectInfoReport mojo = super.createReportMojo( goal, pluginXmlFile );
+        
+        mojo.setLog( new SilentLog() );
+        
+        return mojo;
+    }
 
     /**
      * Test report

@@ -37,7 +37,6 @@ import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * @version $Id$
  * @since 2.1
  */
 public class Dependencies

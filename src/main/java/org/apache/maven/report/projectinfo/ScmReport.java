@@ -48,7 +48,6 @@ import java.util.Locale;
  * Generates the Project Source Code Management (SCM) report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "scm" )

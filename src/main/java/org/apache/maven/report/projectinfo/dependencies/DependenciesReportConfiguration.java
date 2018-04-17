@@ -22,7 +22,6 @@ package org.apache.maven.report.projectinfo.dependencies;
 /**
  * Wrap DependenciesReport Mojo parameters.
  *
- * @version $Id$
  * @since 2.1
  */
 public class DependenciesReportConfiguration

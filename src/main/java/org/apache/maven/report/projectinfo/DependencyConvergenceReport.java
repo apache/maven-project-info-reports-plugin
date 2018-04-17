@@ -33,9 +33,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributeSet;
@@ -44,13 +41,15 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.DependencyVersionMap;
 import org.apache.maven.report.projectinfo.dependencies.SinkSerializingDependencyNodeVisitor;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.artifact.filter.StrictPatternIncludesArtifactFilter;
-import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.filter.AncestorOrSelfDependencyNodeFilter;
 import org.apache.maven.shared.dependency.tree.filter.AndDependencyNodeFilter;
@@ -67,7 +66,6 @@ import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNode
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @author <a href="mailto:wangyf2010@gmail.com">Simon Wang </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "dependency-convergence", aggregator = true )
@@ -96,28 +94,9 @@ public class DependencyConvergenceReport
      * Dependency tree builder, will use it to build dependency tree.
      */
     @Component
-    DependencyTreeBuilder dependencyTreeBuilder;
+    private DependencyTreeBuilder dependencyTreeBuilder;
 
-    /**
-     * Use it to build dependency(artifact) tree
-     */
-    @Component
-    ArtifactFactory factory;
-
-    /**
-     * Use it to get artifact metadata source for dependency tree building.
-     */
-    @Component
-    ArtifactMetadataSource metadataSource;
-
-    /**
-     * Artifact collector - takes a set of original artifacts and resolves all of the best versions to use along with
-     * their metadata.
-     */
-    @Component
-    ArtifactCollector collector;
-
-    ArtifactFilter filter = null;
+    private ArtifactFilter filter = null;
 
     private Map<MavenProject, DependencyNode> projectMap = new HashMap<MavenProject, DependencyNode>();
 
@@ -767,9 +746,14 @@ public class DependencyConvergenceReport
             new TreeMap<String, List<ReverseDependencyLink>>();
         Map<String, List<ReverseDependencyLink>> allDependencies = new TreeMap<String, List<ReverseDependencyLink>>();
 
+        ProjectBuildingRequest buildingRequest =
+            new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
+        
         for ( MavenProject reactorProject : reactorProjects )
         {
-            DependencyNode node = getNode( reactorProject );
+            buildingRequest.setProject( reactorProject );
+            
+            DependencyNode node = getNode( buildingRequest );
 
             this.projectMap.put( reactorProject, node );
 
@@ -921,18 +905,19 @@ public class DependencyConvergenceReport
     /**
      * Get root node of dependency tree for a given project
      *
-     * @param project
+     * @param buildingRequest
      * @return root node of dependency tree
      * @throws MavenReportException
      */
-    private DependencyNode getNode( MavenProject project )
+    private DependencyNode getNode( ProjectBuildingRequest buildingRequest )
         throws MavenReportException
     {
         try
         {
             DependencyNode node =
-                (DependencyNode) dependencyTreeBuilder.buildDependencyTree( project, localRepository, factory,
-                                                                            metadataSource, filter, collector );
+                (DependencyNode) dependencyTreeBuilder.buildDependencyTree( buildingRequest.getProject(),
+                                                                            localRepository,
+                                                                            filter );
 
             return node;
         }

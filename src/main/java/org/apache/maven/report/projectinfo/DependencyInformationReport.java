@@ -32,7 +32,6 @@ import java.util.Locale;
  * Generates code snippets to be added to build tools.
  *
  * @author <a href="mailto:simonetripodi@apache.org">Simone Tripodi</a>
- * @version $Id$
  * @since 2.5
  */
 @Mojo( name = "dependency-info" )

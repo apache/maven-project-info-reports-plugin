@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -86,7 +87,8 @@ public abstract class ProjectInfoProjectStub
         setUrl( model.getUrl() );
         setPackaging( model.getPackaging() );
 
-        Artifact artifact = new ProjectInfoPluginArtifactStub( getGroupId(), getArtifactId(), getVersion(), getPackaging() );
+        String type = Objects.toString( super.getPackaging(), "jar" );
+        Artifact artifact = new ProjectInfoPluginArtifactStub( getGroupId(), getArtifactId(), getVersion(), type );
         artifact.setArtifactHandler( new DefaultArtifactHandlerStub() );
         setArtifact( artifact );
 
@@ -186,5 +188,4 @@ public abstract class ProjectInfoProjectStub
 
         return pluginMgmt;
     }
-
 }

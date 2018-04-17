@@ -24,21 +24,18 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
-import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.Versioning;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
+import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
+import org.apache.maven.shared.artifact.resolve.ArtifactResult;
 
 /**
  * Utilities methods to play with repository
@@ -50,9 +47,9 @@ public class RepositoryUtils
 {
     private final Log log;
 
-    private final MavenProjectBuilder mavenProjectBuilder;
+    private final ProjectBuilder projectBuilder;
 
-    private final ArtifactFactory factory;
+    private final RepositorySystem repositorySystem;
 
     private final List<ArtifactRepository> remoteRepositories;
 
@@ -60,7 +57,7 @@ public class RepositoryUtils
 
     private final ArtifactResolver resolver;
 
-    private final ArtifactRepository localRepository;
+    private final ProjectBuildingRequest buildingRequest;
 
     /**
      * @param log {@link Log}
@@ -72,59 +69,37 @@ public class RepositoryUtils
      * @param localRepository {@link ArtifactRepository}
      * @param repositoryMetadataManager {@link RepositoryMetadataManager}
      */
-    public RepositoryUtils( Log log, MavenProjectBuilder mavenProjectBuilder, ArtifactFactory factory,
+    public RepositoryUtils( Log log, ProjectBuilder projectBuilder, RepositorySystem repositorySystem,
                             ArtifactResolver resolver, List<ArtifactRepository> remoteRepositories,
-                            List<ArtifactRepository> pluginRepositories, ArtifactRepository localRepository,
+                            List<ArtifactRepository> pluginRepositories, ProjectBuildingRequest buildingRequest,
                             RepositoryMetadataManager repositoryMetadataManager )
     {
         this.log = log;
-        this.mavenProjectBuilder = mavenProjectBuilder;
-        this.factory = factory;
+        this.projectBuilder = projectBuilder;
+        this.repositorySystem = repositorySystem;
         this.resolver = resolver;
         this.remoteRepositories = remoteRepositories;
         this.pluginRepositories = pluginRepositories;
-        this.localRepository = localRepository;
-    }
-
-    /**
-     * @return localrepo
-     */
-    public ArtifactRepository getLocalRepository()
-    {
-        return localRepository;
-    }
-
-    /**
-     * @return remote artifact repo
-     */
-    public List<ArtifactRepository> getRemoteArtifactRepositories()
-    {
-        return remoteRepositories;
-    }
-
-    /**
-     * @return plugin artifact repo
-     */
-    public List<ArtifactRepository> getPluginArtifactRepositories()
-    {
-        return pluginRepositories;
+        this.buildingRequest = buildingRequest;
     }
 
     /**
      * @param artifact not null
-     * @throws ArtifactResolutionException if any
-     * @throws ArtifactNotFoundException if any
-     * @see ArtifactResolver#resolve(Artifact, List, ArtifactRepository)
+     * @throws ArtifactResolverException if any 
      */
     public void resolve( Artifact artifact )
-        throws ArtifactResolutionException, ArtifactNotFoundException
+        throws ArtifactResolverException
     {
         List<ArtifactRepository> repos =
             new ArrayList<ArtifactRepository>( pluginRepositories.size() + remoteRepositories.size() );
         repos.addAll( pluginRepositories );
         repos.addAll( remoteRepositories );
 
-        resolver.resolve( artifact, repos, localRepository );
+        ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
+        buildRequest.setRemoteRepositories( repos );
+
+        ArtifactResult result = resolver.resolveArtifact( buildRequest , artifact );
+        artifact.setFile( result.getArtifact().getFile() );
     }
 
     /**
@@ -142,14 +117,12 @@ public class RepositoryUtils
         boolean allowStubModel = false;
         if ( !"pom".equals( artifact.getType() ) )
         {
-            projectArtifact = factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                             artifact.getVersion(), artifact.getScope() );
+            projectArtifact = repositorySystem.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                                                             artifact.getVersion() );
             allowStubModel = true;
         }
 
-        // TODO: we should use the MavenMetadataSource instead
-        return mavenProjectBuilder.buildFromRepository( projectArtifact, remoteRepositories, localRepository,
-                                                        allowStubModel );
+        return projectBuilder.build( projectArtifact, allowStubModel, buildingRequest ).getProject();
     }
 
     /**
@@ -178,37 +151,9 @@ public class RepositoryUtils
                     {
                         resolve( artifact );
                     }
-                    catch ( ArtifactResolutionException e )
+                    catch ( ArtifactResolverException e )
                     {
                         log.error( "Artifact: " + artifact.getId() + " could not be resolved." );
-                    }
-                    catch ( ArtifactNotFoundException e )
-                    {
-                        log.error( "Artifact: " + artifact.getId() + " was not found." );
-                    }
-                }
-
-                for ( ArtifactMetadata m : artifact.getMetadataList() )
-                {
-                    if ( m instanceof SnapshotArtifactRepositoryMetadata )
-                    {
-                        SnapshotArtifactRepositoryMetadata snapshotMetadata = (SnapshotArtifactRepositoryMetadata) m;
-
-                        Metadata metadata = snapshotMetadata.getMetadata();
-                        Versioning versioning = metadata.getVersioning();
-                        if ( versioning == null || versioning.getSnapshot() == null
-                            || versioning.getSnapshot().isLocalCopy()
-                            || versioning.getSnapshot().getTimestamp() == null )
-                        {
-                            continue;
-                        }
-
-                        // create the version according SnapshotTransformation
-                        String version =
-                            StringUtils.replace( copyArtifact.getVersion(), Artifact.SNAPSHOT_VERSION,
-                                                 versioning.getSnapshot().getTimestamp() )
-                                + "-" + versioning.getSnapshot().getBuildNumber();
-                        copyArtifact.setVersion( version );
                     }
                 }
             }

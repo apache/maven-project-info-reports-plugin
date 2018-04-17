@@ -37,9 +37,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.doxia.site.decoration.Body;
 import org.apache.maven.doxia.site.decoration.DecorationModel;
 import org.apache.maven.doxia.siterenderer.Renderer;
@@ -49,15 +47,18 @@ import org.apache.maven.doxia.siterenderer.SiteRenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
 import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.doxia.tools.SiteToolException;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.interpolation.EnvarBasedValueSource;
 import org.codehaus.plexus.interpolation.InterpolationException;
@@ -72,7 +73,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  * Base class with the things that should be in AbstractMavenReport anyway.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
  * @since 2.0
  */
 public abstract class AbstractProjectInfoReport
@@ -106,7 +106,7 @@ public abstract class AbstractProjectInfoReport
      * Artifact Factory component.
      */
     @Component
-    protected ArtifactFactory factory;
+    RepositorySystem repositorySystem;
 
     /**
      * Internationalization component, could support also custom bundle using {@link #customBundle}.
@@ -114,12 +114,8 @@ public abstract class AbstractProjectInfoReport
     @Component
     private I18N i18n;
 
-    /**
-     * Project builder (deprecated in Maven 3: should use ProjectBuilder, which will avoid
-     * issues like DOXIASITETOOLS-166)
-     */
     @Component
-    protected MavenProjectBuilder mavenProjectBuilder;
+    protected ProjectBuilder projectBuilder;
 
     // ----------------------------------------------------------------------
     // Mojo parameters
@@ -138,6 +134,9 @@ public abstract class AbstractProjectInfoReport
      */
     @Parameter( defaultValue = "${project}", readonly = true, required = true )
     protected MavenProject project;
+    
+    @Parameter( defaultValue = "${session}", readonly = true, required = true )
+    private MavenSession session;
 
     /**
      * Local Repository.
@@ -319,6 +318,11 @@ public abstract class AbstractProjectInfoReport
     protected MavenProject getProject()
     {
         return project;
+    }
+    
+    protected MavenSession getSession()
+    {
+        return session;
     }
 
     /**

@@ -34,7 +34,6 @@ import java.util.Locale;
  * Generates the Project Continuous Integration Management report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.0
  */
 @Mojo( name = "cim" )

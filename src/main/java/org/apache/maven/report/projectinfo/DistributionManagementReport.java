@@ -32,7 +32,6 @@ import java.util.Locale;
  * Generates the Project Distribution Management report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
- * @version $Id$
  * @since 2.3
  */
 @Mojo( name = "distribution-management" )

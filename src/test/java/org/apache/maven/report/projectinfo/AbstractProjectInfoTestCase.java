@@ -19,18 +19,23 @@ package org.apache.maven.report.projectinfo;
  * under the License.
  */
 
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.profiles.DefaultProfileManager;
-import org.apache.maven.profiles.ProfileManager;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
-import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
+
+import org.apache.maven.plugin.LegacySupport;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.plugin.testing.ArtifactStubFactory;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
+import org.codehaus.plexus.i18n.I18N;
+import org.codehaus.plexus.util.StringUtils;
+import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
+import org.sonatype.aether.util.DefaultRepositorySystemSession;
 
 /**
  * Abstract class to test reports generation with <a href="http://www.httpunit.org/">HTTPUnit</a> framework.
@@ -42,6 +47,8 @@ import java.util.Locale;
 public abstract class AbstractProjectInfoTestCase
     extends AbstractMojoTestCase
 {
+    private ArtifactStubFactory artifactStubFactory;
+    
     /**
      * The default locale is English.
      */
@@ -64,29 +71,14 @@ public abstract class AbstractProjectInfoTestCase
         // required for mojo lookups to work
         super.setUp();
 
-        i18n = (I18N) getContainer().lookup( I18N.ROLE );
+        i18n = getContainer().lookup( I18N.class );
+        setVariableValueToObject( i18n, "defaultBundleName", "project-info-reports" );
 
-        File f = new File( getBasedir(), "target/local-repo/" );
-        f.mkdirs();
-
+        artifactStubFactory = new DependencyArtifactStubFactory( getTestFile( "target" ), true, false );
+        artifactStubFactory.getWorkingDir().mkdirs();
+        
         // Set the default Locale
         Locale.setDefault( DEFAULT_LOCALE );
-    }
-
-    protected InputStream getCustomConfiguration()
-        throws Exception
-    {
-        // Allow sub classes to have their own configuration...
-        if ( super.getConfiguration() == null )
-        {
-            String className = AbstractProjectInfoTestCase.class.getName();
-
-            String config = className.substring( className.lastIndexOf( "." ) + 1 ) + ".xml";
-
-            return AbstractProjectInfoTestCase.class.getResourceAsStream( config );
-        }
-
-        return null;
     }
 
     @Override
@@ -187,6 +179,14 @@ public abstract class AbstractProjectInfoTestCase
     {
         AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo( goal, pluginXmlFile );
         assertNotNull( "Mojo found.", mojo );
+        
+        LegacySupport legacySupport = lookup( LegacySupport.class );
+        legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
+        DefaultRepositorySystemSession repoSession =
+            (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
+        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManager( artifactStubFactory.getWorkingDir() ) );
+
+        setVariableValueToObject( mojo, "session", legacySupport.getSession() );
 
         setVariableValueToObject( mojo, "remoteRepositories", mojo.project.getRemoteArtifactRepositories() );
         return mojo;
@@ -197,11 +197,13 @@ public abstract class AbstractProjectInfoTestCase
     {
         mojo.execute();
 
-        MavenProjectBuilder builder = (MavenProjectBuilder) lookup( MavenProjectBuilder.ROLE );
-        ProfileManager profileManager = new DefaultProfileManager( getContainer(), null, null );
+        ProjectBuilder builder = lookup( ProjectBuilder.class );
+        
+        ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
+        buildingRequest.setRepositorySession( null );
 
         assertNotNull( "Local repository", mojo.localRepository );
-        testMavenProject = builder.buildWithDependencies( pluginXmlFile, mojo.localRepository, profileManager );
+        testMavenProject = builder.build( pluginXmlFile, buildingRequest ).getProject();
 
         File outputDir = mojo.getReportOutputDirectory();
         String filename = mojo.getOutputName() + ".html";
