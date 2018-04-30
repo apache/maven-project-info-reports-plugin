@@ -41,8 +41,8 @@ import java.util.TreeSet;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.doxia.sink.Sink;
-import org.apache.maven.doxia.sink.SinkEventAttributeSet;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
+import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.doxia.util.HtmlTools;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
@@ -145,7 +145,7 @@ public class DependenciesRenderer
     }
 
     /**
-     * 
+     *
     /**
      * Default constructor.
      *
@@ -161,7 +161,7 @@ public class DependenciesRenderer
      * @param projectBuilder {@link ProjectBuilder}
      * @param buildingRequest {@link ProjectBuildingRequest}
      */
-    public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log, 
+    public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log,
                                  Dependencies dependencies, DependencyNode dependencyTreeNode,
                                  DependenciesReportConfiguration config, RepositoryUtils repoUtils,
                                  RepositorySystem repositorySystem, ProjectBuilder projectBuilder,
@@ -682,8 +682,7 @@ public class DependenciesRenderer
     {
         if ( title != null )
         {
-            SinkEventAttributes attributes = new SinkEventAttributeSet( SinkEventAttributes.TITLE, title );
-            sink.tableHeaderCell( attributes );
+            sink.tableHeaderCell( new SinkEventAttributeSet( SinkEventAttributes.TITLE, title ) );
         }
         else
         {

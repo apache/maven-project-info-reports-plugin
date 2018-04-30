@@ -134,7 +134,7 @@ public abstract class AbstractProjectInfoReport
      */
     @Parameter( defaultValue = "${project}", readonly = true, required = true )
     protected MavenProject project;
-    
+
     @Parameter( defaultValue = "${session}", readonly = true, required = true )
     private MavenSession session;
 
@@ -154,7 +154,7 @@ public abstract class AbstractProjectInfoReport
 
     /**
      * The reactor projects.
-     * 
+     *
      * @since 2.10
      */
     @Parameter( defaultValue = "${reactorProjects}", required = true, readonly = true )
@@ -319,7 +319,7 @@ public abstract class AbstractProjectInfoReport
     {
         return project;
     }
-    
+
     protected MavenSession getSession()
     {
         return session;
@@ -327,7 +327,7 @@ public abstract class AbstractProjectInfoReport
 
     /**
      * Reactor projects
-     * 
+     *
      * @return List of projects
      */
     protected List<MavenProject> getReactorProjects()
