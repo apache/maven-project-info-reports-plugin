@@ -123,6 +123,7 @@ under the License.
     <scmVersion>1.9.5</scmVersion>
     <sitePluginVersion>3.7</sitePluginVersion>
     <surefire.version>2.21.0</surefire.version>
+    <javaVersion>7</javaVersion>
   </properties>
 
   <dependencies>
