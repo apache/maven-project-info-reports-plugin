@@ -19,7 +19,6 @@ package org.apache.maven.report.projectinfo;
  * under the License.
  */
 
-import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Scm;
@@ -160,6 +159,8 @@ public class ScmReport
     private static class ScmRenderer
         extends AbstractProjectInfoRenderer
     {
+        private static final String LS = System.lineSeparator();
+
         private Log log;
 
         private Model model;
@@ -496,8 +497,8 @@ public class ScmReport
                 paragraph( getI18nString( "accessthroughtproxy.svn.intro2" ) );
                 paragraph( getI18nString( "accessthroughtproxy.svn.intro3" ) );
 
-                verbatimText( "[global]" + SystemUtils.LINE_SEPARATOR + "http-proxy-host = your.proxy.name"
-                    + SystemUtils.LINE_SEPARATOR + "http-proxy-port = 3128" + SystemUtils.LINE_SEPARATOR );
+                verbatimText( "[global]" + LS + "http-proxy-host = your.proxy.name"
+                    + LS + "http-proxy-port = 3128" + LS );
 
                 endSection();
             }
@@ -541,7 +542,7 @@ public class ScmReport
         {
             paragraph( getI18nString( "anonymousaccess.cvs.intro" ) );
 
-            verbatimText( "$ cvs -d " + cvsRepo.getCvsRoot() + " login" + SystemUtils.LINE_SEPARATOR + "$ cvs -z3 -d "
+            verbatimText( "$ cvs -d " + cvsRepo.getCvsRoot() + " login" + LS + "$ cvs -z3 -d "
                 + cvsRepo.getCvsRoot() + " co " + cvsRepo.getModule() );
         }
 
@@ -622,7 +623,7 @@ public class ScmReport
             // Safety: remove the username if present
             String cvsRoot = StringUtils.replace( cvsRepo.getCvsRoot(), cvsRepo.getUser(), "username" );
 
-            verbatimText( "$ cvs -d " + cvsRoot + " login" + SystemUtils.LINE_SEPARATOR + "$ cvs -z3 -d " + cvsRoot
+            verbatimText( "$ cvs -d " + cvsRoot + " login" + LS + "$ cvs -z3 -d " + cvsRoot
                 + " co " + cvsRepo.getModule() );
         }
 
@@ -704,7 +705,7 @@ public class ScmReport
             command.append( " -P password" );
             command.append( " " );
             command.append( perforceRepo.getPath() );
-            command.append( SystemUtils.LINE_SEPARATOR );
+            command.append( LS );
             command.append( "$ p4 submit -c \"A comment\"" );
 
             verbatimText( command.toString() );
@@ -737,7 +738,7 @@ public class ScmReport
             command.append( "$ stcmd co -x -nologo -stop -p " );
             command.append( fullUrl );
             command.append( " -is" );
-            command.append( SystemUtils.LINE_SEPARATOR );
+            command.append( LS );
             command.append( "$ stcmd ci -x -nologo -stop -p " );
             command.append( fullUrl );
             command.append( " -f NCI -is" );
@@ -855,12 +856,12 @@ public class ScmReport
                         sb.append( "This SCM url '" );
                         sb.append( scmUrl );
                         sb.append( "' is invalid due to the following errors:" );
-                        sb.append( SystemUtils.LINE_SEPARATOR );
+                        sb.append( LS );
                         isIntroAdded = true;
                     }
                     sb.append( " * " );
                     sb.append( msg );
-                    sb.append( SystemUtils.LINE_SEPARATOR );
+                    sb.append( LS );
                 }
 
                 if ( StringUtils.isNotEmpty( sb.toString() ) )
