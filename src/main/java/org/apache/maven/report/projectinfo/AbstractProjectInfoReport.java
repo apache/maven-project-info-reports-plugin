@@ -91,12 +91,6 @@ public abstract class AbstractProjectInfoReport
     protected SiteTool siteTool;
 
     /**
-     * Doxia Site Renderer component.
-     */
-    @Component
-    protected Renderer siteRenderer;
-
-    /**
      * Artifact Resolver component.
      */
     @Component
@@ -120,21 +114,7 @@ public abstract class AbstractProjectInfoReport
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
-
-    /**
-     * The output directory for the report. Note that this parameter is only evaluated if the goal is run directly from
-     * the command line. If the goal is run indirectly as part of a site generation, the output directory configured in
-     * the Maven Site Plugin is used instead.
-     */
-    @Parameter( property = "project.reporting.outputDirectory", required = true )
-    protected File outputDirectory;
-
-    /**
-     * The Maven Project.
-     */
-    @Parameter( defaultValue = "${project}", readonly = true, required = true )
-    protected MavenProject project;
-
+    
     @Parameter( defaultValue = "${session}", readonly = true, required = true )
     private MavenSession session;
 

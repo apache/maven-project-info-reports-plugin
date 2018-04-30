@@ -32,7 +32,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -54,22 +53,6 @@ import org.codehaus.plexus.util.StringUtils;
 public class PluginsReport
     extends AbstractProjectInfoReport
 {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
-    /**
-     * Maven Artifact Factory component.
-     */
-    @Component
-    private RepositorySystem repositorySystem;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------

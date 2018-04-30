@@ -25,7 +25,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -52,16 +51,6 @@ import java.util.Locale;
 public class PluginManagementReport
     extends AbstractProjectInfoReport
 {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
