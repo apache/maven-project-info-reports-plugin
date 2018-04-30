@@ -40,7 +40,6 @@ import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
@@ -83,12 +82,6 @@ public class DependencyConvergenceReport
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
-
-    /**
-     * The projects in the current build. The effective POM for each of these projects will written.
-     */
-    @Parameter( property = "reactorProjects", required = true, readonly = true )
-    private List<MavenProject> reactorProjects;
 
     /**
      * Dependency tree builder, will use it to build dependency tree.
