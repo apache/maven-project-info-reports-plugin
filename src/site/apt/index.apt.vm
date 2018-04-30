@@ -108,9 +108,7 @@ ${project.name}
 * Usage
 
   General instructions on how to use the Project Info Reports Plugin can be found on the {{{./usage.html}usage page}}. Some more
-  specific use cases are described in the examples given below. Last but not least, users occasionally contribute
-  additional examples, tips or errata to the
-  {{{http://docs.codehaus.org/display/MAVENUSER/Project+Info+Reports+Plugin}plugin's wiki page}}.
+  specific use cases are described in the examples given below.
 
   In case you still have questions regarding the plugin's usage, please have a look at the {{{./faq.html}FAQ}} and feel
   free to contact the {{{./mail-lists.html}user mailing list}}. The posts to the mailing list are archived and could
@@ -142,7 +140,7 @@ ${project.name}
 
 * Related Links
 
-  * {{{http://maven.apache.org/plugins/maven-site-plugin/i18n.html}Internationalization}}
+  * {{{http://maven.apache.org/plugins/localization.html}Localization of Plugins}}
 
   * {{{http://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html}Skinning}}
 
