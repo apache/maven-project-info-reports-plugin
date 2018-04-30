@@ -35,8 +35,8 @@ import java.util.TreeMap;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.doxia.sink.Sink;
-import org.apache.maven.doxia.sink.SinkEventAttributeSet;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
+import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -237,7 +237,7 @@ public class DependencyConvergenceReport
      *
      * @param locale
      * @param sink
-     * @param conflictingDependencyMap
+     * @param result
      */
     private void generateConvergence( Locale locale, Sink sink, DependencyAnalyzeResult result )
     {
@@ -320,7 +320,7 @@ public class DependencyConvergenceReport
         for ( String version : artifactMap.keySet() )
         {
             sink.tableRow();
-            sink.tableCell( new SinkEventAttributeSet( new String[] { SinkEventAttributes.WIDTH, "25%" } ) );
+            sink.tableCell( new SinkEventAttributeSet( SinkEventAttributes.WIDTH, "25%" ) );
             sink.text( version );
             sink.tableCell_();
 
@@ -545,7 +545,7 @@ public class DependencyConvergenceReport
      *
      * @param locale
      * @param sink
-     * @param dependencyMap
+     * @param result
      */
     private void generateStats( Locale locale, Sink sink, DependencyAnalyzeResult result )
     {
