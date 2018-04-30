@@ -230,10 +230,10 @@ public abstract class AbstractProjectInfoReport
             Artifact defaultSkin =
                 siteTool.getDefaultSkinArtifact( localRepository, project.getRemoteArtifactRepositories() );
 
-            SiteRenderingContext siteContext = siteRenderer.createContextForSkin( defaultSkin.getFile(), attributes,
+            SiteRenderingContext siteContext = siteRenderer.createContextForSkin( defaultSkin, attributes,
                                                                                   model, getName( locale ), locale );
 
-            RenderingContext context = new RenderingContext( outputDirectory, filename );
+            RenderingContext context = new RenderingContext( outputDirectory, filename, null );
 
             SiteRendererSink sink = new SiteRendererSink( context );
 
@@ -243,10 +243,9 @@ public abstract class AbstractProjectInfoReport
 
             writer = new OutputStreamWriter( new FileOutputStream( new File( outputDirectory, filename ) ), "UTF-8" );
 
-            siteRenderer.generateDocument( writer, sink, siteContext );
+            siteRenderer.mergeDocumentIntoSite( writer, sink, siteContext );
 
-            siteRenderer.copyResources( siteContext, new File( project.getBasedir(), "src/site/resources" ),
-                                        outputDirectory );
+            siteRenderer.copyResources( siteContext, outputDirectory );
 
             writer.close();
             writer = null;

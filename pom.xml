@@ -118,7 +118,7 @@ under the License.
 
   <properties>
     <doxiaVersion>1.8</doxiaVersion>
-    <doxia-sitetoolsVersion>1.6</doxia-sitetoolsVersion>
+    <doxia-sitetoolsVersion>1.8.1</doxia-sitetoolsVersion>
     <mavenVersion>3.0</mavenVersion>
     <scmVersion>1.9.5</scmVersion>
     <sitePluginVersion>3.7</sitePluginVersion>
@@ -180,11 +180,6 @@ under the License.
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-dependency-tree</artifactId>
       <version>2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.doxia</groupId>
-      <artifactId>doxia-integration-tools</artifactId>
-      <version>1.6</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -307,6 +302,11 @@ under the License.
           <artifactId>plexus-component-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-integration-tools</artifactId>
+      <version>${doxia-sitetoolsVersion}</version>
     </dependency>
 
     <!-- Plexus -->
