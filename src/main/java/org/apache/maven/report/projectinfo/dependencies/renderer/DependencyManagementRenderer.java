@@ -212,8 +212,8 @@ public class DependencyManagementRenderer
     private String[] getDependencyRow( Dependency dependency, boolean hasClassifier )
     {
         Artifact artifact =
-            repositorySystem.createProjectArtifact( dependency.getGroupId(), dependency.getArtifactId(),
-                                                   dependency.getVersion() );
+            repositorySystem.createArtifact( dependency.getGroupId(), dependency.getArtifactId(),
+                                             dependency.getVersion(), dependency.getScope(), dependency.getType() );
 
         StringBuilder licensesBuffer = new StringBuilder();
         String url = null;
