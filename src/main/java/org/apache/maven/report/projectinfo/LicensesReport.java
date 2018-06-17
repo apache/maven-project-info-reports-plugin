@@ -109,10 +109,6 @@ public class LicensesReport
             {
                 licenseUrl = getLicenseURL( project, url );
             }
-            catch ( MalformedURLException e )
-            {
-                getLog().error( e.getMessage() );
-            }
             catch ( IOException e )
             {
                 getLog().error( e.getMessage() );
@@ -334,11 +330,6 @@ public class LicensesReport
                             renderLicenseContent( licenseUrl );
                         }
                     }
-                    catch ( MalformedURLException e )
-                    {
-                        // I18N message
-                        paragraph( e.getMessage() );
-                    }
                     catch ( IOException e )
                     {
                         // I18N message
@@ -372,7 +363,7 @@ public class LicensesReport
                 if ( ( licenseContentLC.contains( "<!doctype html" ) || licenseContentLC.contains( "<html>" ) )
                     && ( ( bodyStart >= 0 ) && ( bodyEnd > bodyStart ) ) )
                 {
-                    bodyStart = licenseContentLC.indexOf( ">", bodyStart ) + 1;
+                    bodyStart = licenseContentLC.indexOf( '>', bodyStart ) + 1;
                     String body = licenseContent.substring( bodyStart, bodyEnd );
 
                     link( licenseUrl.toExternalForm(), getI18nString( "originalText" ) );

@@ -111,6 +111,7 @@ public class DependenciesRenderer
         private static final long serialVersionUID = 1L;
 
         /** {@inheritDoc} */
+        @Override
         public Object put( String key, Object value )
         {
             // handle multiple values as a set to avoid duplicates
@@ -118,7 +119,7 @@ public class DependenciesRenderer
             SortedSet<Object> valueList = (SortedSet<Object>) get( key );
             if ( valueList == null )
             {
-                valueList = new TreeSet<Object>();
+                valueList = new TreeSet<>();
             }
             valueList.add( value );
             return super.put( key, valueList );
@@ -133,7 +134,7 @@ public class DependenciesRenderer
 
     static
     {
-        Set<String> jarSubtype = new HashSet<String>();
+        Set<String> jarSubtype = new HashSet<>();
         jarSubtype.add( "jar" );
         jarSubtype.add( "war" );
         jarSubtype.add( "ear" );
@@ -237,6 +238,7 @@ public class DependenciesRenderer
     /** {@inheritDoc} */
     // workaround for MPIR-140
     // TODO Remove me when MSHARED-390 has been resolved
+    @Override
     protected void startSection( String name )
     {
         startSection( name, name );
@@ -313,6 +315,7 @@ public class DependenciesRenderer
     /** {@inheritDoc} */
     // workaround for MPIR-140
     // TODO Remove me when MSHARED-390 has been resolved
+    @Override
     protected void endSection()
     {
         switch ( section )
@@ -806,7 +809,7 @@ public class DependenciesRenderer
             log.warn( "Unable to create Maven project from repository.", e );
         }
 
-        String content[];
+        String[] content;
         if ( withClassifier )
         {
             content =
@@ -1186,6 +1189,7 @@ public class DependenciesRenderer
         }
 
         /** {@inheritDoc} */
+        @Override
         public StringBuffer format( long fs, StringBuffer result, FieldPosition fieldPosition )
         {
             if ( fs > 1000 * 1000 * 1000 )

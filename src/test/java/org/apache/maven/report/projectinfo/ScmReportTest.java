@@ -100,7 +100,7 @@ public class ScmReportTest
         try
         {
             mojo.execute();
-            assertTrue( "IllegalArgumentException NOT catched", false );
+            fail( "IllegalArgumentException NOT catched" );
         }
         catch ( IllegalArgumentException e )
         {
@@ -116,7 +116,7 @@ public class ScmReportTest
         try
         {
             mojo.execute();
-            assertTrue( "IllegalArgumentException NOT catched", false );
+            fail( "IllegalArgumentException NOT catched" );
         }
         catch ( Exception e )
         {
@@ -132,7 +132,7 @@ public class ScmReportTest
         try
         {
             mojo.execute();
-            assertTrue( "IllegalArgumentException NOT catched", false );
+            fail( "IllegalArgumentException NOT catched" );
         }
         catch ( Exception e )
         {

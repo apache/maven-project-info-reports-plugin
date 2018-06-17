@@ -26,7 +26,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.scm.manager.NoSuchScmProviderException;
 import org.apache.maven.scm.manager.ScmManager;
 import org.apache.maven.scm.provider.cvslib.repository.CvsScmProviderRepository;
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
@@ -35,7 +34,6 @@ import org.apache.maven.scm.provider.perforce.repository.PerforceScmProviderRepo
 import org.apache.maven.scm.provider.starteam.repository.StarteamScmProviderRepository;
 import org.apache.maven.scm.provider.svn.repository.SvnScmProviderRepository;
 import org.apache.maven.scm.repository.ScmRepository;
-import org.apache.maven.scm.repository.ScmRepositoryException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -828,7 +826,7 @@ public class ScmReport
             }
 
             ScmRepository repo = null;
-            List<String> messages = new ArrayList<String>();
+            List<String> messages = new ArrayList<>();
             try
             {
                 messages.addAll( scmManager.validateScmRepository( scmUrl ) );
@@ -838,7 +836,7 @@ public class ScmReport
                 messages.add( e.getMessage() );
             }
 
-            if ( messages.size() > 0 )
+            if ( !messages.isEmpty() )
             {
                 StringBuilder sb = new StringBuilder();
                 boolean isIntroAdded = false;
@@ -876,20 +874,6 @@ public class ScmReport
             try
             {
                 repo = scmManager.makeScmRepository( scmUrl );
-            }
-            catch ( NoSuchScmProviderException e )
-            {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( e.getMessage(), e );
-                }
-            }
-            catch ( ScmRepositoryException e )
-            {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( e.getMessage(), e );
-                }
             }
             catch ( Exception e )
             {

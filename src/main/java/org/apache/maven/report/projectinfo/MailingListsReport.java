@@ -22,7 +22,6 @@ package org.apache.maven.report.projectinfo;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -63,7 +62,7 @@ public class MailingListsReport
     public void executeReport( Locale locale )
     {
         MailingListsRenderer r =
-            new MailingListsRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale, getLog() );
+            new MailingListsRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale );
 
         r.render();
     }
@@ -94,15 +93,11 @@ public class MailingListsReport
     {
         private final Model model;
 
-        private final Log log;
-
-        MailingListsRenderer( Sink sink, Model model, I18N i18n, Locale locale, Log log )
+        MailingListsRenderer( Sink sink, Model model, I18N i18n, Locale locale )
         {
             super( sink, i18n, locale );
-
             this.model = model;
 
-            this.log = log;
         }
 
         @Override
@@ -161,7 +156,7 @@ public class MailingListsReport
 
             for ( MailingList mailingList : model.getMailingLists() )
             {
-                List<String> textRow = new ArrayList<String>();
+                List<String> textRow = new ArrayList<>();
 
                 // Validate here subsribe/unsubsribe lists and archives?
                 textRow.add( mailingList.getName() );
@@ -205,7 +200,7 @@ public class MailingListsReport
                         otherArchive = it.next();
 
                         // Reinit the list to beautify the display
-                        textRow = new ArrayList<String>();
+                        textRow = new ArrayList<>();
 
                         // Name
                         textRow.add( " " );
@@ -262,14 +257,14 @@ public class MailingListsReport
             int fromIndex;
             if ( at >= 0 )
             {
-                fromIndex = uri.lastIndexOf( "/", at - 1 ) >= 0 ? 0 : at + 2;
+                fromIndex = uri.lastIndexOf( '/', at - 1 ) >= 0 ? 0 : at + 2;
             }
             else
             {
                 fromIndex = 0;
             }
 
-            int from = uri.indexOf( "/", fromIndex );
+            int from = uri.indexOf( '/', fromIndex );
 
             if ( from == -1 )
             {

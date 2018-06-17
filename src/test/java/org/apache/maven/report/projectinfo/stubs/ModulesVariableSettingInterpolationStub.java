@@ -20,6 +20,7 @@ package org.apache.maven.report.projectinfo.stubs;
  */
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,6 +38,6 @@ public class ModulesVariableSettingInterpolationStub
     @Override
     public List<String> getModules()
     {
-        return Arrays.<String>asList( "subproject-site-url" );
+        return Collections.singletonList( "subproject-site-url" );
     }
 }
