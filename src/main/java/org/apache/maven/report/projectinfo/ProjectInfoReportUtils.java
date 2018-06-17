@@ -180,6 +180,7 @@ public class ProjectInfoReportUtils
                     Authenticator.setDefault( new Authenticator()
                     {
                         /** {@inheritDoc} */
+                        @Override
                         protected PasswordAuthentication getPasswordAuthentication()
                         {
                             return new PasswordAuthentication( userName, pwd.toCharArray() );
@@ -209,7 +210,7 @@ public class ProjectInfoReportUtils
     }
 
     /**
-     * @param factory not null
+     * @param repositorySystem not null
      * @param artifact not null
      * @param projectBuilder not null
      * @param buildingRequest not null
@@ -367,11 +368,7 @@ public class ProjectInfoReportUtils
 
                 ( (HttpsURLConnection) conn ).setSSLSocketFactory( sslSocketFactory );
             }
-            catch ( NoSuchAlgorithmException e1 )
-            {
-                // ignore
-            }
-            catch ( KeyManagementException e )
+            catch ( NoSuchAlgorithmException | KeyManagementException e1 )
             {
                 // ignore
             }

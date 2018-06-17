@@ -33,34 +33,34 @@ import org.apache.maven.model.Dependency;
  */
 public class ManagementDependencies
 {
-    private final List<Dependency> managementDependencies;
+    private final List<Dependency> dependencies;
 
     /**
      * @param projectDependencies the list of dependencies.
      */
     public ManagementDependencies( List<Dependency> projectDependencies )
     {
-        this.managementDependencies = projectDependencies;
+        this.dependencies = projectDependencies;
     }
 
     /**
-     * @return <code>true</code> if managementDependencies is not null and not empty.
+     * @return <code>true</code> if dependencies is not null and not empty.
      */
     public boolean hasDependencies()
     {
-        return ( managementDependencies != null ) && ( !this.managementDependencies.isEmpty() );
+        return ( dependencies != null ) && ( !this.dependencies.isEmpty() );
     }
 
     /**
-     * @return managementDependencies
+     * @return dependencies
      */
     public List<Dependency> getManagementDependencies()
     {
-        return new ArrayList<Dependency>( managementDependencies );
+        return new ArrayList<>( dependencies );
     }
 
     /**
-     * @return the managementDependencies by scope
+     * @return the dependencies by scope
      * @see Artifact#SCOPE_COMPILE
      * @see Artifact#SCOPE_PROVIDED
      * @see Artifact#SCOPE_RUNTIME
@@ -69,14 +69,14 @@ public class ManagementDependencies
      */
     public Map<String, List<Dependency>> getManagementDependenciesByScope()
     {
-        Map<String, List<Dependency>> dependenciesByScope = new HashMap<String, List<Dependency>>();
-        for ( Dependency dependency : managementDependencies )
+        Map<String, List<Dependency>> dependenciesByScope = new HashMap<>();
+        for ( Dependency dependency : dependencies )
         {
             String scope = dependency.getScope() != null ? dependency.getScope() : Artifact.SCOPE_COMPILE;
             List<Dependency> multiValue = dependenciesByScope.get( scope );
             if ( multiValue == null )
             {
-                multiValue = new ArrayList<Dependency>();
+                multiValue = new ArrayList<>();
             }
             multiValue.add( dependency );
             dependenciesByScope.put( scope, multiValue );

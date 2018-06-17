@@ -123,7 +123,7 @@ public class PluginManagementReport
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
          * @param repositorySystem {@link RepositorySystem}
-         * @param buildingRequest {@link ArtifactRepository}
+         * @param buildingRequest {@link ProjectBuildingRequest}
          */
         public PluginManagementRenderer( Log log, Sink sink, Locale locale, I18N i18n, List<Plugin> plugins,
                                          MavenProject project, ProjectBuilder projectBuilder,
@@ -153,10 +153,10 @@ public class PluginManagementReport
         @Override
         public void renderBody()
         {
-            PluginManagement pluginManagement = project.getPluginManagement();
+            PluginManagement projectPluginManagement = project.getPluginManagement();
 
-            if ( pluginManagement == null || pluginManagement.getPlugins() == null
-                || pluginManagement.getPlugins().isEmpty() )
+            if ( projectPluginManagement == null || projectPluginManagement.getPlugins() == null
+                || projectPluginManagement.getPlugins().isEmpty() )
             {
                 startSection( getTitle() );
 

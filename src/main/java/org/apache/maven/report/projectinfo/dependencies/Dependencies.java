@@ -119,7 +119,7 @@ public class Dependencies
             return projectDependencies;
         }
 
-        projectDependencies = new ArrayList<Artifact>();
+        projectDependencies = new ArrayList<>();
         for ( DependencyNode dep : dependencyNode.getChildren() )
         {
             projectDependencies.add( dep.getArtifact() );
@@ -138,7 +138,7 @@ public class Dependencies
             return projectTransitiveDependencies;
         }
 
-        projectTransitiveDependencies = new ArrayList<Artifact>( getAllDependencies() );
+        projectTransitiveDependencies = new ArrayList<>( getAllDependencies() );
         projectTransitiveDependencies.removeAll( getProjectDependencies() );
 
         return projectTransitiveDependencies;
@@ -154,7 +154,7 @@ public class Dependencies
             return allDependencies;
         }
 
-        allDependencies = new ArrayList<Artifact>();
+        allDependencies = new ArrayList<>();
 
         addAllChildrenDependencies( dependencyNode );
 
@@ -179,13 +179,13 @@ public class Dependencies
                 return transitiveDependenciesByScope;
             }
 
-            transitiveDependenciesByScope = new HashMap<String, List<Artifact>>();
+            transitiveDependenciesByScope = new HashMap<>();
             for ( Artifact artifact : getTransitiveDependencies() )
             {
                 List<Artifact> multiValue = transitiveDependenciesByScope.get( artifact.getScope() );
                 if ( multiValue == null )
                 {
-                    multiValue = new ArrayList<Artifact>();
+                    multiValue = new ArrayList<>();
                 }
 
                 if ( !multiValue.contains( artifact ) )
@@ -203,13 +203,13 @@ public class Dependencies
             return dependenciesByScope;
         }
 
-        dependenciesByScope = new HashMap<String, List<Artifact>>();
+        dependenciesByScope = new HashMap<>();
         for ( Artifact artifact : getProjectDependencies() )
         {
             List<Artifact> multiValue = dependenciesByScope.get( artifact.getScope() );
             if ( multiValue == null )
             {
-                multiValue = new ArrayList<Artifact>();
+                multiValue = new ArrayList<>();
             }
 
             if ( !multiValue.contains( artifact ) )
@@ -232,7 +232,7 @@ public class Dependencies
     {
         if ( dependencyDetails == null )
         {
-            dependencyDetails = new HashMap<String, JarData>();
+            dependencyDetails = new HashMap<>();
         }
 
         JarData jarData = dependencyDetails.get( artifact.getId() );

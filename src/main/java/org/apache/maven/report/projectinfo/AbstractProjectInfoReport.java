@@ -202,7 +202,7 @@ public abstract class AbstractProjectInfoReport
             DecorationModel model = new DecorationModel();
             model.setBody( new Body() );
 
-            Map<String, Object> attributes = new HashMap<String, Object>();
+            Map<String, Object> attributes = new HashMap<>();
             attributes.put( "outputEncoding", "UTF-8" );
             attributes.put( "project", project );
 
@@ -230,22 +230,7 @@ public abstract class AbstractProjectInfoReport
             writer.close();
             writer = null;
         }
-        catch ( RendererException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( SiteToolException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( MavenReportException e )
+        catch ( RendererException | IOException | SiteToolException | MavenReportException e )
         {
             throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
                 + " report generation.", e );
@@ -325,12 +310,12 @@ public abstract class AbstractProjectInfoReport
             return null;
         }
 
-        Plugin plugin = (Plugin) getProject().getBuild().getPluginsAsMap().get( pluginId );
+        Plugin plugin = getProject().getBuild().getPluginsAsMap().get( pluginId );
 
         if ( ( plugin == null ) && ( getProject().getBuild().getPluginManagement() != null )
             && ( getProject().getBuild().getPluginManagement().getPluginsAsMap() != null ) )
         {
-            plugin = (Plugin) getProject().getBuild().getPluginManagement().getPluginsAsMap().get( pluginId );
+            plugin = getProject().getBuild().getPluginManagement().getPluginsAsMap().get( pluginId );
         }
 
         return plugin;
@@ -387,13 +372,10 @@ public abstract class AbstractProjectInfoReport
             File customBundleFile = new File( customBundle );
             if ( customBundleFile.isFile() && customBundleFile.getName().endsWith( ".properties" ) )
             {
-                if ( !i18n.getClass().isAssignableFrom( CustomI18N.class ) )
+                if ( !i18n.getClass().isAssignableFrom( CustomI18N.class )
+                        || !i18n.getDefaultLanguage().equals( locale.getLanguage() ) )
                 {
                     // first load
-                    i18n = new CustomI18N( project, settings, customBundleFile, locale, i18n );
-                }
-                else if ( !i18n.getDefaultLanguage().equals( locale.getLanguage() ) )
-                {
                     i18n = new CustomI18N( project, settings, customBundleFile, locale, i18n );
                 }
             }

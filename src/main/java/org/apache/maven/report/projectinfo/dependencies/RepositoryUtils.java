@@ -61,12 +61,12 @@ public class RepositoryUtils
 
     /**
      * @param log {@link Log}
-     * @param mavenProjectBuilder {@link MavenProjectBuilder}
-     * @param factory {@link ArtifactFactory}
+     * @param projectBuilder {@link ProjectBuilder}
+     * @param repositorySystem {@link RepositorySystem}
      * @param resolver {@link ArtifactResolver}
      * @param remoteRepositories {@link ArtifactRepository}
      * @param pluginRepositories {@link ArtifactRepository}
-     * @param localRepository {@link ArtifactRepository}
+     * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repositoryMetadataManager {@link RepositoryMetadataManager}
      */
     public RepositoryUtils( Log log, ProjectBuilder projectBuilder, RepositorySystem repositorySystem,
@@ -91,7 +91,7 @@ public class RepositoryUtils
         throws ArtifactResolverException
     {
         List<ArtifactRepository> repos =
-            new ArrayList<ArtifactRepository>( pluginRepositories.size() + remoteRepositories.size() );
+            new ArrayList<>( pluginRepositories.size() + remoteRepositories.size() );
         repos.addAll( pluginRepositories );
         repos.addAll( remoteRepositories );
 

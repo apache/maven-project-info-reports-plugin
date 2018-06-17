@@ -80,8 +80,7 @@ public class DependencyManagementRenderer
      * @param artifactMetadataSource {@link ArtifactMetadataSource}
      * @param repositorySystem {@link RepositorySystem}
      * @param projectBuilder {@link ProjectBuilder}
-     * @param remoteRepositories {@link ArtifactRepository}
-     * @param localRepository {@link ArtifactRepository}
+     * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repoUtils {@link RepositoryUtils}
      */
     public DependencyManagementRenderer( Sink sink, Locale locale, I18N i18n, Log log,
@@ -240,7 +239,7 @@ public class DependencyManagementRenderer
                 }
 
                 // select latest, assuming pom information will be the most accurate
-                if ( versions.size() > 0 )
+                if ( !versions.isEmpty() )
                 {
                     ArtifactVersion maxArtifactVersion = Collections.max( versions );
 
