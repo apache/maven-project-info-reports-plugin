@@ -53,7 +53,7 @@ Customize the Text Reports
 
   To change texts in the reports, you should import the default Project Info report bundles from
   {{http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/}}
-  and edit them. For example, if you want to modify the Mailing List introduction, you should edit the <<<report.mailing-lists.intro>>> property.
+  and edit them. For example, if you want to modify the Mailing Lists introduction, you should edit the <<<report.mailing-lists.intro>>> property.
 
   Extract of the default bundle {{{http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/project-info-reports.properties}project-info-reports.properties}}:
 

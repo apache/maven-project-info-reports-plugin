@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.0
  */
-@Mojo( name = "license" )
+@Mojo( name = "licenses" )
 public class LicensesReport
     extends AbstractProjectInfoReport
 {
@@ -149,7 +149,7 @@ public class LicensesReport
      */
     public String getOutputName()
     {
-        return "license";
+        return "licenses";
     }
 
     @Override

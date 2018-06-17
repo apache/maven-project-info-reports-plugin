@@ -49,9 +49,9 @@ public class SummaryReportTest
         throws Exception
     {
         generateReport( "summary", "summary-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "project-summary.html" ).exists() );
+        assertTrue( "Test html generated", getGeneratedReport( "summary.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "project-summary.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "summary.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

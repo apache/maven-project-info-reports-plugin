@@ -48,10 +48,10 @@ public class CiManagementReportTest
     public void testReport()
         throws Exception
     {
-        generateReport( "cim", "ci-management-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "integration.html" ).exists() );
+        generateReport( "ci-management", "ci-management-plugin-config.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "ci-management.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "integration.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "ci-management.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

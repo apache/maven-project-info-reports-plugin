@@ -35,17 +35,17 @@ try
                          "plugin-management",
                          "plugins",
                          "project-info",
-                         "project-summary"
+                         "summary"
                        };
 
     String[] skippedReports = { "dependencies",
                                 "integration",
-                                "issue-tracking",
-                                "license",
-                                "mail-lists",
-                                "source-repository",
+                                "issue-management",
+                                "licenses",
+                                "mailing-lists",
+                                "scm",
                                 "dependency-management",
-                                "team-list",
+                                "team",
                                 "distribution-management",
                                 "modules"
                               };

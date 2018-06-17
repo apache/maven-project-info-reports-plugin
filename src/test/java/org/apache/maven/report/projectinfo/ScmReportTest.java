@@ -52,9 +52,9 @@ public class ScmReportTest
         throws Exception
     {
         generateReport( "scm", "scm-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "source-repository.html" ).exists() );
+        assertTrue( "Test html generated", getGeneratedReport( "scm.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "source-repository.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "scm.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

@@ -65,7 +65,7 @@
         <reportSets>
           <reportSet>
             <reports>
-              <report>license</report>
+              <report>licenses</report>
             </reports>
           </reportSet>
         </reportSets>

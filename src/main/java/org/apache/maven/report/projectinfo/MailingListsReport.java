@@ -39,7 +39,7 @@ import java.util.Locale;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "mailing-list" )
+@Mojo( name = "mailing-lists" )
 public class MailingListsReport
     extends AbstractProjectInfoReport
 {
@@ -73,7 +73,7 @@ public class MailingListsReport
      */
     public String getOutputName()
     {
-        return "mail-lists";
+        return "mailing-lists";
     }
 
     @Override

@@ -201,16 +201,16 @@
             <reports>
               <report>index</report>
               <report>summary</report>
-              <report>license</report>
-              <report>project-team</report>
+              <report>licenses</report>
+              <report>team</report>
               <report>scm</report>
-              <report>issue-tracking</report>
-              <report>mailing-list</report>
+              <report>issue-management</report>
+              <report>mailing-lists</report>
               <report>dependency-info</report>
               <report>dependency-management</report>
               <report>dependencies</report>
               <report>dependency-convergence</report>
-              <report>cim</report>
+              <report>ci-management</report>
               <report>plugin-management</report>
               <report>plugins</report>
               <report>distribution-management</report>

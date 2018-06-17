@@ -17,8 +17,8 @@
  * under the License.
  */
 
-assert new File( basedir, 'plugin/target/site/project-summary.html' ).text.contains( '<td>1.5</td>' )
-assert new File( basedir, 'pluginManagement/target/site/project-summary.html' ).text.contains( '<td>1.4</td>' )
-assert new File( basedir, 'property/target/site/project-summary.html' ).text.contains( '<td>1.3</td>' )
+assert new File( basedir, 'plugin/target/site/summary.html' ).text.contains( '<td>1.5</td>' )
+assert new File( basedir, 'pluginManagement/target/site/summary.html' ).text.contains( '<td>1.4</td>' )
+assert new File( basedir, 'property/target/site/summary.html' ).text.contains( '<td>1.3</td>' )
 
 return true;

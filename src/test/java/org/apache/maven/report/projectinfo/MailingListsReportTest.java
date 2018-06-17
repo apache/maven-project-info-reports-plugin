@@ -53,10 +53,10 @@ public class MailingListsReportTest
     public void testReport()
         throws Exception
     {
-        generateReport( "mailing-list", "mailing-lists-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "mail-lists.html" ).exists() );
+        generateReport( "mailing-lists", "mailing-lists-plugin-config.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "mail-lists.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "mailing-lists.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit
@@ -92,8 +92,8 @@ public class MailingListsReportTest
         {
             Locale.setDefault( Locale.FRENCH );
 
-            generateReport( "mailing-list", "mailing-lists-plugin-config.xml" );
-            assertTrue( "Test html generated", getGeneratedReport( "mail-lists.html" ).exists() );
+            generateReport( "mailing-lists", "mailing-lists-plugin-config.xml" );
+            assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
         }
         finally
         {

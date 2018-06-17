@@ -34,7 +34,7 @@ import java.util.Locale;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "issue-tracking" )
+@Mojo( name = "issue-management" )
 public class IssueManagementReport
     extends AbstractProjectInfoReport
 {
@@ -66,7 +66,7 @@ public class IssueManagementReport
     /** {@inheritDoc} */
     public String getOutputName()
     {
-        return "issue-tracking";
+        return "issue-management";
     }
 
     @Override

@@ -35,7 +35,7 @@ ${project.name}
 
  The Project Info Reports Plugin has the following goals:
 
-   * {{{./cim-mojo.html}project-info-reports:cim}} is used to generate the Project Continuous Integration
+   * {{{./ci-management-mojo.html}project-info-reports:ci-management}} is used to generate the Project Continuous Integration
    Management report.
 
    * {{{./dependencies-mojo.html}project-info-reports:dependencies}} is used to generate the Project Dependencies
@@ -58,13 +58,13 @@ ${project.name}
 
    * {{{./index-mojo.html}project-info-reports:index}} is used to generate the Project index page.
 
-   * {{{./issue-tracking-mojo.html}project-info-reports:issue-tracking}} is used to generate the Project Issue
+   * {{{./issue-management-mojo.html}project-info-reports:issue-management}} is used to generate the Project Issue
    Management report.
 
-   * {{{./license-mojo.html}project-info-reports:license}} is used to generate the Project Licenses report.
+   * {{{./licenses-mojo.html}project-info-reports:licenses}} is used to generate the Project Licenses report.
 
-   * {{{./mailing-list-mojo.html}project-info-reports:mailing-list}} is used to generate the Project Mailing
-   List report.
+   * {{{./mailing-lists-mojo.html}project-info-reports:mailing-lists}} is used to generate the Project Mailing
+   Lists report.
 
    * {{{./modules-mojo.html}project-info-reports:modules}} is used to generate the Project Modules report.
 
@@ -73,17 +73,17 @@ ${project.name}
 
    * {{{./plugins-mojo.html}project-info-reports:plugins}} is used to generate the Project Plugins report.
 
-   * {{{./project-team-mojo.html}project-info-reports:project-team}} is used to generate the Project Team report.
+   * {{{./team-mojo.html}project-info-reports:team}} is used to generate the Project Team report.
 
    * {{{./scm-mojo.html}project-info-reports:scm}} is used to generate the Project Source Code Management report.
 
    * {{{./summary-mojo.html}project-info-reports:summary}} is used to generate the Project Summary report.
 
-* Upcoming Incompatibility Notice
+* Incompatibility Notice
 
-  With the next major version (3.0) several mojos and output filenames will change fort alignment
-  with their corresponding elements in the POM. In other words, mojos will have the same names as
-  their POM counterparts. To make you aware of that, see the following table for the upcoming changes:
+  With the major version 3.0 several mojos and output filenames have been changed for alignment
+  with their corresponding elements in the POM. In other words, mojos have the same names as their
+  POM counterparts. To make you aware of that, see the following table for the upcoming changes:
 
 *----------------------*------------------------*------------------------------*-----------------------------*
 || Goal Name           || New Goal Name         || Output name                 || New Output Name            |

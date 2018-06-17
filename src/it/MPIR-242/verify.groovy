@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File licensePage = new File( basedir, 'target/site/license.html' )
-assert licensePage.exists()
-// assert licensePage.text.contains( 'Свобода всему коду!' )
+File licensesPage = new File( basedir, 'target/site/licenses.html' )
+assert licensesPage.exists()
+// assert licensesPage.text.contains( 'Свобода всему коду!' )
 // Raw UTF-8 bytes written by Doxia and converted from ISO-8859-5
-assert licensePage.text.contains( '&#x421;&#x432;&#x43e;&#x431;&#x43e;&#x434;&#x430; &#x432;&#x441;&#x435;&#x43c;&#x443; &#x43a;&#x43e;&#x434;&#x443;!' )
+assert licensesPage.text.contains( '&#x421;&#x432;&#x43e;&#x431;&#x43e;&#x434;&#x430; &#x432;&#x441;&#x435;&#x43c;&#x443; &#x43a;&#x43e;&#x434;&#x443;!' )

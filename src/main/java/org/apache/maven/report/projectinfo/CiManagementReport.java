@@ -36,7 +36,7 @@ import java.util.Locale;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "cim" )
+@Mojo( name = "ci-management" )
 public class CiManagementReport
     extends AbstractProjectInfoReport
 {
@@ -69,7 +69,7 @@ public class CiManagementReport
     /** {@inheritDoc} */
     public String getOutputName()
     {
-        return "integration";
+        return "ci-management";
     }
 
     @Override

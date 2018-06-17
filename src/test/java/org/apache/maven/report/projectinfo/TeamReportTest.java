@@ -50,12 +50,12 @@ public class TeamReportTest
         throws Exception
     {
         File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml" );
-        AbstractProjectInfoReport mojo  = createReportMojo( "project-team", pluginXmlFile );
+        AbstractProjectInfoReport mojo  = createReportMojo( "team", pluginXmlFile );
         setVariableValueToObject( mojo, "showAvatarImages", Boolean.TRUE );
        generateReport( mojo, pluginXmlFile);
-        assertTrue( "Test html generated", getGeneratedReport( "team-list.html" ).exists() );
+        assertTrue( "Test html generated", getGeneratedReport( "team.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "team-list.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "team.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

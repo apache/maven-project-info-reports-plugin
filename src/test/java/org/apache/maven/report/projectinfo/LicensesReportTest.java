@@ -49,10 +49,10 @@ public class LicensesReportTest
     public void testReport()
         throws Exception
     {
-        generateReport( "license", "licenses-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "license.html" ).exists() );
+        generateReport( "licenses", "licenses-plugin-config.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "licenses.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "license.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "licenses.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit
@@ -84,10 +84,10 @@ public class LicensesReportTest
     public void testReportLinksOnly()
         throws Exception
     {
-        generateReport( "license", "licenses-plugin-config-linkonly.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "license.html" ).exists() );
+        generateReport( "licenses", "licenses-plugin-config-linkonly.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "licenses.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "license.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "licenses.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

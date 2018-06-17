@@ -43,7 +43,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "project-team" )
+@Mojo( name = "team" )
 public class TeamReport
     extends AbstractProjectInfoReport
 {
@@ -93,7 +93,7 @@ public class TeamReport
      */
     public String getOutputName()
     {
-        return "team-list";
+        return "team";
     }
 
     @Override

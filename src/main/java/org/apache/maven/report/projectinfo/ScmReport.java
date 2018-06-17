@@ -140,7 +140,7 @@ public class ScmReport
     /** {@inheritDoc} */
     public String getOutputName()
     {
-        return "source-repository";
+        return "scm";
     }
 
     @Override

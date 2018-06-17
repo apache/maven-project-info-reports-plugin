@@ -49,10 +49,10 @@ public class IssueManagementReportTest
     public void testReport()
         throws Exception
     {
-        generateReport( "issue-tracking", "issue-management-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "issue-tracking.html" ).exists() );
+        generateReport( "issue-management", "issue-management-plugin-config.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "issue-management.html" ).exists() );
 
-        URL reportURL = getGeneratedReport( "issue-tracking.html" ).toURI().toURL();
+        URL reportURL = getGeneratedReport( "issue-management.html" ).toURI().toURL();
         assertNotNull( reportURL );
 
         // HTTPUnit

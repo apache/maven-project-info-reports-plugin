@@ -32,17 +32,17 @@ try
     }
 
     String[] reports = { "index",                  // <report>index</report>
-                         "project-summary",        // <report>summary</report>
-                         "license",                // <report>license</report>
-                         "team-list",              // <report>project-team</report>
-                         "source-repository",      // <report>scm</report>
-                         "issue-tracking",         // <report>issue-tracking</report>
-                         "mail-lists",             // <report>mailing-list</report>
+                         "summary",                // <report>summary</report>
+                         "licenses",               // <report>licenses</report>
+                         "team",                   // <report>team</report>
+                         "scm",                    // <report>scm</report>
+                         "issue-management",       // <report>issue-management</report>
+                         "mailing-lists",          // <report>mailing-lists</report>
                          "dependency-info",        // <report>dependency-info</report>
                          "dependency-management",  // <report>dependency-management</report>
                          "dependencies",           // <report>dependencies</report>
                          "dependency-convergence", // <report>dependency-convergence</report>
-                         "integration",            // <report>cim</report>
+                         "ci-management",          // <report>ci-management</report>
                          "plugin-management",      // <report>plugin-management</report>
                          "plugins",                // <report>plugins</report>
                          "distribution-management" // <report>distribution-management</report>
@@ -83,11 +83,11 @@ try
         previousReportLink = link;
     }
 
-    File maillist = new File( siteDir, "mail-lists.html");
-    String content = FileUtils.fileRead( maillist, "UTF-8" );
+    File mailinglists = new File( siteDir, "mailing-lists.html");
+    String content = FileUtils.fileRead( mailinglists, "UTF-8" );
     if ( !content.contains( "mail list intro text foo" ) )
     {
-        System.err.println( "mail-lists.html doesn't contain mail list intro text foo" );
+        System.err.println( "mailing-lists.html doesn't contain mail list intro text foo" );
         return false;
     }
 

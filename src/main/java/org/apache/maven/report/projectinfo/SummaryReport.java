@@ -61,7 +61,7 @@ public class SummaryReport
     /** {@inheritDoc} */
     public String getOutputName()
     {
-        return "project-summary";
+        return "summary";
     }
 
     @Override
