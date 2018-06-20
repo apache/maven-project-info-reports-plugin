@@ -185,6 +185,17 @@ under the License.
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-jar</artifactId>
       <version>1.2</version>
+      <exclusions><!--Replace problematic bcel version. See MPIR-370 -->
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>bcel-findbugs</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>6.2</version>
     </dependency>
 
     <dependency>
