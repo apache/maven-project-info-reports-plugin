@@ -40,7 +40,6 @@ import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
@@ -85,12 +84,6 @@ public class DependencyConvergenceReport
     // ----------------------------------------------------------------------
 
     /**
-     * The projects in the current build. The effective POM for each of these projects will written.
-     */
-    @Parameter( property = "reactorProjects", required = true, readonly = true )
-    private List<MavenProject> reactorProjects;
-
-    /**
      * Dependency tree builder, will use it to build dependency tree.
      */
     @Component
@@ -98,7 +91,7 @@ public class DependencyConvergenceReport
 
     private ArtifactFilter filter = null;
 
-    private Map<MavenProject, DependencyNode> projectMap = new HashMap<MavenProject, DependencyNode>();
+    private Map<MavenProject, DependencyNode> projectMap = new HashMap<>();
 
     // ----------------------------------------------------------------------
     // Public methods
@@ -198,7 +191,7 @@ public class DependencyConvergenceReport
     private List<ReverseDependencyLink> getSnapshotDependencies( Map<String, List<ReverseDependencyLink>> dependencyMap )
     // CHECKSTYLE_ON: LineLength
     {
-        List<ReverseDependencyLink> snapshots = new ArrayList<ReverseDependencyLink>();
+        List<ReverseDependencyLink> snapshots = new ArrayList<>();
         for ( Map.Entry<String, List<ReverseDependencyLink>> entry : dependencyMap.entrySet() )
         {
             List<ReverseDependencyLink> depList = entry.getValue();
@@ -283,7 +276,7 @@ public class DependencyConvergenceReport
             sink.text( dep.getGroupId() + ":" + dep.getArtifactId() );
             sink.sectionTitle3_();
 
-            List<ReverseDependencyLink> depList = new ArrayList<ReverseDependencyLink>();
+            List<ReverseDependencyLink> depList = new ArrayList<>();
             depList.add( dependencyLink );
             generateDependencyDetails( locale, sink, depList );
 
@@ -354,7 +347,7 @@ public class DependencyConvergenceReport
 
         List<DependencyNode> projectNodes = getProjectNodes( depList );
 
-        if ( projectNodes == null || projectNodes.size() == 0 )
+        if ( projectNodes.isEmpty() )
         {
             getLog().warn( "Can't find project nodes for dependency list: " + depList.get( 0 ).getDependency() );
             return;
@@ -383,7 +376,7 @@ public class DependencyConvergenceReport
 
     private List<DependencyNode> getProjectNodes( List<ReverseDependencyLink> depList )
     {
-        List<DependencyNode> projectNodes = new ArrayList<DependencyNode>();
+        List<DependencyNode> projectNodes = new ArrayList<>();
 
         for ( ReverseDependencyLink depLink : depList )
         {
@@ -426,12 +419,13 @@ public class DependencyConvergenceReport
 
         visitor = new BuildingDependencyNodeVisitor( visitor );
 
-        DependencyNodeFilter filter = createDependencyNodeFilter( key );
+        DependencyNodeFilter nodeFilter = createDependencyNodeFilter( key );
 
-        if ( filter != null )
+        if ( nodeFilter != null )
         {
             CollectingDependencyNodeVisitor collectingVisitor = new CollectingDependencyNodeVisitor();
-            DependencyNodeVisitor firstPassVisitor = new FilteringDependencyNodeVisitor( collectingVisitor, filter );
+            DependencyNodeVisitor firstPassVisitor = new FilteringDependencyNodeVisitor(
+                    collectingVisitor, nodeFilter );
             rootNode.accept( firstPassVisitor );
 
             DependencyNodeFilter secondPassFilter =
@@ -449,7 +443,7 @@ public class DependencyConvergenceReport
      */
     private DependencyNodeFilter createDependencyNodeFilter( String includes )
     {
-        List<DependencyNodeFilter> filters = new ArrayList<DependencyNodeFilter>();
+        List<DependencyNodeFilter> filters = new ArrayList<>();
 
         // filter includes
         if ( includes != null )
@@ -494,7 +488,7 @@ public class DependencyConvergenceReport
      */
     private Map<String, List<ReverseDependencyLink>> getSortedUniqueArtifactMap( List<ReverseDependencyLink> depList )
     {
-        Map<String, List<ReverseDependencyLink>> uniqueArtifactMap = new TreeMap<String, List<ReverseDependencyLink>>();
+        Map<String, List<ReverseDependencyLink>> uniqueArtifactMap = new TreeMap<>();
 
         for ( ReverseDependencyLink rdl : depList )
         {
@@ -502,7 +496,7 @@ public class DependencyConvergenceReport
             List<ReverseDependencyLink> projectList = uniqueArtifactMap.get( key );
             if ( projectList == null )
             {
-                projectList = new ArrayList<ReverseDependencyLink>();
+                projectList = new ArrayList<>();
             }
             projectList.add( rdl );
             uniqueArtifactMap.put( key, projectList );
@@ -742,9 +736,8 @@ public class DependencyConvergenceReport
     private DependencyAnalyzeResult analyzeDependencyTree()
         throws MavenReportException
     {
-        Map<String, List<ReverseDependencyLink>> conflictingDependencyMap =
-            new TreeMap<String, List<ReverseDependencyLink>>();
-        Map<String, List<ReverseDependencyLink>> allDependencies = new TreeMap<String, List<ReverseDependencyLink>>();
+        Map<String, List<ReverseDependencyLink>> conflictingDependencyMap = new TreeMap<>();
+        Map<String, List<ReverseDependencyLink>> allDependencies = new TreeMap<>();
 
         ProjectBuildingRequest buildingRequest =
             new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
@@ -812,7 +805,7 @@ public class DependencyConvergenceReport
             List<ReverseDependencyLink> dependencyList = conflictingDependencyMap.get( key );
             if ( dependencyList == null )
             {
-                dependencyList = new ArrayList<ReverseDependencyLink>();
+                dependencyList = new ArrayList<>();
             }
 
             // CHECKSTYLE_OFF: LineLength
@@ -849,7 +842,7 @@ public class DependencyConvergenceReport
             List<ReverseDependencyLink> reverseDepependencies = allDependencies.get( key );
             if ( reverseDepependencies == null )
             {
-                reverseDepependencies = new ArrayList<ReverseDependencyLink>();
+                reverseDepependencies = new ArrayList<>();
             }
 
             if ( !containsDependency( reverseDepependencies, art ) )
@@ -914,12 +907,7 @@ public class DependencyConvergenceReport
     {
         try
         {
-            DependencyNode node =
-                (DependencyNode) dependencyTreeBuilder.buildDependencyTree( buildingRequest.getProject(),
-                                                                            localRepository,
-                                                                            filter );
-
-            return node;
+            return dependencyTreeBuilder.buildDependencyTree( buildingRequest.getProject(), localRepository, filter );
         }
         catch ( DependencyTreeBuilderException e )
         {
@@ -938,7 +926,7 @@ public class DependencyConvergenceReport
         Set<Artifact> children = null;
         if ( node.getChildren() != null )
         {
-            children = new HashSet<Artifact>();
+            children = new HashSet<>();
             for ( DependencyNode depNode : node.getChildren() )
             {
                 children.add( depNode.getArtifact() );

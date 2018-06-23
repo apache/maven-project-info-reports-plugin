@@ -27,12 +27,10 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
-import org.apache.maven.repository.RepositorySystem;
 
 /**
  * Generates the Project Dependency Management report.
@@ -49,24 +47,12 @@ public class DependencyManagementReport
     // ----------------------------------------------------------------------
 
     /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
-    /**
      * Artifact metadata source component.
      *
      * @since 2.4
      */
     @Component
     protected ArtifactMetadataSource artifactMetadataSource;
-
-    /**
-     * Maven Artifact Factory component.
-     */
-    @Component
-    private RepositorySystem repositorySystem;
 
     /**
      * Repository metadata component.

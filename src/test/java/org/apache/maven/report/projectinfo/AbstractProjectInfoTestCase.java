@@ -188,7 +188,7 @@ public abstract class AbstractProjectInfoTestCase
 
         setVariableValueToObject( mojo, "session", legacySupport.getSession() );
 
-        setVariableValueToObject( mojo, "remoteRepositories", mojo.project.getRemoteArtifactRepositories() );
+        setVariableValueToObject( mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories() );
         return mojo;
     }
 

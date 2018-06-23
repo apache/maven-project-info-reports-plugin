@@ -25,7 +25,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -52,16 +51,6 @@ import java.util.Locale;
 public class PluginManagementReport
     extends AbstractProjectInfoReport
 {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -134,7 +123,7 @@ public class PluginManagementReport
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
          * @param repositorySystem {@link RepositorySystem}
-         * @param buildingRequest {@link ArtifactRepository}
+         * @param buildingRequest {@link ProjectBuildingRequest}
          */
         public PluginManagementRenderer( Log log, Sink sink, Locale locale, I18N i18n, List<Plugin> plugins,
                                          MavenProject project, ProjectBuilder projectBuilder,
@@ -164,10 +153,10 @@ public class PluginManagementReport
         @Override
         public void renderBody()
         {
-            PluginManagement pluginManagement = project.getPluginManagement();
+            PluginManagement projectPluginManagement = project.getPluginManagement();
 
-            if ( pluginManagement == null || pluginManagement.getPlugins() == null
-                || pluginManagement.getPlugins().isEmpty() )
+            if ( projectPluginManagement == null || projectPluginManagement.getPlugins() == null
+                || projectPluginManagement.getPlugins().isEmpty() )
             {
                 startSection( getTitle() );
 

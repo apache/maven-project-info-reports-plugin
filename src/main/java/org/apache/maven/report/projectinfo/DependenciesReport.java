@@ -38,13 +38,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
@@ -73,12 +71,6 @@ public class DependenciesReport
     // ----------------------------------------------------------------------
 
     /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
-    /**
      * Dependency graph builder component.
      *
      * @since 2.5
@@ -101,14 +93,6 @@ public class DependenciesReport
      */
     @Component
     private RepositoryMetadataManager repositoryMetadataManager;
-
-    /**
-     * Maven Artifact Factory component.
-     *
-     * @since 2.1
-     */
-    @Component
-    private RepositorySystem repositorySystem;
 
     // ----------------------------------------------------------------------
     // Mojo parameters

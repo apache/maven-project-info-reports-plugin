@@ -52,16 +52,11 @@ public class DependencyArtifactStubFactory
 
         if ( !flattenedPath )
         {
-            StringBuilder path = new StringBuilder( 128 );
-
-            path.append( groupId.replace( '.', '/' ) ).append( '/' );
-
-            path.append( artifactId ).append( '/' );
-
-            path.append( ArtifactUtils.toSnapshotVersion( versionRange.getRecommendedVersion().toString() ) );
-
             // don't use flatten directories, won't happen at runtime
-            setWorkingDir( new File( workingDir, path.toString() ) );
+            String path = groupId.replace( '.', '/' ) + '/' +
+                    artifactId + '/' +
+                    ArtifactUtils.toSnapshotVersion( versionRange.getRecommendedVersion().toString() );
+            setWorkingDir( new File( workingDir, path ) );
         }
 
         Artifact artifact =

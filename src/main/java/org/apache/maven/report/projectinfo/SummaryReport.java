@@ -245,7 +245,7 @@ public class SummaryReport
             {
                 try
                 {
-                    if ( FileUtils.getFileNames( sourceDir, "**/*.java", null, false ).size() > 0 )
+                    if ( !FileUtils.getFileNames( sourceDir, "**/*.java", null, false ).isEmpty() )
                     {
                         return true;
                     }

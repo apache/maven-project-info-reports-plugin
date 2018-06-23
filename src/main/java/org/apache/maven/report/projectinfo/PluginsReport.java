@@ -32,7 +32,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -54,22 +53,6 @@ import org.codehaus.plexus.util.StringUtils;
 public class PluginsReport
     extends AbstractProjectInfoReport
 {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Maven Project Builder component.
-     */
-    @Component
-    private ProjectBuilder projectBuilder;
-
-    /**
-     * Maven Artifact Factory component.
-     */
-    @Component
-    private RepositorySystem repositorySystem;
-
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -142,7 +125,7 @@ public class PluginsReport
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
          * @param repositorySystem {@link RepositorySystem}
-         * @param localRepository {@link ArtifactRepository}
+         * @param buildingRequest {@link ProjectBuildingRequest}
          *
          */
         public PluginsRenderer( Log log, Sink sink, Locale locale, I18N i18n, List<Plugin> plugins,
@@ -154,9 +137,9 @@ public class PluginsReport
 
             this.log = log;
 
-            this.plugins = new ArrayList<Plugin>( plugins );
+            this.plugins = new ArrayList<>( plugins );
 
-            this.reports = new ArrayList<ReportPlugin>( reports );
+            this.reports = new ArrayList<>( reports );
 
             this.project = project;
 
@@ -195,7 +178,7 @@ public class PluginsReport
 
             startSection( getI18nString( isPlugins ? "build.title" : "report.title" ) );
 
-            if ( list == null || list.isEmpty() )
+            if ( list.isEmpty() )
             {
 
                 paragraph( getI18nString( isPlugins ? "nolist" : "report.nolist" ) ) ;
@@ -211,7 +194,7 @@ public class PluginsReport
             List<ArtifactRepository> artifactRepositories = project.getPluginArtifactRepositories();
             if ( artifactRepositories == null )
             {
-                artifactRepositories = new ArrayList<ArtifactRepository>();
+                artifactRepositories = new ArrayList<>();
             }
 
             ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
@@ -301,7 +284,7 @@ public class PluginsReport
 
             public static List<GAV> pluginsToGAV( List<Plugin> plugins )
             {
-                List<GAV> result = new ArrayList<GAV>( plugins.size() );
+                List<GAV> result = new ArrayList<>( plugins.size() );
                 for ( Plugin plugin : plugins )
                 {
                     result.add( new GAV( plugin ) );
@@ -311,7 +294,7 @@ public class PluginsReport
 
             public static List<GAV> reportPluginsToGAV( List<ReportPlugin> reportPlugins, MavenProject project )
             {
-                List<GAV> result = new ArrayList<GAV>( reportPlugins.size() );
+                List<GAV> result = new ArrayList<>( reportPlugins.size() );
                 for ( ReportPlugin reportPlugin : reportPlugins )
                 {
                     result.add( new GAV( reportPlugin, project ) );

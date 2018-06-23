@@ -31,7 +31,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Contributor;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.Model;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.i18n.I18N;
@@ -82,7 +81,7 @@ public class TeamReport
     {
         // CHECKSTYLE_OFF: LineLength
         ProjectTeamRenderer r =
-            new ProjectTeamRenderer( getSink(), project.getModel(), getI18N( locale ), locale, getLog(), showAvatarImages );
+            new ProjectTeamRenderer( getSink(), project.getModel(), getI18N( locale ), locale, showAvatarImages );
         // CHECKSTYLE_ON: LineLength
 
         r.render();
@@ -138,7 +137,7 @@ public class TeamReport
 
         private final String protocol;
 
-        ProjectTeamRenderer( Sink sink, Model model, I18N i18n, Locale locale, Log log, boolean showAvatarImages )
+        ProjectTeamRenderer( Sink sink, Model model, I18N i18n, Locale locale, boolean showAvatarImages )
         {
             super( sink, i18n, locale );
 
@@ -167,9 +166,6 @@ public class TeamReport
         {
             startSection( getI18nString( "intro.title" ) );
 
-            // To handle JS
-            StringBuilder javascript = new StringBuilder();
-
             // Introduction
             paragraph( getI18nString( "intro.description1" ) );
             paragraph( getI18nString( "intro.description2" ) );
@@ -195,13 +191,9 @@ public class TeamReport
 
                 tableHeader( requiredHeaders );
 
-                // To handle JS
-                int developersRowId = 0;
                 for ( Developer developer : developers )
                 {
-                    renderTeamMember( developer, developersRowId, headersMap, javascript );
-
-                    developersRowId++;
+                    renderTeamMember( developer, headersMap );
                 }
 
                 endTable();
@@ -229,13 +221,9 @@ public class TeamReport
 
                 tableHeader( requiredHeaders );
 
-                // To handle JS
-                int contributorsRowId = 0;
                 for ( Contributor contributor : contributors )
                 {
-                    renderTeamMember( contributor, contributorsRowId, headersMap, javascript );
-
-                    contributorsRowId++;
+                    renderTeamMember( contributor, headersMap );
                 }
 
                 endTable();
@@ -246,8 +234,7 @@ public class TeamReport
             endSection();
         }
 
-        private void renderTeamMember( Contributor member, int rowId, Map<String, Boolean> headersMap,
-                                       StringBuilder javascript )
+        private void renderTeamMember( Contributor member, Map<String, Boolean> headersMap )
         {
             sink.tableRow();
 
@@ -269,10 +256,8 @@ public class TeamReport
                 sink.figure_();
                 sink.tableCell_();
             }
-            String type = "contributor";
             if ( member instanceof Developer )
             {
-                type = "developer";
                 if ( headersMap.get( ID ) == Boolean.TRUE )
                 {
                     String id = ( (Developer) member ).getId();
@@ -360,7 +345,7 @@ public class TeamReport
             {
                 md = MessageDigest.getInstance( "MD5" );
                 md.update( email.getBytes() );
-                byte byteData[] = md.digest();
+                byte[] byteData = md.digest();
                 StringBuilder sb = new StringBuilder();
                 final int lowerEightBitsOnly = 0xff;
                 for ( byte aByteData : byteData )
@@ -381,7 +366,7 @@ public class TeamReport
          */
         private String[] getRequiredContrHeaderArray( Map<String, Boolean> requiredHeaders )
         {
-            List<String> requiredArray = new ArrayList<String>();
+            List<String> requiredArray = new ArrayList<>();
             String image = getI18nString( "contributors.image" );
             String name = getI18nString( "contributors.name" );
             String email = getI18nString( "contributors.email" );
@@ -390,14 +375,13 @@ public class TeamReport
             String organizationUrl = getI18nString( "contributors.organizationurl" );
             String roles = getI18nString( "contributors.roles" );
             String timeZone = getI18nString( "contributors.timezone" );
-            String actualTime = getI18nString( "contributors.actualtime" );
             String properties = getI18nString( "contributors.properties" );
             if ( requiredHeaders.get( IMAGE ) == Boolean.TRUE && showAvatarImages )
             {
                 requiredArray.add( image );
             }
-            setRequiredArray( requiredHeaders, requiredArray, image, name, email, url, organization, organizationUrl,
-                              roles, timeZone, actualTime, properties );
+            setRequiredArray( requiredHeaders, requiredArray, name, email, url, organization, organizationUrl,
+                              roles, timeZone, properties );
 
             return requiredArray.toArray( new String[requiredArray.size()] );
         }
@@ -408,7 +392,7 @@ public class TeamReport
          */
         private String[] getRequiredDevHeaderArray( Map<String, Boolean> requiredHeaders )
         {
-            List<String> requiredArray = new ArrayList<String>();
+            List<String> requiredArray = new ArrayList<>();
 
             String image = getI18nString( "developers.image" );
             String id = getI18nString( "developers.id" );
@@ -419,7 +403,6 @@ public class TeamReport
             String organizationUrl = getI18nString( "developers.organizationurl" );
             String roles = getI18nString( "developers.roles" );
             String timeZone = getI18nString( "developers.timezone" );
-            String actualTime = getI18nString( "developers.actualtime" );
             String properties = getI18nString( "developers.properties" );
 
             if ( requiredHeaders.get( IMAGE ) == Boolean.TRUE && showAvatarImages )
@@ -431,16 +414,15 @@ public class TeamReport
                 requiredArray.add( id );
             }
 
-            setRequiredArray( requiredHeaders, requiredArray, image, name, email, url, organization, organizationUrl,
-                              roles, timeZone, actualTime, properties );
+            setRequiredArray( requiredHeaders, requiredArray, name, email, url, organization, organizationUrl,
+                              roles, timeZone, properties );
 
-            return requiredArray.toArray( new String[requiredArray.size()] );
+            return requiredArray.toArray( new String[ 0 ] );
         }
 
         /**
          * @param requiredHeaders
          * @param requiredArray
-         * @param image
          * @param name
          * @param email
          * @param url
@@ -448,12 +430,11 @@ public class TeamReport
          * @param organizationUrl
          * @param roles
          * @param timeZone
-         * @param actualTime
          * @param properties
          */
-        private void setRequiredArray( Map<String, Boolean> requiredHeaders, List<String> requiredArray, String image,
+        private void setRequiredArray( Map<String, Boolean> requiredHeaders, List<String> requiredArray,
                                        String name, String email, String url, String organization,
-                                       String organizationUrl, String roles, String timeZone, String actualTime,
+                                       String organizationUrl, String roles, String timeZone,
                                        String properties )
         {
             if ( requiredHeaders.get( NAME ) == Boolean.TRUE )
@@ -497,7 +478,7 @@ public class TeamReport
          */
         private Map<String, Boolean> checkRequiredHeaders( List<? extends Contributor> units )
         {
-            Map<String, Boolean> requiredHeaders = new HashMap<String, Boolean>();
+            Map<String, Boolean> requiredHeaders = new HashMap<>();
 
             requiredHeaders.put( IMAGE, Boolean.FALSE );
             requiredHeaders.put( ID, Boolean.FALSE );

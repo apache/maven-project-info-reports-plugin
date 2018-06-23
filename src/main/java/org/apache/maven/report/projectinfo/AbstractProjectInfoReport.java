@@ -91,12 +91,6 @@ public abstract class AbstractProjectInfoReport
     protected SiteTool siteTool;
 
     /**
-     * Doxia Site Renderer component.
-     */
-    @Component
-    protected Renderer siteRenderer;
-
-    /**
      * Artifact Resolver component.
      */
     @Component
@@ -120,21 +114,7 @@ public abstract class AbstractProjectInfoReport
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
-
-    /**
-     * The output directory for the report. Note that this parameter is only evaluated if the goal is run directly from
-     * the command line. If the goal is run indirectly as part of a site generation, the output directory configured in
-     * the Maven Site Plugin is used instead.
-     */
-    @Parameter( property = "project.reporting.outputDirectory", required = true )
-    protected File outputDirectory;
-
-    /**
-     * The Maven Project.
-     */
-    @Parameter( defaultValue = "${project}", readonly = true, required = true )
-    protected MavenProject project;
-
+    
     @Parameter( defaultValue = "${session}", readonly = true, required = true )
     private MavenSession session;
 
@@ -222,7 +202,7 @@ public abstract class AbstractProjectInfoReport
             DecorationModel model = new DecorationModel();
             model.setBody( new Body() );
 
-            Map<String, Object> attributes = new HashMap<String, Object>();
+            Map<String, Object> attributes = new HashMap<>();
             attributes.put( "outputEncoding", "UTF-8" );
             attributes.put( "project", project );
 
@@ -233,7 +213,8 @@ public abstract class AbstractProjectInfoReport
             SiteRenderingContext siteContext = siteRenderer.createContextForSkin( defaultSkin, attributes,
                                                                                   model, getName( locale ), locale );
 
-            RenderingContext context = new RenderingContext( outputDirectory, filename, null );
+            RenderingContext context = new RenderingContext(
+                    outputDirectory, null, filename, null, null, false, null );
 
             SiteRendererSink sink = new SiteRendererSink( context );
 
@@ -250,22 +231,7 @@ public abstract class AbstractProjectInfoReport
             writer.close();
             writer = null;
         }
-        catch ( RendererException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( SiteToolException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        catch ( MavenReportException e )
+        catch ( RendererException | IOException | SiteToolException | MavenReportException e )
         {
             throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
                 + " report generation.", e );
@@ -345,12 +311,12 @@ public abstract class AbstractProjectInfoReport
             return null;
         }
 
-        Plugin plugin = (Plugin) getProject().getBuild().getPluginsAsMap().get( pluginId );
+        Plugin plugin = getProject().getBuild().getPluginsAsMap().get( pluginId );
 
         if ( ( plugin == null ) && ( getProject().getBuild().getPluginManagement() != null )
             && ( getProject().getBuild().getPluginManagement().getPluginsAsMap() != null ) )
         {
-            plugin = (Plugin) getProject().getBuild().getPluginManagement().getPluginsAsMap().get( pluginId );
+            plugin = getProject().getBuild().getPluginManagement().getPluginsAsMap().get( pluginId );
         }
 
         return plugin;
@@ -407,13 +373,10 @@ public abstract class AbstractProjectInfoReport
             File customBundleFile = new File( customBundle );
             if ( customBundleFile.isFile() && customBundleFile.getName().endsWith( ".properties" ) )
             {
-                if ( !i18n.getClass().isAssignableFrom( CustomI18N.class ) )
+                if ( !i18n.getClass().isAssignableFrom( CustomI18N.class )
+                        || !i18n.getDefaultLanguage().equals( locale.getLanguage() ) )
                 {
                     // first load
-                    i18n = new CustomI18N( project, settings, customBundleFile, locale, i18n );
-                }
-                else if ( !i18n.getDefaultLanguage().equals( locale.getLanguage() ) )
-                {
                     i18n = new CustomI18N( project, settings, customBundleFile, locale, i18n );
                 }
             }
