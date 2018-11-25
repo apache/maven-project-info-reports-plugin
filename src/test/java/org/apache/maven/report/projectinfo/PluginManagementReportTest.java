@@ -118,7 +118,52 @@ public class PluginManagementReportTest
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals( getString( "report.plugin-management.title" ), textBlocks[0].getText() );
     }
-    
+
+    /**
+     * Test report with excludes (to solve MPIR-375)
+     *
+     * @throws Exception if any
+     */
+    public void testReportEclipseM2EPluginLifecycleMapping()
+        throws Exception
+    {
+        generateReport( "plugin-management", "plugin-management-plugin-config-MPIR-375.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "plugin-management.html" ).exists() );
+
+        URL reportURL = getGeneratedReport( "plugin-management.html" ).toURI().toURL();
+        assertNotNull( reportURL );
+
+        // HTTPUnit
+        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
+        WebResponse response = WEB_CONVERSATION.getResponse( request );
+
+        // Basic HTML tests
+        assertTrue( response.isHTML() );
+        assertTrue( response.getContentLength() > 0 );
+
+        // Test the Page title
+        String expectedTitle = prepareTitle( getString( "report.plugin-management.name" ),
+            getString( "report.plugin-management.title" ) );
+        assertEquals( expectedTitle, response.getTitle() );
+
+        // Test the tables
+        WebTable[] webTables = response.getTables();
+        assertEquals( 1, webTables.length );
+
+        // generated table for the plugin management
+        assertEquals( 3, webTables[0].getColumnCount() );
+        assertEquals( 2, webTables[0].getRowCount() );
+        // row 0 are the table titles
+        // row 1 is the m-javadoc-plugin
+        assertEquals( "org.apache.maven.plugins", webTables[0].getCellAsText( 1, 0 ) );
+        assertEquals( "maven-javadoc-plugin", webTables[0].getCellAsText( 1, 1 ) );
+        assertEquals( "3.0.1", webTables[0].getCellAsText( 1, 2 ) );
+
+        // Test the texts
+        TextBlock[] textBlocks = response.getTextBlocks();
+        assertEquals( getString( "report.plugin-management.title" ), textBlocks[0].getText() );
+    }
+
     private static ProjectBuildingResult createProjectBuildingResult( Artifact artifact, String url )
     {
         ProjectBuildingResult result = mock( ProjectBuildingResult.class );
