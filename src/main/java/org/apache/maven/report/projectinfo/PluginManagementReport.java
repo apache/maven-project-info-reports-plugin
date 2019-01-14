@@ -34,6 +34,7 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -128,7 +129,7 @@ public class PluginManagementReport
 
         private final ProjectBuildingRequest buildingRequest;
         
-        private final List<String> excludes;
+        private final PatternExcludesArtifactFilter patternExcludesArtifactFilter;
 
         /**
          * @param log {@link #log}
@@ -161,7 +162,7 @@ public class PluginManagementReport
 
             this.buildingRequest = buildingRequest;
 
-            this.excludes = excludes;
+            this.patternExcludesArtifactFilter = new PatternExcludesArtifactFilter( excludes );
         }
 
         @Override
@@ -220,14 +221,10 @@ public class PluginManagementReport
 
                 Artifact pluginArtifact = repositorySystem.createProjectArtifact( plugin.getGroupId(), plugin
                     .getArtifactId(), versionRange.toString() );
-                
-                try
+
+                if ( patternExcludesArtifactFilter.include( pluginArtifact ) )
                 {
-                    if ( isExcluded( pluginArtifact ) )
-                    {
-                        log.debug( "Excluding plugin " + pluginArtifact.getId() + " from report" );
-                    }
-                    else
+                    try
                     {
                         MavenProject pluginProject =
                             projectBuilder.build( pluginArtifact, buildingRequest ).getProject();
@@ -235,13 +232,17 @@ public class PluginManagementReport
                         tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(),
                                                 pluginProject.getVersion(), pluginProject.getUrl() ) );
                     }
+                    catch ( ProjectBuildingException e )
+                    {
+                        log.info( "Could not build project for: " + plugin.getArtifactId() + ":" + e.getMessage(), e );
+                        tableRow( getPluginRow( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(),
+                                                null ) );
+                    }
                 }
-                catch ( ProjectBuildingException e )
+                else
                 {
-                    log.info( "Could not build project for: " + plugin.getArtifactId() + ":" + e.getMessage(), e );
-                    tableRow( getPluginRow( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(), null ) );
+                    log.debug( "Excluding plugin " + pluginArtifact.getId() + " from report" );
                 }
-
             }
             endTable();
 
@@ -283,41 +284,6 @@ public class PluginManagementReport
                 }
             };
         }
-        
-        private boolean isExcluded( Artifact pluginArtifact )
-        {
-            if ( excludes == null )
-            {
-                return false;
-            }
 
-            for ( String pattern : excludes )
-            {
-                String[] subStrings = pattern.split( ":" );
-                subStrings = StringUtils.stripAll( subStrings );
-                String resultPattern = StringUtils.join( subStrings, ":" );
-
-                if ( compareDependency( resultPattern, pluginArtifact ) )
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Compares the given pattern against the given artifact. The pattern should follow the format
-         * <code>groupId:artifactId:type:classifier:version</code>.
-         * 
-         * @param pattern The pattern to compare the artifact with.
-         * @param artifact the artifact
-         * @return <code>true</code> if the artifact matches the pattern
-         */
-        protected boolean compareDependency( String pattern, Artifact artifact )
-        {
-            // TODO: compare with a better pattern matcher, like class ArtifactMatcher from Enforcer rules plugin
-            return artifact.getId().startsWith( pattern );
-        }
     }
 }
