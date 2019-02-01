@@ -26,6 +26,7 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
@@ -51,6 +52,17 @@ import java.util.Locale;
 public class PluginManagementReport
     extends AbstractProjectInfoReport
 {
+    
+    /**
+     * Specify the excluded plugins. This can be a list of artifacts in the format
+     * groupId[:artifactId[:type[:version]]]. <br>
+     * Plugins matching any exclude will not be present in the report.
+     * 
+     * @since 3.0.1
+     */
+    @Parameter
+    private List<String> pluginManagementExcludes = null;
+    
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -61,7 +73,8 @@ public class PluginManagementReport
         PluginManagementRenderer r =
             new PluginManagementRenderer( getLog(), getSink(), locale, getI18N( locale ),
                                           project.getPluginManagement().getPlugins(), project, projectBuilder,
-                                          repositorySystem, getSession().getProjectBuildingRequest() );
+                                          repositorySystem, getSession().getProjectBuildingRequest(),
+                                          pluginManagementExcludes );
         r.render();
     }
 
@@ -102,6 +115,7 @@ public class PluginManagementReport
     protected static class PluginManagementRenderer
         extends AbstractProjectInfoRenderer
     {
+
         private final Log log;
 
         private final List<Plugin> pluginManagement;
@@ -113,6 +127,8 @@ public class PluginManagementReport
         private final RepositorySystem repositorySystem;
 
         private final ProjectBuildingRequest buildingRequest;
+        
+        private final List<String> excludes;
 
         /**
          * @param log {@link #log}
@@ -124,10 +140,12 @@ public class PluginManagementReport
          * @param projectBuilder {@link ProjectBuilder}
          * @param repositorySystem {@link RepositorySystem}
          * @param buildingRequest {@link ProjectBuildingRequest}
+         * @param excludes the list of plugins to be excluded from the report
          */
         public PluginManagementRenderer( Log log, Sink sink, Locale locale, I18N i18n, List<Plugin> plugins,
                                          MavenProject project, ProjectBuilder projectBuilder,
-                                         RepositorySystem repositorySystem, ProjectBuildingRequest buildingRequest )
+                                         RepositorySystem repositorySystem, ProjectBuildingRequest buildingRequest,
+                                         List<String> excludes )
         {
             super( sink, i18n, locale );
 
@@ -142,6 +160,8 @@ public class PluginManagementReport
             this.repositorySystem = repositorySystem;
 
             this.buildingRequest = buildingRequest;
+
+            this.excludes = excludes;
         }
 
         @Override
@@ -200,13 +220,21 @@ public class PluginManagementReport
 
                 Artifact pluginArtifact = repositorySystem.createProjectArtifact( plugin.getGroupId(), plugin
                     .getArtifactId(), versionRange.toString() );
-
+                
                 try
                 {
-                    MavenProject pluginProject = projectBuilder.build( pluginArtifact, buildingRequest ).getProject();
-                    
-                    tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(), pluginProject
-                        .getVersion(), pluginProject.getUrl() ) );
+                    if ( isExcluded( pluginArtifact ) )
+                    {
+                        log.debug( "Excluding plugin " + pluginArtifact.getId() + " from report" );
+                    }
+                    else
+                    {
+                        MavenProject pluginProject =
+                            projectBuilder.build( pluginArtifact, buildingRequest ).getProject();
+
+                        tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(),
+                                                pluginProject.getVersion(), pluginProject.getUrl() ) );
+                    }
                 }
                 catch ( ProjectBuildingException e )
                 {
@@ -254,6 +282,42 @@ public class PluginManagementReport
                     return result;
                 }
             };
+        }
+        
+        private boolean isExcluded( Artifact pluginArtifact )
+        {
+            if ( excludes == null )
+            {
+                return false;
+            }
+
+            for ( String pattern : excludes )
+            {
+                String[] subStrings = pattern.split( ":" );
+                subStrings = StringUtils.stripAll( subStrings );
+                String resultPattern = StringUtils.join( subStrings, ":" );
+
+                if ( compareDependency( resultPattern, pluginArtifact ) )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * Compares the given pattern against the given artifact. The pattern should follow the format
+         * <code>groupId:artifactId:type:classifier:version</code>.
+         * 
+         * @param pattern The pattern to compare the artifact with.
+         * @param artifact the artifact
+         * @return <code>true</code> if the artifact matches the pattern
+         */
+        protected boolean compareDependency( String pattern, Artifact artifact )
+        {
+            // TODO: compare with a better pattern matcher, like class ArtifactMatcher from Enforcer rules plugin
+            return artifact.getId().startsWith( pattern );
         }
     }
 }
