@@ -279,7 +279,8 @@ public class TeamReport
             }
             if ( headersMap.get( EMAIL ) == Boolean.TRUE )
             {
-                tableCell( createLinkPatternedText( member.getEmail(), String.format("mailto:%s", member.getEmail()) ) );
+                final String link = String.format( "mailto:%s", member.getEmail() );
+                tableCell( createLinkPatternedText( member.getEmail(), link ) );
             }
             if ( headersMap.get( URL ) == Boolean.TRUE )
             {
