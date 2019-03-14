@@ -23,10 +23,13 @@ import java.io.File;
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.TableCell;
 import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.WebTable;
 
 /**
  * @author Edwin Punzalan
@@ -52,7 +55,7 @@ public class TeamReportTest
         File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml" );
         AbstractProjectInfoReport mojo  = createReportMojo( "team", pluginXmlFile );
         setVariableValueToObject( mojo, "showAvatarImages", Boolean.TRUE );
-       generateReport( mojo, pluginXmlFile);
+        generateReport( mojo, pluginXmlFile);
         assertTrue( "Test html generated", getGeneratedReport( "team.html" ).exists() );
 
         URL reportURL = getGeneratedReport( "team.html" ).toURI().toURL();
@@ -85,5 +88,13 @@ public class TeamReportTest
         assertEquals( getString( "report.team.developers.intro" ), textBlocks[4].getText() );
         assertEquals( getString( "report.team.contributors.title" ), textBlocks[5].getText() );
         assertEquals( getString( "report.team.nocontributor" ), textBlocks[6].getText() );
+
+        WebTable[] tables = response.getTables();
+        assertEquals(1, tables.length);
+        TableCell emailCell = tables[0].getTableCell(1, 3);
+        assertEquals("vsiveton@apache.org", emailCell.getText());
+        WebLink[] links = emailCell.getLinks();
+        assertEquals(1, links.length);
+        assertEquals("mailto:vsiveton@apache.org", links[0].getURLString());
     }
 }

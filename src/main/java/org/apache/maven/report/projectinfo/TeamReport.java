@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Contributor;
 import org.apache.maven.model.Developer;
@@ -90,6 +91,7 @@ public class TeamReport
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getOutputName()
     {
         return "team";
@@ -277,7 +279,8 @@ public class TeamReport
             }
             if ( headersMap.get( EMAIL ) == Boolean.TRUE )
             {
-                tableCell( createLinkPatternedText( member.getEmail(), member.getEmail() ) );
+                final String link = String.format( "mailto:%s", member.getEmail() );
+                tableCell( createLinkPatternedText( member.getEmail(), link ) );
             }
             if ( headersMap.get( URL ) == Boolean.TRUE )
             {
@@ -432,7 +435,7 @@ public class TeamReport
          * @param timeZone
          * @param properties
          */
-        private void setRequiredArray( Map<String, Boolean> requiredHeaders, List<String> requiredArray,
+        private static void setRequiredArray( Map<String, Boolean> requiredHeaders, List<String> requiredArray,
                                        String name, String email, String url, String organization,
                                        String organizationUrl, String roles, String timeZone,
                                        String properties )
@@ -476,7 +479,7 @@ public class TeamReport
          * @param units contributors and developers to check
          * @return required headers
          */
-        private Map<String, Boolean> checkRequiredHeaders( List<? extends Contributor> units )
+        private static Map<String, Boolean> checkRequiredHeaders( List<? extends Contributor> units )
         {
             Map<String, Boolean> requiredHeaders = new HashMap<>();
 
@@ -566,7 +569,7 @@ public class TeamReport
             sink.tableCell_();
         }
 
-        private boolean isEmpty( List<?> list )
+        private static boolean isEmpty( List<?> list )
         {
             return ( list == null ) || list.isEmpty();
         }
