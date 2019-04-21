@@ -128,7 +128,7 @@ ${project.name}
   To provide you with better understanding on some usages of the Maven Project Info Reports Plugin,
   you can take a look into the following examples:
 
-  * {{{./examples/selective-project-info-reports.html}Run Selective Reports}}
+  * {{{./examples/selective-reports.html}Run Selective Reports}}
 
   * {{{./examples/individual-reports.html}Run Individual Reports}}
 
