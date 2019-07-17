@@ -806,7 +806,15 @@ public class DependenciesRenderer
         }
         catch ( ProjectBuildingException e )
         {
-            log.warn( "Unable to create Maven project from repository.", e );
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Unable to create Maven project from repository.", e );
+            }
+            else
+            {
+                log.info( "Unable to create Maven project from repository for artifact " + artifact.getId()
+                        + " for more information run with -X" );
+            }
         }
 
         String[] content;
@@ -984,7 +992,15 @@ public class DependenciesRenderer
             }
             catch ( ProjectBuildingException e )
             {
-                log.warn( "Unable to create Maven project from repository for artifact " + artifact.getId(), e );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Unable to create Maven project from repository for artifact " + artifact.getId(), e );
+                }
+                else
+                {
+                    log.info( "Unable to create Maven project from repository for artifact " + artifact.getId()
+                            + " for more information run with -X" );
+                }
             }
         }
         else
