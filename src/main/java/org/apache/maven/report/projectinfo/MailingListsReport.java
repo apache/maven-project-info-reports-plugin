@@ -161,13 +161,13 @@ public class MailingListsReport
                 // Validate here subsribe/unsubsribe lists and archives?
                 textRow.add( mailingList.getName() );
 
-                textRow.add( createLinkPatternedText( subscribe, mailingList.getSubscribe() ) );
+                textRow.add( createLinkPatternedText( subscribe, "mailto:" + mailingList.getSubscribe() ) );
 
-                textRow.add( createLinkPatternedText( unsubscribe, mailingList.getUnsubscribe() ) );
+                textRow.add( createLinkPatternedText( unsubscribe, "mailto:" + mailingList.getUnsubscribe() ) );
 
                 if ( mailingList.getPost() != null && mailingList.getPost().length() > 0 )
                 {
-                    textRow.add( createLinkPatternedText( post, mailingList.getPost() ) );
+                    textRow.add( createLinkPatternedText( post, "mailto:" + mailingList.getPost() ) );
                 }
                 else
                 {
