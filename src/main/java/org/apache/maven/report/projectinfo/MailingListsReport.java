@@ -161,18 +161,11 @@ public class MailingListsReport
                 // Validate here subsribe/unsubsribe lists and archives?
                 textRow.add( mailingList.getName() );
 
-                textRow.add( createLinkPatternedText( subscribe, mailingList.getSubscribe() ) );
+                textRow.add( createEmailLinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
 
-                textRow.add( createLinkPatternedText( unsubscribe, mailingList.getUnsubscribe() ) );
+                textRow.add( createEmailLinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
 
-                if ( mailingList.getPost() != null && mailingList.getPost().length() > 0 )
-                {
-                    textRow.add( createLinkPatternedText( post, mailingList.getPost() ) );
-                }
-                else
-                {
-                    textRow.add( "-" );
-                }
+                textRow.add( createEmailLinkPatternedText( post, mailingList.getPost(), "-" ) );
 
                 if ( mailingList.getArchive() != null && mailingList.getArchive().length() > 0 )
                 {
@@ -236,6 +229,25 @@ public class MailingListsReport
             endTable();
 
             endSection();
+        }
+
+        /**
+         * Create a link pattern text for email addresses defined by <code>{text, mailto:href}</code>. If href is null,
+         * then <code>defaultHref</code> is used instead.
+         *
+         * @param text a text.
+         * @param href the email address to use.
+         * @param defaultHref the String to use in case href is null.
+         * @return an email link pattern.
+         * @see #createLinkPatternedText(String,String)
+         */
+        private String createEmailLinkPatternedText( String text, String href, String defaultHref )
+        {
+            if ( href == null || href.isEmpty() )
+            {
+                return createLinkPatternedText( text, defaultHref );
+            }
+            return createLinkPatternedText( text, "mailto:" + href );
         }
 
         /**
