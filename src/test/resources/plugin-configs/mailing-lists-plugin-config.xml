@@ -37,7 +37,6 @@ under the License.
       <name>Test List</name>
       <post>test@maven.apache.org</post>
       <subscribe>test-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>test-unsubscribe@maven.apache.org</unsubscribe>
     </mailingList>
   </mailingLists>
   <build>
