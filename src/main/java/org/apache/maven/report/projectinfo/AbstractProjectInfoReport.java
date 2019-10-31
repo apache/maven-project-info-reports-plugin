@@ -133,6 +133,14 @@ public abstract class AbstractProjectInfoReport
     protected List<ArtifactRepository> remoteRepositories;
 
     /**
+     * Plugin repositories used for the project.
+     *
+     * @since 3.0.2
+     */
+    @Parameter( property = "project.pluginArtifactRepositories" )
+    protected List<ArtifactRepository> pluginRepositories;
+
+    /**
      * The reactor projects.
      *
      * @since 2.10
