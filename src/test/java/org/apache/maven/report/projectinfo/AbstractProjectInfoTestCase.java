@@ -187,8 +187,8 @@ public abstract class AbstractProjectInfoTestCase
         repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManager( artifactStubFactory.getWorkingDir() ) );
 
         setVariableValueToObject( mojo, "session", legacySupport.getSession() );
-
         setVariableValueToObject( mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories() );
+        setVariableValueToObject( mojo, "pluginRepositories", mojo.getProject().getPluginArtifactRepositories() );
         return mojo;
     }
 

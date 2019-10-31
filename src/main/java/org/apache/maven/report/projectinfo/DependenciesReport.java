@@ -142,6 +142,7 @@ public class DependenciesReport
             new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
         buildingRequest.setLocalRepository( localRepository );
         buildingRequest.setRemoteRepositories( remoteRepositories );
+        buildingRequest.setPluginArtifactRepositories( pluginRepositories );
 
         RepositoryUtils repoUtils =
             new RepositoryUtils( getLog(), projectBuilder, repositorySystem, resolver,
