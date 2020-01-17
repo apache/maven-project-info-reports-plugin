@@ -64,7 +64,7 @@ under the License.
     <mirror>
       <id>mirror-test</id>
       <mirrorOf>central</mirrorOf>
-      <url>http://repo.maven.apache.org/maven2/</url>
+      <url>https://repo.maven.apache.org/maven2/</url>
     </mirror>
   </mirrors>
 </settings>
