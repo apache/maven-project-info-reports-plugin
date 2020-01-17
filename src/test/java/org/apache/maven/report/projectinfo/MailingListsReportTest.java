@@ -81,7 +81,7 @@ public class MailingListsReportTest
         String post = getString("report.mailing-lists.column.post");
         assertEquals( "mailto:test@maven.apache.org", response.getLinkWith( post ).getAttribute( "href" ) );
         String subscribe = getString("report.mailing-lists.column.subscribe");
-        assertEquals( "mailto:test-subscribe@maven.apache.org", response.getLinkWith( subscribe ).getAttribute( "href" ) );
+        assertEquals( "MAILTO:test-subscribe@maven.apache.org", response.getLinkWith( subscribe ).getAttribute( "href" ) );
         String unsubscribe = getString("report.mailing-lists.column.unsubscribe");
         assertNull( response.getLinkWith( unsubscribe ) );
     }

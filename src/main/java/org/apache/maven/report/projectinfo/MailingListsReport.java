@@ -247,7 +247,8 @@ public class MailingListsReport
             {
                 return createLinkPatternedText( text, defaultHref );
             }
-            return createLinkPatternedText( text, "mailto:" + href );
+            return createLinkPatternedText( text,
+                    href.toLowerCase( Locale.ENGLISH ).startsWith( "mailto:" ) ? href : "mailto:" + href );
         }
 
         /**
