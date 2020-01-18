@@ -80,11 +80,8 @@ public class TeamReport
     @Override
     public void executeReport( Locale locale )
     {
-        // CHECKSTYLE_OFF: LineLength
         ProjectTeamRenderer r =
             new ProjectTeamRenderer( getSink(), project.getModel(), getI18N( locale ), locale, showAvatarImages );
-        // CHECKSTYLE_ON: LineLength
-
         r.render();
     }
 

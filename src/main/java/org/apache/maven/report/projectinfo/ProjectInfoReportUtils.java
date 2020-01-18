@@ -47,10 +47,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
-// CHECKSTYLE_OFF: UnusedImports
 import org.apache.maven.reporting.AbstractMavenReportRenderer;
 import org.apache.maven.repository.RepositorySystem;
-// CHECKSTYLE_ON: UnusedImports
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;

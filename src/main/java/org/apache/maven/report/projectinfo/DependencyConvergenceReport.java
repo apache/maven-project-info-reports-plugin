@@ -187,9 +187,8 @@ public class DependencyConvergenceReport
      * @param dependencyMap
      * @return snapshots dependencies
      */
-    // CHECKSTYLE_OFF: LineLength
-    private List<ReverseDependencyLink> getSnapshotDependencies( Map<String, List<ReverseDependencyLink>> dependencyMap )
-    // CHECKSTYLE_ON: LineLength
+    private List<ReverseDependencyLink> getSnapshotDependencies(
+                    Map<String, List<ReverseDependencyLink>> dependencyMap )
     {
         List<ReverseDependencyLink> snapshots = new ArrayList<>();
         for ( Map.Entry<String, List<ReverseDependencyLink>> entry : dependencyMap.entrySet() )
@@ -338,9 +337,8 @@ public class DependencyConvergenceReport
      * @param artifactMap
      * @param version
      */
-    // CHECKSTYLE_OFF: LineLength
-    private void generateVersionDetails( Sink sink, Map<String, List<ReverseDependencyLink>> artifactMap, String version )
-    // CHECKSTYLE_ON: LineLength
+    private void generateVersionDetails( Sink sink, Map<String, List<ReverseDependencyLink>> artifactMap,
+                    String version )
     {
         sink.numberedList( 0 ); // Use lower alpha numbering
         List<ReverseDependencyLink> depList = artifactMap.get( version );
@@ -766,10 +764,9 @@ public class DependencyConvergenceReport
      * @return DependencyAnalyzeResult contains conflicting dependencies map, snapshot dependencies map and all
      *         dependencies map.
      */
-    // CHECKSTYLE_OFF: LineLength
-    private DependencyAnalyzeResult populateDependencyAnalyzeResult( Map<String, List<ReverseDependencyLink>> conflictingDependencyMap,
-                                                                     Map<String, List<ReverseDependencyLink>> allDependencies )
-    // CHECKSTYLE_ON: LineLength
+    private DependencyAnalyzeResult populateDependencyAnalyzeResult(
+            Map<String, List<ReverseDependencyLink>> conflictingDependencyMap,
+            Map<String, List<ReverseDependencyLink>> allDependencies )
     {
         DependencyAnalyzeResult dependencyResult = new DependencyAnalyzeResult();
 
@@ -808,15 +805,13 @@ public class DependencyConvergenceReport
                 dependencyList = new ArrayList<>();
             }
 
-            // CHECKSTYLE_OFF: LineLength
-            dependencyList.add( new ReverseDependencyLink( toDependency( dependencyNode.getArtifact() ), reactorProject ) );
-            // CHECKSTYLE_ON: LineLength
+            dependencyList.add( new ReverseDependencyLink(
+                    toDependency( dependencyNode.getArtifact() ), reactorProject ) );
 
             for ( DependencyNode workNode : nodes.subList( 1, nodes.size() ) )
             {
-                // CHECKSTYLE_OFF: LineLength
-                dependencyList.add( new ReverseDependencyLink( toDependency( workNode.getArtifact() ), reactorProject ) );
-                // CHECKSTYLE_ON: LineLength
+                dependencyList.add( new ReverseDependencyLink(
+                        toDependency( workNode.getArtifact() ), reactorProject ) );
             }
 
             conflictingDependencyMap.put( key, dependencyList );

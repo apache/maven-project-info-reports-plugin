@@ -660,9 +660,8 @@ public class DependenciesRenderer
         {
             if ( titles != null && content.length != titles.length )
             {
-                // CHECKSTYLE_OFF: LineLength
-                throw new IllegalArgumentException( "Length of title array must equal the length of the content array" );
-                // CHECKSTYLE_ON: LineLength
+                throw new IllegalArgumentException(
+                        "Length of title array must equal the length of the content array" );
             }
 
             for ( int i = 0; i < content.length; i++ )

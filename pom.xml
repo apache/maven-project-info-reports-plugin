@@ -125,6 +125,7 @@ under the License.
     <sitePluginVersion>3.7</sitePluginVersion>
     <surefire.version>2.21.0</surefire.version>
     <javaVersion>7</javaVersion>
+    <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
   </properties>
 
   <dependencies>
