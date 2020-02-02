@@ -25,7 +25,7 @@ under the License.
   <parent>
     <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>33</version>
+    <version>34</version>
     <relativePath>../../pom/maven/maven-plugins/pom.xml</relativePath>
   </parent>
 
@@ -126,6 +126,7 @@ under the License.
     <surefire.version>2.21.0</surefire.version>
     <javaVersion>7</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
+    <project.build.outputTimestamp>2020-02-02T17:43:59Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
