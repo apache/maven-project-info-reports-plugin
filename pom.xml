@@ -119,7 +119,7 @@ under the License.
 
   <properties>
     <doxiaVersion>1.9.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.8.1</doxia-sitetoolsVersion>
+    <doxia-sitetoolsVersion>1.9.2</doxia-sitetoolsVersion>
     <mavenVersion>3.0</mavenVersion>
     <scmVersion>1.10.0</scmVersion>
     <sitePluginVersion>3.7</sitePluginVersion>
