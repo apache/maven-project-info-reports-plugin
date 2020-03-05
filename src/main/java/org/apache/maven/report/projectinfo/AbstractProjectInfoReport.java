@@ -135,7 +135,7 @@ public abstract class AbstractProjectInfoReport
     /**
      * Plugin repositories used for the project.
      *
-     * @since 3.0.2
+     * @since 3.1.0
      */
     @Parameter( property = "project.pluginArtifactRepositories" )
     protected List<ArtifactRepository> pluginRepositories;
