@@ -102,9 +102,9 @@ try
     // MPIR-216: dependency with range
     File dependencyMgmt = new File( siteDir, "dependency-management.html");
     content = FileUtils.fileRead( dependencyMgmt, "UTF-8" );
-    if ( !content.contains( "http://maven.apache.org/doxia/doxia/doxia-sink-api/" ) )
+    if ( !content.contains( "https://maven.apache.org/doxia/doxia/doxia-sink-api/" ) )
     {
-        System.err.println( "MPIR-216: dependency-management doesn't contain doxia-sink-api url http://maven.apache.org/doxia/doxia/doxia-sink-api/" );
+        System.err.println( "MPIR-216: dependency-management doesn't contain doxia-sink-api url https://maven.apache.org/doxia/doxia/doxia-sink-api/" );
         return false;
     }
     
