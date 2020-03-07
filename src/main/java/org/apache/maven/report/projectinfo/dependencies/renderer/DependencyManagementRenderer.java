@@ -273,7 +273,14 @@ public class DependencyManagementRenderer
         }
         catch ( ProjectBuildingException e )
         {
-            log.warn( "Unable to create Maven project for " + artifact.getId() + " from repository.", e );
+            if ( log.isDebugEnabled() ) 
+            {
+                log.warn( "Unable to create Maven project for " + artifact.getId() + " from repository.", e );
+            } 
+            else 
+            {
+                log.warn( "Unable to create Maven project for " + artifact.getId() + " from repository." );
+            }
         }
 
         String artifactIdCell = ProjectInfoReportUtils.getArtifactIdCell( artifact.getArtifactId(), url );
