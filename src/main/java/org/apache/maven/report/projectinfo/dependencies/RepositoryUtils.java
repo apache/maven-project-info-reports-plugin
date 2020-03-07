@@ -33,12 +33,12 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
-import org.apache.maven.shared.artifact.resolve.ArtifactResult;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
 
 /**
- * Utilities methods to play with repository
+ * Utility methods to play with repository.
  *
  * @version $Id$
  * @since 2.1
@@ -128,7 +128,7 @@ public class RepositoryUtils
     /**
      * @param artifact not null
      * @param repo not null
-     * @return the artifact url in the given repo for the given artifact. If it is a snapshot artifact, the version
+     * @return the URL in the given repo for the given artifact. If it is a snapshot artifact, the version
      * will be the timestamp and the build number from the metadata. Could return null if the repo is blacklisted.
      */
     public String getDependencyUrlFromRepository( Artifact artifact, ArtifactRepository repo )

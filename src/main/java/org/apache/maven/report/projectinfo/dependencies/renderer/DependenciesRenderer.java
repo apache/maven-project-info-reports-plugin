@@ -56,7 +56,7 @@ import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.i18n.I18N;
