@@ -348,9 +348,9 @@ under the License.
 
     <!-- Test -->
     <dependency>
-      <groupId>httpunit</groupId>
+      <groupId>org.httpunit</groupId>
       <artifactId>httpunit</artifactId>
-      <version>1.6.1</version>
+      <version>1.7.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
