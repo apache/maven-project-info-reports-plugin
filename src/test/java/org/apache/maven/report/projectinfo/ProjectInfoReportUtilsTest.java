@@ -43,6 +43,8 @@ import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+import static org.apache.maven.report.projectinfo.ProjectInfoReportUtils.getArchiveServer;
+
 /**
  * @author <a href="mailto:vincent.siveton@crim.ca">Vincent Siveton</a>
  * @version $Id$
@@ -189,6 +191,31 @@ public class ProjectInfoReportUtilsTest
         stopJetty();
 
         // TODO need to test with a proxy
+    }
+
+    public void testGetArchiveServer()
+    {
+        assertEquals( "???UNKNOWN???", getArchiveServer( null ) );
+
+        assertNull( getArchiveServer( "" ) );
+
+        assertEquals( "mail-archives.apache.org",
+                getArchiveServer( "http://mail-archives.apache.org/mod_mbox/maven-announce/" ) );
+
+        assertEquals( "mail-archives.apache.org",
+                getArchiveServer( "https://mail-archives.apache.org/mod_mbox/maven-announce/" ) );
+
+        assertEquals( "mail-archives.apache.org",
+                getArchiveServer( "http://mail-archives.apache.org/mod_mbox/maven-announce" ) );
+
+        assertEquals( "www.mail-archive.com",
+                getArchiveServer( "http://www.mail-archive.com/announce@maven.apache.org" ) );
+
+        assertEquals( "www.nabble.com", getArchiveServer( "http://www.nabble.com/Maven-Announcements-f15617.html" ) );
+
+        assertEquals( "maven.announce.markmail.org", getArchiveServer( "http://maven.announce.markmail.org/" ) );
+
+        assertEquals( "maven.announce.markmail.org", getArchiveServer( "http://maven.announce.markmail.org" ) );
     }
 
     private void startJetty( boolean isSSL, boolean withAuth )

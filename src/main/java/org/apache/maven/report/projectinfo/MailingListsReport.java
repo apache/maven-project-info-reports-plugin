@@ -24,7 +24,6 @@ import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -169,8 +168,9 @@ public class MailingListsReport
 
                 if ( mailingList.getArchive() != null && mailingList.getArchive().length() > 0 )
                 {
-                    textRow.add( createLinkPatternedText( getArchiveServer( mailingList.getArchive() ),
-                                                          mailingList.getArchive() ) );
+                    textRow.add( createLinkPatternedText(
+                            ProjectInfoReportUtils.getArchiveServer( mailingList.getArchive() ),
+                            mailingList.getArchive() ) );
                 }
                 else
                 {
@@ -183,7 +183,8 @@ public class MailingListsReport
                     Iterator<String> it = mailingList.getOtherArchives().iterator();
                     String otherArchive = it.next();
 
-                    textRow.add( createLinkPatternedText( getArchiveServer( otherArchive ), otherArchive ) );
+                    textRow.add( createLinkPatternedText(
+                            ProjectInfoReportUtils.getArchiveServer( otherArchive ), otherArchive ) );
 
                     tableRow( textRow.toArray( new String[textRow.size()] ) );
 
@@ -210,7 +211,8 @@ public class MailingListsReport
                         // Archive
                         textRow.add( " " );
 
-                        textRow.add( createLinkPatternedText( getArchiveServer( otherArchive ), otherArchive ) );
+                        textRow.add( createLinkPatternedText(
+                                ProjectInfoReportUtils.getArchiveServer( otherArchive ), otherArchive ) );
 
                         tableRow( textRow.toArray( new String[textRow.size()] ) );
                     }
@@ -249,42 +251,6 @@ public class MailingListsReport
             }
             return createLinkPatternedText( text,
                     href.toLowerCase( Locale.ENGLISH ).startsWith( "mailto:" ) ? href : "mailto:" + href );
-        }
-
-        /**
-         * Convenience method to return the name of a web-based mailing list archive server. <br>
-         * For instance, if the archive uri is <code>http://www.mail-archive.com/dev@maven.apache.org</code>, this
-         * method return <code>www.mail-archive.com</code>
-         *
-         * @param uri
-         * @return the server name of a web-based mailing list archive server
-         */
-        private static String getArchiveServer( String uri )
-        {
-            if ( StringUtils.isEmpty( uri ) )
-            {
-                return "???UNKNOWN???";
-            }
-
-            int at = uri.indexOf( "//" );
-            int fromIndex;
-            if ( at >= 0 )
-            {
-                fromIndex = uri.lastIndexOf( '/', at - 1 ) >= 0 ? 0 : at + 2;
-            }
-            else
-            {
-                fromIndex = 0;
-            }
-
-            int from = uri.indexOf( '/', fromIndex );
-
-            if ( from == -1 )
-            {
-                return uri.substring( at + 2 );
-            }
-
-            return uri.substring( at + 2, from );
         }
     }
 }

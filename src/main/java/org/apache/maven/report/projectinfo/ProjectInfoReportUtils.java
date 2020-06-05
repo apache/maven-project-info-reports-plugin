@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
@@ -274,6 +275,23 @@ public class ProjectInfoReportUtils
         }
 
         return URL_VALIDATOR.isValid( url );
+    }
+
+    /**
+     * Convenience method to return the name of a web-based mailing list archive server.
+     * For instance, if the archive URI is <code>http://www.mail-archive.com/dev@maven.apache.org</code>, this
+     * method returns <code>www.mail-archive.com</code>
+     *
+     * @param uri the URI parse
+     * @return the server host of a web-based mailing list archive server
+     */
+    public static String getArchiveServer( String uri )
+    {
+        if ( uri == null )
+        {
+            return "???UNKNOWN???";
+        }
+        return URI.create( uri ).getHost();
     }
 
     /**
