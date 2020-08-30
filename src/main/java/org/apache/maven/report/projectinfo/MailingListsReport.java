@@ -157,16 +157,43 @@ public class MailingListsReport
             {
                 List<String> textRow = new ArrayList<>();
 
-                // Validate here subsribe/unsubsribe lists and archives?
-                textRow.add( mailingList.getName() );
+                if ( StringUtils.isNotEmpty( mailingList.getName() ) )
+                {
+                    textRow.add( mailingList.getName() );
+                }
+                else
+                {
+                    textRow.add( "-" );
+                }
 
-                textRow.add( createEmailLinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
+                if ( StringUtils.isNotEmpty( mailingList.getSubscribe() ) )
+                {
+                    textRow.add( createEmailLinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
+                }
+                else
+                {
+                    textRow.add( "-" );
+                }
 
-                textRow.add( createEmailLinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
+                if ( StringUtils.isNotEmpty( mailingList.getUnsubscribe() ) )
+                {
+                    textRow.add( createEmailLinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
+                }
+                else
+                {
+                    textRow.add( "-" );
+                }
 
-                textRow.add( createEmailLinkPatternedText( post, mailingList.getPost(), "-" ) );
+                if ( StringUtils.isNotEmpty( mailingList.getPost() ) )
+                {
+                    textRow.add( createEmailLinkPatternedText( post, mailingList.getPost(), null ) );
+                }
+                else
+                {
+                    textRow.add( "-" );
+                }
 
-                if ( mailingList.getArchive() != null && mailingList.getArchive().length() > 0 )
+                if ( mailingList.getArchive() != null && !mailingList.getArchive().isEmpty() )
                 {
                     textRow.add( createLinkPatternedText(
                             ProjectInfoReportUtils.getArchiveServer( mailingList.getArchive() ),
