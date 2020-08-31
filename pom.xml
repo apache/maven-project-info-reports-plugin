@@ -35,7 +35,7 @@ under the License.
 
   <name>Apache Maven Project Info Reports Plugin</name>
   <description>
-    The Maven Project Info Reports Plugin is a plugin that generates standard reports
+    The Maven Project Info Reports Plugin generates standard reports
     for the specified project.
   </description>
   <inceptionYear>2005</inceptionYear>
@@ -70,7 +70,7 @@ under the License.
       <name>Daniel Teleginski Camargo</name>
       <email>danielsudpr@gmail.com</email>
       <roles>
-        <role>Brazillian Portuguese translator</role>
+        <role>Brazilian Portuguese translator</role>
       </roles>
     </contributor>
     <contributor>
