@@ -123,7 +123,7 @@ under the License.
     <mavenVersion>3.0</mavenVersion>
     <scmVersion>1.10.0</scmVersion>
     <sitePluginVersion>3.7</sitePluginVersion>
-    <surefire.version>2.21.0</surefire.version>
+    <surefire.version>2.22.2</surefire.version>
     <javaVersion>7</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2020-08-30T18:46:41Z</project.build.outputTimestamp>
