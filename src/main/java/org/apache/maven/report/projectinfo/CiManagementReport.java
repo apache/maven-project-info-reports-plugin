@@ -158,6 +158,10 @@ public class CiManagementReport
             {
                 linkPatternedText( getI18nString( "luntbuild.intro" ) );
             }
+            else if ( isCiManagementSystem( system, "teamcity" ) )
+            {
+                linkPatternedText( getI18nString( "teamcity.intro" ) );
+            }
             else if ( isCiManagementSystem( system, "travis" ) )
             {
                 linkPatternedText( getI18nString( "travis.intro" ) );
