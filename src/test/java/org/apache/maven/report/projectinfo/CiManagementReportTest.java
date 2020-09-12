@@ -26,6 +26,7 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.w3c.dom.html.HTMLAnchorElement;
 
 /**
  * @author Edwin Punzalan
@@ -71,5 +72,37 @@ public class CiManagementReportTest
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals( getString( "report.ci-management.name" ), textBlocks[0].getText() );
         assertEquals( getString( "report.ci-management.nocim" ), textBlocks[1].getText() );
+    }
+
+    /**
+     * When a ciManagement section is present, test that the correct name and link text are chosen
+     * from the 'system' property.
+     *
+     * @throws Exception if any
+     */
+    public void testCiNameReport()
+        throws Exception
+    {
+        generateReport( "ci-management", "ci-management-plugin-with-ci-section-config.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "ci-management.html" ).exists() );
+
+        URL reportURL = getGeneratedReport( "ci-management.html" ).toURI().toURL();
+        assertNotNull( reportURL );
+
+        // HTTPUnit
+        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
+        WebResponse response = WEB_CONVERSATION.getResponse( request );
+
+        // Basic HTML tests
+        assertTrue( response.isHTML() );
+        assertTrue( response.getContentLength() > 0 );
+
+        // Test the texts
+        TextBlock[] textBlocks = response.getTextBlocks();
+        assertTrue( textBlocks[1].getText().startsWith( "This project uses " ) );
+        assertEquals(3, textBlocks[1].getNode().getChildNodes().getLength());
+        HTMLAnchorElement anchor = (HTMLAnchorElement) textBlocks[1].getNode().getChildNodes().item( 1 );
+        assertEquals( "https://www.jetbrains.com/teamcity/", anchor.getAttribute( "href" ) );
+        assertEquals( "TeamCity", anchor.getFirstChild().getNodeValue() );
     }
 }
