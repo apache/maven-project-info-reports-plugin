@@ -27,8 +27,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Generates the Project Continuous Integration Management report.
@@ -88,6 +91,20 @@ public class CiManagementReport
     private static class CiManagementRenderer
         extends AbstractProjectInfoRenderer
     {
+
+        private static final Set<String> SYSTEMS = new HashSet<>( Arrays.asList(
+                "anthill",
+                "bamboo",
+                "buildforge",
+                "continuum",
+                "cruisecontrol",
+                "hudson",
+                "jenkins",
+                "luntbuild",
+                "teamcity",
+                "travis"
+        ) );
+
         private Model model;
 
         CiManagementRenderer( Sink sink, Model model, I18N i18n, Locale locale )
@@ -126,50 +143,7 @@ public class CiManagementReport
             startSection( getI18nString( "overview.title" ) );
 
             sink.paragraph();
-            if ( isCiManagementSystem( system, "anthill" ) )
-            {
-                linkPatternedText( getI18nString( "anthill.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "bamboo" ) )
-            {
-                linkPatternedText( getI18nString( "bamboo.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "buildforge" ) )
-            {
-                linkPatternedText( getI18nString( "buildforge.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "continuum" ) )
-            {
-                linkPatternedText( getI18nString( "continuum.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "cruisecontrol" ) )
-            {
-                linkPatternedText( getI18nString( "cruisecontrol.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "hudson" ) )
-            {
-                linkPatternedText( getI18nString( "hudson.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "jenkins" ) )
-            {
-                linkPatternedText( getI18nString( "jenkins.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "luntbuild" ) )
-            {
-                linkPatternedText( getI18nString( "luntbuild.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "teamcity" ) )
-            {
-                linkPatternedText( getI18nString( "teamcity.intro" ) );
-            }
-            else if ( isCiManagementSystem( system, "travis" ) )
-            {
-                linkPatternedText( getI18nString( "travis.intro" ) );
-            }
-            else
-            {
-                linkPatternedText( getI18nString( "general.intro" ) );
-            }
+            linkPatternedText( getIntroForCiManagementSystem( system ) );
             sink.paragraph_();
 
             endSection();
@@ -225,23 +199,29 @@ public class CiManagementReport
         }
 
         /**
-         * Checks if a CI management system is bugzilla, continuum...
+         * Search system description.
          *
-         * @return true if the CI management system is bugzilla, continuum..., false otherwise.
+         * @param system a system for description
+         * @return system description from properties
          */
-        private boolean isCiManagementSystem( String system, String actual )
+        private String getIntroForCiManagementSystem( String system )
         {
             if ( StringUtils.isEmpty( system ) )
             {
-                return false;
+                return getI18nString( "general.intro" );
             }
 
-            if ( StringUtils.isEmpty( actual ) )
+            String systemLowerCase = system.toLowerCase( Locale.ENGLISH );
+
+            for ( String systemName : SYSTEMS )
             {
-                return false;
+                if ( systemLowerCase.startsWith( systemName ) )
+                {
+                    return getI18nString( systemName + ".intro" );
+                }
             }
 
-            return system.toLowerCase( Locale.ENGLISH ).startsWith( actual.toLowerCase( Locale.ENGLISH ) );
+            return getI18nString( "general.intro" );
         }
     }
 }
