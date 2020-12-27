@@ -98,6 +98,7 @@ public class CiManagementReport
                 "buildforge",
                 "continuum",
                 "cruisecontrol",
+                "github",
                 "hudson",
                 "jenkins",
                 "luntbuild",
