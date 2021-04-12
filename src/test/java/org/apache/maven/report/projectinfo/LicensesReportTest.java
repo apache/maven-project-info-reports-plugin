@@ -114,7 +114,7 @@ public class LicensesReportTest
         final WebLink[] links = response.getLinks();
         assertEquals( 2, links.length );
         assertEquals( "http://maven.apache.org/", links[0].getURLString() );
-        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString() );
-        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText() );
+        assertEquals( "https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString() );
+        assertEquals( "https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText() );
     }
 }
