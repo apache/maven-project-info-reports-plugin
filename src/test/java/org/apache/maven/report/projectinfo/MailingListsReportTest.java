@@ -25,6 +25,7 @@ import java.util.Locale;
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
@@ -73,13 +74,19 @@ public class MailingListsReportTest
         assertEquals( getString( "report.mailing-lists.title" ), textBlocks[0].getText() );
         assertEquals( getString( "report.mailing-lists.intro" ), textBlocks[1].getText() );
 
-        // MPIR-385: Test emails starts with 'mailto:'
+        // MPIR-385 + MPIR-401: Test links are URIs otherwise assume a plain email address
         String post = getString("report.mailing-lists.column.post");
-        assertEquals( "mailto:test@maven.apache.org", response.getLinkWith( post ).getAttribute( "href" ) );
+        WebLink[] postLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, post );
+        assertEquals( "mailto:test@maven.apache.org", postLinks[0].getAttribute( "href" ) );
+        assertEquals( "mailto:test2@maven.apache.org", postLinks[1].getAttribute( "href" ) );
         String subscribe = getString("report.mailing-lists.column.subscribe");
-        assertEquals( "MAILTO:test-subscribe@maven.apache.org", response.getLinkWith( subscribe ).getAttribute( "href" ) );
+        WebLink[] subscribeLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, subscribe );
+        assertEquals( "MAILTO:test-subscribe@maven.apache.org", subscribeLinks[0].getAttribute( "href" ) );
+        assertEquals( "MAILTO:test-subscribe2@maven.apache.org", subscribeLinks[1].getAttribute( "href" ) );
         String unsubscribe = getString("report.mailing-lists.column.unsubscribe");
-        assertNull( response.getLinkWith( unsubscribe ) );
+        WebLink[] unsubscribeLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, unsubscribe );
+        assertTrue( unsubscribeLinks.length == 1 );
+        assertEquals( "https://example.com/unsubscribe", unsubscribeLinks[0].getAttribute( "href" ) );
     }
 
     /**

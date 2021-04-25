@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -169,7 +170,7 @@ public class MailingListsReport
 
                 if ( StringUtils.isNotEmpty( mailingList.getSubscribe() ) )
                 {
-                    textRow.add( createEmailLinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
+                    textRow.add( createURILinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
                 }
                 else
                 {
@@ -178,7 +179,7 @@ public class MailingListsReport
 
                 if ( StringUtils.isNotEmpty( mailingList.getUnsubscribe() ) )
                 {
-                    textRow.add( createEmailLinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
+                    textRow.add( createURILinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
                 }
                 else
                 {
@@ -187,7 +188,7 @@ public class MailingListsReport
 
                 if ( StringUtils.isNotEmpty( mailingList.getPost() ) )
                 {
-                    textRow.add( createEmailLinkPatternedText( post, mailingList.getPost(), null ) );
+                    textRow.add( createURILinkPatternedText( post, mailingList.getPost(), null ) );
                 }
                 else
                 {
@@ -262,23 +263,31 @@ public class MailingListsReport
         }
 
         /**
-         * Create a link pattern text for email addresses defined by <code>{text, mailto:href}</code>. If href is null,
-         * then <code>defaultHref</code> is used instead.
+         * Create a URI link pattern text for a mailing list. If no scheme is provided {@code mailto:}
+         * will be prepended by default. If href is null, then <code>defaultHref</code> is used instead.
          *
          * @param text a text.
-         * @param href the email address to use.
+         * @param href the potential URI to use.
          * @param defaultHref the String to use in case href is null.
-         * @return an email link pattern.
+         * @return a link pattern.
          * @see #createLinkPatternedText(String,String)
          */
-        private String createEmailLinkPatternedText( String text, String href, String defaultHref )
+        private String createURILinkPatternedText( String text, String href, String defaultHref )
         {
             if ( href == null || href.isEmpty() )
             {
                 return createLinkPatternedText( text, defaultHref );
             }
-            return createLinkPatternedText( text,
-                    href.toLowerCase( Locale.ENGLISH ).startsWith( "mailto:" ) ? href : "mailto:" + href );
+
+            URI hrefUri = URI.create( href );
+            if ( StringUtils.isNotEmpty( hrefUri.getScheme() ) )
+            {
+                return createLinkPatternedText( text, href );
+            }
+            else
+            {
+                return createLinkPatternedText( text, "mailto:" + href );
+            }
         }
     }
 }
