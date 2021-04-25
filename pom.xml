@@ -30,7 +30,7 @@ under the License.
   </parent>
 
   <artifactId>maven-project-info-reports-plugin</artifactId>
-  <version>3.1.2-SNAPSHOT</version>
+  <version>3.1.2</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Project Info Reports Plugin</name>
@@ -100,7 +100,7 @@ under the License.
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-project-info-reports-plugin.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-project-info-reports-plugin.git</developerConnection>
     <url>https://github.com/apache/maven-project-info-reports-plugin/tree/${project.scm.tag}</url>
-    <tag>HEAD</tag>
+    <tag>maven-project-info-reports-plugin-3.1.2</tag>
   </scm>
   <issueManagement>
     <system>JIRA</system>
@@ -126,7 +126,7 @@ under the License.
     <surefire.version>2.22.2</surefire.version>
     <javaVersion>7</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2020-08-30T18:46:41Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2021-04-25T18:20:59Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
