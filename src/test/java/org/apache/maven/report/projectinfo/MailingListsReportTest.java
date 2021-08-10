@@ -111,4 +111,16 @@ public class MailingListsReportTest
             Locale.setDefault( oldLocale );
         }
     }
+
+    /**
+     * Test invalid links (MPIR-404)
+     * Those should only lead to a WARN but not an exception
+     * @throws Exception if any
+     */
+    public void testInvalidLink()
+        throws Exception
+    {
+        generateReport( "mailing-lists", "mailing-lists-plugin-config-invalidlink.xml" );
+        assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
+    }
 }

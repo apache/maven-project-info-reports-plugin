@@ -22,6 +22,7 @@ package org.apache.maven.report.projectinfo;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -63,7 +64,7 @@ public class MailingListsReport
     public void executeReport( Locale locale )
     {
         MailingListsRenderer r =
-            new MailingListsRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale );
+            new MailingListsRenderer( getLog(), getSink(), getProject().getModel(), getI18N( locale ), locale );
 
         r.render();
     }
@@ -92,13 +93,15 @@ public class MailingListsReport
     protected static class MailingListsRenderer
         extends AbstractProjectInfoRenderer
     {
+
+        private final Log log;
         private final Model model;
 
-        MailingListsRenderer( Sink sink, Model model, I18N i18n, Locale locale )
+        MailingListsRenderer( Log log, Sink sink, Model model, I18N i18n, Locale locale )
         {
             super( sink, i18n, locale );
             this.model = model;
-
+            this.log = log;
         }
 
         @Override
@@ -279,14 +282,22 @@ public class MailingListsReport
                 return createLinkPatternedText( text, defaultHref );
             }
 
-            URI hrefUri = URI.create( href );
-            if ( StringUtils.isNotEmpty( hrefUri.getScheme() ) )
+            try
             {
-                return createLinkPatternedText( text, href );
+                URI hrefUri = URI.create( href );
+                if ( StringUtils.isNotEmpty( hrefUri.getScheme() ) )
+                {
+                    return createLinkPatternedText( text, href );
+                }
+                else
+                {
+                    return createLinkPatternedText( text, "mailto:" + href );
+                }
             }
-            else
+            catch ( IllegalArgumentException e )
             {
-                return createLinkPatternedText( text, "mailto:" + href );
+                log.warn( "Invalid mailing list link provided '" + href + "': " + e.getMessage() );
+                return href;
             }
         }
     }
