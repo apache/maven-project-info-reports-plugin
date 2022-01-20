@@ -692,22 +692,18 @@ public class DependencyConvergenceReport
 
     private void iconSuccess( Locale locale, Sink sink )
     {
-        sink.figure();
-        sink.figureCaption();
-        sink.text( getI18nString( locale, "icon.success" ) );
-        sink.figureCaption_();
+        // a rendering regression was fixed here,
+        // putting figure back will reintroduce the regression.
+        // https://issues.apache.org/jira/browse/MPIR-405
         sink.figureGraphics( IMG_SUCCESS_URL );
-        sink.figure_();
     }
 
     private void iconError( Locale locale, Sink sink )
     {
-        sink.figure();
-        sink.figureCaption();
-        sink.text( getI18nString( locale, "icon.error" ) );
-        sink.figureCaption_();
+        // a rendering regression was fixed here,
+        // putting figure back will reintroduce the regression.
+        // https://issues.apache.org/jira/browse/MPIR-405
         sink.figureGraphics( IMG_ERROR_URL );
-        sink.figure_();
     }
 
     /**
