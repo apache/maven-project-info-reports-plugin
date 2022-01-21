@@ -692,17 +692,11 @@ public class DependencyConvergenceReport
 
     private void iconSuccess( Locale locale, Sink sink )
     {
-        // a rendering regression was fixed here,
-        // putting figure back will reintroduce the regression.
-        // https://issues.apache.org/jira/browse/MPIR-405
         sink.figureGraphics( IMG_SUCCESS_URL );
     }
 
     private void iconError( Locale locale, Sink sink )
     {
-        // a rendering regression was fixed here,
-        // putting figure back will reintroduce the regression.
-        // https://issues.apache.org/jira/browse/MPIR-405
         sink.figureGraphics( IMG_ERROR_URL );
     }
 

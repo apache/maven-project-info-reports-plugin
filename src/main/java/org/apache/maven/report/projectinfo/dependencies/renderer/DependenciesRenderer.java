@@ -489,29 +489,14 @@ public class DependenciesRenderer
         endSection();
     }
 
-    /**
-     * Internal Artifact comparator
-     */
-    class ArtifactComparator
-          implements Comparator<Artifact>
-    {
-        /** {@inheritDoc} */
-        public int compare( Artifact p1, Artifact p2 )
-        {
-            return String.CASE_INSENSITIVE_ORDER.compare(
-                  dependencies.getFile( p1 ).getName(),
-                  dependencies.getFile( p2 ).getName() );
-        }
-    }
-
     private void renderSectionDependencyFileDetails()
     {
         startSection( getI18nString( "file.details.title" ) );
 
         List<Artifact> alldeps = dependencies.getAllDependencies();
+        Collections.sort( alldeps, getArtifactComparator() );
 
         resolveAtrifacts( alldeps );
-        Collections.sort( alldeps, new ArtifactComparator() );
 
         // i18n
         String filename = getI18nString( "file.details.column.file" );
@@ -849,19 +834,6 @@ public class DependenciesRenderer
         tableRow( withOptional, content );
     }
 
-    /**
-     * Internal DependencyNode comparator
-     */
-    static class DependencyNodeComparator
-          implements Comparator<DependencyNode>
-    {
-        /** {@inheritDoc} */
-        public int compare( DependencyNode p1, DependencyNode p2 )
-        {
-            return p1.getArtifact().getId().compareTo( p2.getArtifact().getId() );
-        }
-    }
-
     private void printDependencyListing( DependencyNode node )
     {
         Artifact artifact = node.getArtifact();
@@ -898,7 +870,6 @@ public class DependenciesRenderer
             if ( toBeIncluded )
             {
                 sink.list();
-                Collections.sort( subList, new DependencyNodeComparator() );
                 for ( DependencyNode dep : subList )
                 {
                     printDependencyListing( dep );
