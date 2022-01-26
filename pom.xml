@@ -122,7 +122,7 @@ under the License.
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <mavenVersion>3.0</mavenVersion>
     <scmVersion>1.12.2</scmVersion>
-    <sitePluginVersion>3.7</sitePluginVersion>
+    <sitePluginVersion>3.10.0</sitePluginVersion>
     <surefire.version>2.22.2</surefire.version>
     <javaVersion>7</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
