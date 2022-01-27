@@ -692,12 +692,16 @@ public class DependencyConvergenceReport
 
     private void iconSuccess( Locale locale, Sink sink )
     {
-        sink.figureGraphics( IMG_SUCCESS_URL );
+        SinkEventAttributes attributes =
+            new SinkEventAttributeSet( SinkEventAttributes.ALT, getI18nString( locale, "icon.success" ) );
+        sink.figureGraphics( IMG_SUCCESS_URL, attributes );
     }
 
     private void iconError( Locale locale, Sink sink )
     {
-        sink.figureGraphics( IMG_ERROR_URL );
+        SinkEventAttributes attributes =
+            new SinkEventAttributeSet( SinkEventAttributes.ALT, getI18nString( locale, "icon.error" ) );
+        sink.figureGraphics( IMG_ERROR_URL, attributes );
     }
 
     /**
