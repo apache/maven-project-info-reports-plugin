@@ -25,7 +25,7 @@ under the License.
   <parent>
     <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>34</version>
+    <version>35-SNAPSHOT</version>
     <relativePath>../../pom/maven/maven-plugins/pom.xml</relativePath>
   </parent>
 
@@ -118,13 +118,13 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
-    <mavenVersion>3.0</mavenVersion>
-    <scmVersion>1.12.2</scmVersion>
+    <doxiaVersion>2.0.0-M2-SNAPSHOT</doxiaVersion>
+    <doxiaSitetoolsVersion>2.0.0-M1-SNAPSHOT</doxiaSitetoolsVersion>
+    <mavenVersion>4.0.0-alpha-1-SNAPSHOT</mavenVersion>
+    <scmVersion>2.0.0-M2-SNAPSHOT</scmVersion>
     <sitePluginVersion>3.10.0</sitePluginVersion>
     <surefire.version>2.22.2</surefire.version>
-    <javaVersion>7</javaVersion>
+    <javaVersion>8</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2021-04-25T18:21:42Z</project.build.outputTimestamp>
   </properties>
@@ -133,12 +133,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.0</version>
+      <version>3.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>3.0.0</version>
+      <version>3.1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Maven -->
@@ -153,41 +153,48 @@ under the License.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-repository-metadata</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-settings</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-dependency-tree</artifactId>
-      <version>2.2</version>
+      <version>3.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-utils</artifactId>
-      <version>3.3.3</version>
+      <version>4.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -214,12 +221,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-artifact-transfer</artifactId>
-      <version>0.12.0</version>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- SCM -->
@@ -241,39 +248,12 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-perforce</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-starteam</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
       <artifactId>maven-scm-provider-svn-commons</artifactId>
       <version>${scmVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.scm</groupId>
       <artifactId>maven-scm-provider-svnexe</artifactId>
-      <version>${scmVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvs-commons</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvsexe</artifactId>
-      <version>${scmVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvsjava</artifactId>
       <version>${scmVersion}</version>
       <scope>runtime</scope>
     </dependency>
@@ -305,12 +285,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-decoration-model</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
+      <version>${doxiaSitetoolsVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
+      <version>${doxiaSitetoolsVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
@@ -325,7 +305,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-integration-tools</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
+      <version>${doxiaSitetoolsVersion}</version>
     </dependency>
 
     <!-- Plexus -->
@@ -361,7 +341,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>2.1</version>
+      <version>3.4.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

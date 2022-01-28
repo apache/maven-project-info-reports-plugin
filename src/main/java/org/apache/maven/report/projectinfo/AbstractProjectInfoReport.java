@@ -116,7 +116,7 @@ public abstract class AbstractProjectInfoReport
     // ----------------------------------------------------------------------
 
     @Parameter( defaultValue = "${session}", readonly = true, required = true )
-    private MavenSession session;
+    protected MavenSession session;
 
     /**
      * Local Repository.

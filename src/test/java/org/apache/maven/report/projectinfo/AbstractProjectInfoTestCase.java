@@ -32,10 +32,12 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
-import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
-import org.sonatype.aether.util.DefaultRepositorySystemSession;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
 
 /**
  * Abstract class to test reports generation with <a href="http://www.httpunit.org/">HTTPUnit</a> framework.
@@ -182,9 +184,10 @@ public abstract class AbstractProjectInfoTestCase
         
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
-        DefaultRepositorySystemSession repoSession =
-            (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
-        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManager( artifactStubFactory.getWorkingDir() ) );
+        DefaultRepositorySystemSession repoSession = MavenRepositorySystemUtils.newSession();
+        LocalRepository localRepo = new LocalRepository( artifactStubFactory.getWorkingDir() );
+        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory()
+                .newInstance( repoSession, localRepo ) );
 
         setVariableValueToObject( mojo, "session", legacySupport.getSession() );
         setVariableValueToObject( mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories() );

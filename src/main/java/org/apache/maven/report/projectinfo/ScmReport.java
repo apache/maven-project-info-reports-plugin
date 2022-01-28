@@ -27,11 +27,8 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.scm.manager.ScmManager;
-import org.apache.maven.scm.provider.cvslib.repository.CvsScmProviderRepository;
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
 import org.apache.maven.scm.provider.hg.repository.HgScmProviderRepository;
-import org.apache.maven.scm.provider.perforce.repository.PerforceScmProviderRepository;
-import org.apache.maven.scm.provider.starteam.repository.StarteamScmProviderRepository;
 import org.apache.maven.scm.provider.svn.repository.SvnScmProviderRepository;
 import org.apache.maven.scm.repository.ScmRepository;
 import org.codehaus.plexus.i18n.I18N;
@@ -347,14 +344,7 @@ public class ScmReport
 
             startSection( getI18nString( "anonymousaccess.title" ) );
 
-            if ( anonymousRepository != null && isScmSystem( anonymousRepository, "cvs" ) )
-            {
-                CvsScmProviderRepository cvsRepo =
-                    (CvsScmProviderRepository) anonymousRepository.getProviderRepository();
-
-                anonymousAccessCVS( cvsRepo );
-            }
-            else if ( anonymousRepository != null && isScmSystem( anonymousRepository, "git" ) )
+            if ( anonymousRepository != null && isScmSystem( anonymousRepository, "git" ) )
             {
                 GitScmProviderRepository gitRepo =
                     (GitScmProviderRepository) anonymousRepository.getProviderRepository();
@@ -402,12 +392,6 @@ public class ScmReport
             {
                 developerAccessClearCase();
             }
-            else if ( devRepository != null && isScmSystem( devRepository, "cvs" ) )
-            {
-                CvsScmProviderRepository cvsRepo = (CvsScmProviderRepository) devRepository.getProviderRepository();
-
-                developerAccessCVS( cvsRepo );
-            }
             else if ( devRepository != null && isScmSystem( devRepository, "git" ) )
             {
                 GitScmProviderRepository gitRepo = (GitScmProviderRepository) devRepository.getProviderRepository();
@@ -419,20 +403,6 @@ public class ScmReport
                 HgScmProviderRepository hgRepo = (HgScmProviderRepository) devRepository.getProviderRepository();
 
                 developerAccessMercurial( hgRepo );
-            }
-            else if ( devRepository != null && isScmSystem( devRepository, "perforce" ) )
-            {
-                PerforceScmProviderRepository perforceRepo =
-                    (PerforceScmProviderRepository) devRepository.getProviderRepository();
-
-                developerAccessPerforce( perforceRepo );
-            }
-            else if ( devRepository != null && isScmSystem( devRepository, "starteam" ) )
-            {
-                StarteamScmProviderRepository starteamRepo =
-                    (StarteamScmProviderRepository) devRepository.getProviderRepository();
-
-                developerAccessStarteam( starteamRepo );
             }
             else if ( devRepository != null && isScmSystem( devRepository, "svn" ) )
             {
@@ -521,28 +491,6 @@ public class ScmReport
         // CVS
 
         // CHECKSTYLE_OFF: LineLength
-        /**
-         * Create the documentation to provide an anonymous access with a <code>CVS</code> SCM. For example, generate
-         * the following command line:
-         * <p>
-         * cvs -d :pserver:anoncvs@cvs.apache.org:/home/cvspublic login
-         * </p>
-         * <p>
-         * cvs -z3 -d :pserver:anoncvs@cvs.apache.org:/home/cvspublic co maven-plugins/dist
-         * </p>
-         *
-         * @param cvsRepo
-         * @see <a
-         *      href="https://www.cvshome.org/docs/manual/cvs-1.12.12/cvs_16.html#SEC115">https://www.cvshome.org/docs/manual/cvs-1.12.12/cvs_16.html#SEC115</a>
-         */
-        // CHECKSTYLE_ON: LineLength
-        private void anonymousAccessCVS( CvsScmProviderRepository cvsRepo )
-        {
-            paragraph( getI18nString( "anonymousaccess.cvs.intro" ) );
-
-            verbatimText( "$ cvs -d " + cvsRepo.getCvsRoot() + " login" + LS + "$ cvs -z3 -d "
-                + cvsRepo.getCvsRoot() + " co " + cvsRepo.getModule() );
-        }
 
         // Git
 
@@ -599,31 +547,6 @@ public class ScmReport
         }
 
         // CHECKSTYLE_OFF: LineLength
-        /**
-         * Create the documentation to provide an developer access with a <code>CVS</code> SCM. For example, generate
-         * the following command line:
-         * <p>
-         * cvs -d :pserver:username@cvs.apache.org:/home/cvs login
-         * </p>
-         * <p>
-         * cvs -z3 -d :ext:username@cvs.apache.org:/home/cvs co maven-plugins/dist
-         * </p>
-         *
-         * @param cvsRepo
-         * @see <a
-         *      href="https://www.cvshome.org/docs/manual/cvs-1.12.12/cvs_16.html#SEC115">https://www.cvshome.org/docs/manual/cvs-1.12.12/cvs_16.html#SEC115</a>
-         */
-        // CHECKSTYLE_ON: LineLength
-        private void developerAccessCVS( CvsScmProviderRepository cvsRepo )
-        {
-            paragraph( getI18nString( "devaccess.cvs.intro" ) );
-
-            // Safety: remove the username if present
-            String cvsRoot = StringUtils.replace( cvsRepo.getCvsRoot(), cvsRepo.getUser(), "username" );
-
-            verbatimText( "$ cvs -d " + cvsRoot + " login" + LS + "$ cvs -z3 -d " + cvsRoot
-                + " co " + cvsRepo.getModule() );
-        }
 
         // Git
 
@@ -668,81 +591,8 @@ public class ScmReport
         // Perforce
 
         // CHECKSTYLE_OFF: LineLength
-        /**
-         * Create the documentation to provide an developer access with a <code>Perforce</code> SCM. For example,
-         * generate the following command line:
-         * <p>
-         * p4 -H hostname -p port -u username -P password path
-         * </p>
-         * <p>
-         * p4 -H hostname -p port -u username -P password path submit -c changement
-         * </p>
-         *
-         * @param perforceRepo
-         * @see <a
-         *      href="http://www.perforce.com/perforce/doc.051/manuals/cmdref/index.html">http://www.perforce.com/
-         *      perforce
-         *      /doc.051/manuals/cmdref/index.html</>
-         */
-        // CHECKSTYLE_ON: LineLength
-        private void developerAccessPerforce( PerforceScmProviderRepository perforceRepo )
-        {
-            paragraph( getI18nString( "devaccess.perforce.intro" ) );
-
-            StringBuilder command = new StringBuilder();
-            command.append( "$ p4" );
-            if ( !StringUtils.isEmpty( perforceRepo.getHost() ) )
-            {
-                command.append( " -H " ).append( perforceRepo.getHost() );
-            }
-            if ( perforceRepo.getPort() > 0 )
-            {
-                command.append( " -p " ).append( perforceRepo.getPort() );
-            }
-            command.append( " -u username" );
-            command.append( " -P password" );
-            command.append( " " );
-            command.append( perforceRepo.getPath() );
-            command.append( LS );
-            command.append( "$ p4 submit -c \"A comment\"" );
-
-            verbatimText( command.toString() );
-        }
 
         // Starteam
-
-        /**
-         * Create the documentation to provide an developer access with a <code>Starteam</code> SCM. For example,
-         * generate the following command line:
-         * <p>
-         * stcmd co -x -nologo -stop -p myusername:mypassword@myhost:1234/projecturl -is
-         * </p>
-         * <p>
-         * stcmd ci -x -nologo -stop -p myusername:mypassword@myhost:1234/projecturl -f NCI -is
-         * </p>
-         *
-         * @param starteamRepo
-         */
-        private void developerAccessStarteam( StarteamScmProviderRepository starteamRepo )
-        {
-            paragraph( getI18nString( "devaccess.starteam.intro" ) );
-
-            StringBuilder command = new StringBuilder();
-
-            // Safety: remove the username/password if present
-            String fullUrl = StringUtils.replace( starteamRepo.getFullUrl(), starteamRepo.getUser(), "username" );
-            fullUrl = StringUtils.replace( fullUrl, starteamRepo.getPassword(), "password" );
-
-            command.append( "$ stcmd co -x -nologo -stop -p " );
-            command.append( fullUrl );
-            command.append( " -is" );
-            command.append( LS );
-            command.append( "$ stcmd ci -x -nologo -stop -p " );
-            command.append( fullUrl );
-            command.append( " -f NCI -is" );
-
-            verbatimText( command.toString() );
-        }
 
         // Subversion
 
