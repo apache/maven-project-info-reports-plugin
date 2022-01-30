@@ -889,8 +889,6 @@ public class DependenciesRenderer
 
         sink.rawText( "<div id=\"" + uid + "\" style=\"display:none\">" );
 
-        sink.table();
-
         if ( !Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) )
         {
             try
@@ -901,6 +899,8 @@ public class DependenciesRenderer
                 String artifactName = artifactProject.getName();
 
                 List<License> licenses = artifactProject.getLicenses();
+
+                sink.table();
 
                 sink.tableRow();
                 sink.tableHeaderCell();
@@ -989,6 +989,11 @@ public class DependenciesRenderer
                     licenseMap.put( unknownLicenseMessage, artifactName );
                 }
                 sink.paragraph_();
+
+                sink.tableCell_();
+                sink.tableRow_();
+
+                sink.table_();
             }
             catch ( ProjectBuildingException e )
             {
@@ -1006,6 +1011,8 @@ public class DependenciesRenderer
         }
         else
         {
+            sink.table();
+
             sink.tableRow();
             sink.tableHeaderCell();
             sink.text( id );
@@ -1031,12 +1038,12 @@ public class DependenciesRenderer
                 sink.text( artifact.getFile().getAbsolutePath() );
                 sink.paragraph_();
             }
+
+            sink.tableCell_();
+            sink.tableRow_();
+
+            sink.table_();
         }
-
-        sink.tableCell_();
-        sink.tableRow_();
-
-        sink.table_();
 
         sink.rawText( "</div>" );
     }
