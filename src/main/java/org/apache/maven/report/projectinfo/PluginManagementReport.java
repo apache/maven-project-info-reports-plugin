@@ -227,7 +227,7 @@ public class PluginManagementReport
                     try
                     {
                         MavenProject pluginProject =
-                            projectBuilder.build( pluginArtifact, buildingRequest ).getProject();
+                            projectBuilder.build( pluginArtifact, buildRequest ).getProject();
 
                         tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(),
                                                 pluginProject.getVersion(), pluginProject.getUrl() ) );
