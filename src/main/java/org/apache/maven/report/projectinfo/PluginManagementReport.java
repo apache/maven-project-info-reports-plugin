@@ -53,17 +53,17 @@ import java.util.Locale;
 public class PluginManagementReport
     extends AbstractProjectInfoReport
 {
-    
+
     /**
      * Specify the excluded plugins. This can be a list of artifacts in the format
      * groupId[:artifactId[:type[:version]]]. <br>
      * Plugins matching any exclude will not be present in the report.
-     * 
+     *
      * @since 3.0.1
      */
     @Parameter
     private List<String> pluginManagementExcludes = null;
-    
+
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -128,7 +128,7 @@ public class PluginManagementReport
         private final RepositorySystem repositorySystem;
 
         private final ProjectBuildingRequest buildingRequest;
-        
+
         private final PatternExcludesArtifactFilter patternExcludesArtifactFilter;
 
         /**
@@ -206,7 +206,7 @@ public class PluginManagementReport
 
             ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
             buildRequest.setRemoteRepositories( project.getPluginArtifactRepositories() );
-            
+
             for ( Plugin plugin : pluginManagement )
             {
                 VersionRange versionRange;
@@ -227,14 +227,14 @@ public class PluginManagementReport
                     try
                     {
                         MavenProject pluginProject =
-                            projectBuilder.build( pluginArtifact, buildingRequest ).getProject();
+                            projectBuilder.build( pluginArtifact, buildRequest ).getProject();
 
                         tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(),
                                                 pluginProject.getVersion(), pluginProject.getUrl() ) );
                     }
                     catch ( ProjectBuildingException e )
                     {
-                        log.info( "Could not build project for: " + plugin.getArtifactId() + ":" + e.getMessage(), e );
+                        log.info( "Could not build project for " + plugin.getArtifactId(), e );
                         tableRow( getPluginRow( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(),
                                                 null ) );
                     }

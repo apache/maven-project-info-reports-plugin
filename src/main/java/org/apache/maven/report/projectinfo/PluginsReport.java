@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
@@ -173,7 +172,7 @@ public class PluginsReport
         private void renderSectionPlugins( boolean isPlugins )
         {
             List<GAV> list = isPlugins ? GAV.pluginsToGAV( plugins ) : GAV.reportPluginsToGAV( reports, project );
-            
+
             String[] tableHeader = getPluginTableHeader();
 
             startSection( getI18nString( isPlugins ? "build.title" : "report.title" ) );
@@ -191,20 +190,14 @@ public class PluginsReport
             startTable();
             tableHeader( tableHeader );
 
-            List<ArtifactRepository> artifactRepositories = project.getPluginArtifactRepositories();
-            if ( artifactRepositories == null )
-            {
-                artifactRepositories = new ArrayList<>();
-            }
-
             ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
-            buildRequest.setRemoteRepositories( artifactRepositories );
-            
+            buildRequest.setRemoteRepositories( project.getPluginArtifactRepositories() );
+
             for ( GAV plugin : list )
             {
                 VersionRange versionRange = VersionRange.createFromVersion( plugin.getVersion() );
 
-                
+
                 Artifact pluginArtifact =
                                 repositorySystem.createProjectArtifact( plugin.getGroupId(), plugin.getArtifactId(),
                                                           versionRange.toString() );
@@ -217,11 +210,10 @@ public class PluginsReport
                 }
                 catch ( ProjectBuildingException e )
                 {
-                    log.info( "Could not build project for " + plugin.getArtifactId() + ": " + e.getMessage(), e );
+                    log.info( "Could not build project for " + plugin.getArtifactId(), e );
                     tableRow( getPluginRow( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(),
                                             null ) );
                 }
-
             }
             endTable();
 
