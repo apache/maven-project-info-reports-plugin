@@ -47,7 +47,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
       </plugin>
     </plugins>
   </build>

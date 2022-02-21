@@ -92,7 +92,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <configuration>
           <pluginManagementExcludes>
             <pluginManagementExclude>org.eclipse.m2e:lifecycle-mapping</pluginManagementExclude>
@@ -106,7 +106,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <reportSets>
           <reportSet>
             <reports>
