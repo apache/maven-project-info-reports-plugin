@@ -34,8 +34,9 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
-import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
-import org.sonatype.aether.util.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.repository.LocalRepository;
 
 /**
  * Abstract class to test reports generation with <a href="http://www.httpunit.org/">HTTPUnit</a> framework.
@@ -184,7 +185,7 @@ public abstract class AbstractProjectInfoTestCase
         legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
         DefaultRepositorySystemSession repoSession =
             (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
-        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManager( artifactStubFactory.getWorkingDir() ) );
+        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory().newInstance( repoSession, new LocalRepository( artifactStubFactory.getWorkingDir() ) ) );
 
         setVariableValueToObject( mojo, "session", legacySupport.getSession() );
         setVariableValueToObject( mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories() );
@@ -200,7 +201,7 @@ public abstract class AbstractProjectInfoTestCase
         ProjectBuilder builder = lookup( ProjectBuilder.class );
         
         ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
-        buildingRequest.setRepositorySession( null );
+        buildingRequest.setRepositorySession( lookup( LegacySupport.class ).getRepositorySession() );
 
         assertNotNull( "Local repository", mojo.localRepository );
         testMavenProject = builder.build( pluginXmlFile, buildingRequest ).getProject();

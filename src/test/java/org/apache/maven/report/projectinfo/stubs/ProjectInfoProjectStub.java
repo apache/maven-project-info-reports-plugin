@@ -30,7 +30,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Build;
@@ -154,8 +155,8 @@ public abstract class ProjectInfoProjectStub
     @Override
     public List<ArtifactRepository> getRemoteArtifactRepositories()
     {
-        ArtifactRepository repository = new DefaultArtifactRepository( "central", "https://repo1.maven.org/maven2",
-                                                                       new DefaultRepositoryLayout() );
+        ArtifactRepository repository = new MavenArtifactRepository( "central", "https://repo1.maven.org/maven2",
+                                                                       new DefaultRepositoryLayout(), new ArtifactRepositoryPolicy(), new ArtifactRepositoryPolicy() );
 
         return Collections.singletonList( repository );
     }
