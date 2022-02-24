@@ -119,7 +119,7 @@ under the License.
 
   <properties>
     <doxiaVersion>2.0.0-M2-SNAPSHOT</doxiaVersion>
-    <doxiaSitetoolsVersion>2.0.0-M1-SNAPSHOT</doxiaSitetoolsVersion>
+    <doxiaSitetoolsVersion>2.0.0-M3-SNAPSHOT</doxiaSitetoolsVersion>
     <mavenVersion>4.0.0-alpha-1-SNAPSHOT</mavenVersion>
     <scmVersion>2.0.0-M2-SNAPSHOT</scmVersion>
     <sitePluginVersion>3.10.0</sitePluginVersion>
