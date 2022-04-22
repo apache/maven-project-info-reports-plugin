@@ -189,7 +189,10 @@ public class DependenciesReport
         try
         {
             ArtifactFilter artifactFilter = new ScopeArtifactFilter( Artifact.SCOPE_TEST );
-            return dependencyGraphBuilder.buildDependencyGraph( project, artifactFilter );
+            ProjectBuildingRequest buildingRequest =
+                new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
+            buildingRequest.setProject( project );
+            return dependencyGraphBuilder.buildDependencyGraph( buildingRequest, artifactFilter );
         }
         catch ( DependencyGraphBuilderException e )
         {
