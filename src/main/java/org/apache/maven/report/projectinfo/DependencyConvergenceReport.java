@@ -47,17 +47,17 @@ import org.apache.maven.report.projectinfo.dependencies.DependencyVersionMap;
 import org.apache.maven.report.projectinfo.dependencies.SinkSerializingDependencyNodeVisitor;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.artifact.filter.StrictPatternIncludesArtifactFilter;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
-import org.apache.maven.shared.dependency.tree.DependencyNode;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
-import org.apache.maven.shared.dependency.tree.filter.AncestorOrSelfDependencyNodeFilter;
-import org.apache.maven.shared.dependency.tree.filter.AndDependencyNodeFilter;
-import org.apache.maven.shared.dependency.tree.filter.ArtifactDependencyNodeFilter;
-import org.apache.maven.shared.dependency.tree.filter.DependencyNodeFilter;
-import org.apache.maven.shared.dependency.tree.traversal.BuildingDependencyNodeVisitor;
-import org.apache.maven.shared.dependency.tree.traversal.CollectingDependencyNodeVisitor;
-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
-import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNodeVisitor;
+import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilder;
+import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilderException;
+import org.apache.maven.shared.dependency.graph.DependencyNode;
+import org.apache.maven.shared.dependency.graph.filter.AncestorOrSelfDependencyNodeFilter;
+import org.apache.maven.shared.dependency.graph.filter.AndDependencyNodeFilter;
+import org.apache.maven.shared.dependency.graph.filter.ArtifactDependencyNodeFilter;
+import org.apache.maven.shared.dependency.graph.filter.DependencyNodeFilter;
+import org.apache.maven.shared.dependency.graph.traversal.BuildingDependencyNodeVisitor;
+import org.apache.maven.shared.dependency.graph.traversal.CollectingDependencyNodeVisitor;
+import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
+import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
 
 /**
  * Generates the Project Dependency Convergence report for (reactor) builds.
@@ -71,10 +71,14 @@ import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNode
 public class DependencyConvergenceReport
     extends AbstractProjectInfoReport
 {
-    /** URL for the 'icon_success_sml.gif' image */
+    /**
+     * URL for the 'icon_success_sml.gif' image
+     */
     private static final String IMG_SUCCESS_URL = "images/icon_success_sml.gif";
 
-    /** URL for the 'icon_error_sml.gif' image */
+    /**
+     * URL for the 'icon_error_sml.gif' image
+     */
     private static final String IMG_ERROR_URL = "images/icon_error_sml.gif";
 
     private static final int FULL_CONVERGENCE = 100;
@@ -84,10 +88,10 @@ public class DependencyConvergenceReport
     // ----------------------------------------------------------------------
 
     /**
-     * Dependency tree builder, will use it to build dependency tree.
+     * Raw dependency collector builder, will use it to build dependency tree.
      */
     @Component
-    private DependencyTreeBuilder dependencyTreeBuilder;
+    private DependencyCollectorBuilder dependencyCollectorBuilder;
 
     private ArtifactFilter filter = null;
 
@@ -97,7 +101,9 @@ public class DependencyConvergenceReport
     // Public methods
     // ----------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String getOutputName()
     {
         return "dependency-convergence";
@@ -188,7 +194,7 @@ public class DependencyConvergenceReport
      * @return snapshots dependencies
      */
     private List<ReverseDependencyLink> getSnapshotDependencies(
-                    Map<String, List<ReverseDependencyLink>> dependencyMap )
+        Map<String, List<ReverseDependencyLink>> dependencyMap )
     {
         List<ReverseDependencyLink> snapshots = new ArrayList<>();
         for ( Map.Entry<String, List<ReverseDependencyLink>> entry : dependencyMap.entrySet() )
@@ -338,7 +344,7 @@ public class DependencyConvergenceReport
      * @param version
      */
     private void generateVersionDetails( Sink sink, Map<String, List<ReverseDependencyLink>> artifactMap,
-                    String version )
+                                         String version )
     {
         sink.numberedList( 0 ); // Use lower alpha numbering
         List<ReverseDependencyLink> depList = artifactMap.get( version );
@@ -423,7 +429,7 @@ public class DependencyConvergenceReport
         {
             CollectingDependencyNodeVisitor collectingVisitor = new CollectingDependencyNodeVisitor();
             DependencyNodeVisitor firstPassVisitor = new FilteringDependencyNodeVisitor(
-                    collectingVisitor, nodeFilter );
+                collectingVisitor, nodeFilter );
             rootNode.accept( firstPassVisitor );
 
             DependencyNodeFilter secondPassFilter =
@@ -722,7 +728,7 @@ public class DependencyConvergenceReport
      * </pre>
      *
      * @return DependencyAnalyzeResult contains conflicting dependencies map, snapshot dependencies map and all
-     *         dependencies map.
+     * dependencies map.
      * @throws MavenReportException
      */
     private DependencyAnalyzeResult analyzeDependencyTree()
@@ -756,11 +762,11 @@ public class DependencyConvergenceReport
      * @param conflictingDependencyMap
      * @param allDependencies
      * @return DependencyAnalyzeResult contains conflicting dependencies map, snapshot dependencies map and all
-     *         dependencies map.
+     * dependencies map.
      */
     private DependencyAnalyzeResult populateDependencyAnalyzeResult(
-            Map<String, List<ReverseDependencyLink>> conflictingDependencyMap,
-            Map<String, List<ReverseDependencyLink>> allDependencies )
+        Map<String, List<ReverseDependencyLink>> conflictingDependencyMap,
+        Map<String, List<ReverseDependencyLink>> allDependencies )
     {
         DependencyAnalyzeResult dependencyResult = new DependencyAnalyzeResult();
 
@@ -800,12 +806,12 @@ public class DependencyConvergenceReport
             }
 
             dependencyList.add( new ReverseDependencyLink(
-                    toDependency( dependencyNode.getArtifact() ), reactorProject ) );
+                toDependency( dependencyNode.getArtifact() ), reactorProject ) );
 
             for ( DependencyNode workNode : nodes.subList( 1, nodes.size() ) )
             {
                 dependencyList.add( new ReverseDependencyLink(
-                        toDependency( workNode.getArtifact() ), reactorProject ) );
+                    toDependency( workNode.getArtifact() ), reactorProject ) );
             }
 
             conflictingDependencyMap.put( key, dependencyList );
@@ -896,9 +902,9 @@ public class DependencyConvergenceReport
     {
         try
         {
-            return dependencyTreeBuilder.buildDependencyTree( buildingRequest.getProject(), localRepository, filter );
+            return dependencyCollectorBuilder.collectDependencyGraph( buildingRequest, filter );
         }
-        catch ( DependencyTreeBuilderException e )
+        catch ( DependencyCollectorBuilderException e )
         {
             throw new MavenReportException( "Could not build dependency tree: " + e.getMessage(), e );
         }
@@ -932,7 +938,7 @@ public class DependencyConvergenceReport
     private int calculateConvergence( DependencyAnalyzeResult result )
     {
         return (int) ( ( (double) result.getDependencyCount()
-                / (double) result.getArtifactCount() ) * FULL_CONVERGENCE );
+            / (double) result.getArtifactCount() ) * FULL_CONVERGENCE );
     }
 
     /**
@@ -973,7 +979,9 @@ public class DependencyConvergenceReport
     static class DependencyNodeComparator
         implements Comparator<DependencyNode>
     {
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public int compare( DependencyNode p1, DependencyNode p2 )
         {
             return p1.getArtifact().getId().compareTo( p2.getArtifact().getId() );

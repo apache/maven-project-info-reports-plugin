@@ -120,4 +120,10 @@ public class ProjectInfoPluginArtifactStub
     {
         this.handler = handler;
     }
+
+    @Override
+    public String getType()
+    {
+        return "";
+    }
 }
