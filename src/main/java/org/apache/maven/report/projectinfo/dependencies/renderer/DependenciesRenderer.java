@@ -51,6 +51,7 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
+import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
@@ -132,6 +133,8 @@ public class DependenciesRenderer
 
     private final ProjectBuildingRequest buildingRequest;
 
+    private final Map<String, String> licenseMappings;
+
     static
     {
         Set<String> jarSubtype = new HashSet<>();
@@ -161,12 +164,13 @@ public class DependenciesRenderer
      * @param repositorySystem {@link RepositorySystem}
      * @param projectBuilder {@link ProjectBuilder}
      * @param buildingRequest {@link ProjectBuildingRequest}
+     * @param licenseMappings {@link LicenseMapping}
      */
     public DependenciesRenderer( Sink sink, Locale locale, I18N i18n, Log log,
                                  Dependencies dependencies, DependencyNode dependencyTreeNode,
                                  DependenciesReportConfiguration config, RepositoryUtils repoUtils,
                                  RepositorySystem repositorySystem, ProjectBuilder projectBuilder,
-                                 ProjectBuildingRequest buildingRequest )
+                                 ProjectBuildingRequest buildingRequest, Map<String, String> licenseMappings )
     {
         super( sink, i18n, locale );
 
@@ -178,6 +182,7 @@ public class DependenciesRenderer
         this.repositorySystem = repositorySystem;
         this.projectBuilder = projectBuilder;
         this.buildingRequest = buildingRequest;
+        this.licenseMappings = licenseMappings;
 
         // Using the right set of symbols depending of the locale
         DEFAULT_DECIMAL_FORMAT.setDecimalFormatSymbols( new DecimalFormatSymbols( locale ) );
@@ -800,7 +805,12 @@ public class DependenciesRenderer
             List<License> licenses = artifactProject.getLicenses();
             for ( License license : licenses )
             {
-                sb.append( ProjectInfoReportUtils.getArtifactIdCell( license.getName(), license.getUrl() ) );
+                String name = license.getName();
+                if ( licenseMappings != null && licenseMappings.containsKey( name ) )
+                {
+                    name = licenseMappings.get( name );
+                }
+                sb.append( ProjectInfoReportUtils.getArtifactIdCell( name, license.getUrl() ) );
             }
         }
         catch ( ProjectBuildingException e )
@@ -956,6 +966,10 @@ public class DependenciesRenderer
                         License license = it.next();
 
                         String licenseName = license.getName();
+                        if ( licenseMappings != null && licenseMappings.containsKey( licenseName ) )
+                        {
+                            licenseName = licenseMappings.get( licenseName );
+                        }
                         if ( StringUtils.isEmpty( licenseName ) )
                         {
                             licenseName = getI18nString( "unnamed" );

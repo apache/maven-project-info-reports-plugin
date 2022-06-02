@@ -41,6 +41,7 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
+import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
@@ -69,6 +70,8 @@ public class DependencyManagementRenderer
 
     private final RepositoryUtils repoUtils;
 
+    private final Map<String, String> licenseMappings;
+
     /**
      * Default constructor
      *
@@ -82,12 +85,14 @@ public class DependencyManagementRenderer
      * @param projectBuilder {@link ProjectBuilder}
      * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repoUtils {@link RepositoryUtils}
+     * @param licenseMappings {@link LicenseMapping}
      */
     public DependencyManagementRenderer( Sink sink, Locale locale, I18N i18n, Log log,
                                          ManagementDependencies dependencies,
                                          ArtifactMetadataSource artifactMetadataSource,
                                          RepositorySystem repositorySystem, ProjectBuilder projectBuilder,
-                                         ProjectBuildingRequest buildingRequest, RepositoryUtils repoUtils )
+                                         ProjectBuildingRequest buildingRequest, RepositoryUtils repoUtils,
+                                         Map<String, String> licenseMappings )
     {
         super( sink, i18n, locale );
 
@@ -98,6 +103,7 @@ public class DependencyManagementRenderer
         this.projectBuilder = projectBuilder;
         this.buildingRequest = buildingRequest;
         this.repoUtils = repoUtils;
+        this.licenseMappings = licenseMappings;
     }
 
     // ----------------------------------------------------------------------
@@ -255,7 +261,12 @@ public class DependencyManagementRenderer
             List<License> licenses = artifactProject.getLicenses();
             for ( License license : licenses )
             {
-                String licenseCell = ProjectInfoReportUtils.getArtifactIdCell( license.getName(), license.getUrl() );
+                String name = license.getName();
+                if ( licenseMappings != null && licenseMappings.containsKey( name ) )
+                {
+                    name = licenseMappings.get( name );
+                }
+                String licenseCell = ProjectInfoReportUtils.getArtifactIdCell( name, license.getUrl() );
                 if ( licensesBuffer.length() > 0 )
                 {
                     licensesBuffer.append( ", " );
@@ -273,11 +284,11 @@ public class DependencyManagementRenderer
         }
         catch ( ProjectBuildingException e )
         {
-            if ( log.isDebugEnabled() ) 
+            if ( log.isDebugEnabled() )
             {
                 log.warn( "Unable to create Maven project for " + artifact.getId() + " from repository.", e );
-            } 
-            else 
+            }
+            else
             {
                 log.warn( "Unable to create Maven project for " + artifact.getId() + " from repository." );
             }

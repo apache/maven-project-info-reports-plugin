@@ -182,6 +182,14 @@ public abstract class AbstractProjectInfoReport
     @Parameter( defaultValue = "true" )
     protected boolean skipEmptyReport;
 
+    /**
+     * A mapping of license names to group licenses referred to with different names together
+     *
+     * @since 3.3.1
+     */
+    @Parameter
+    private List<LicenseMapping> licenseMappings;
+
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
@@ -258,6 +266,22 @@ public abstract class AbstractProjectInfoReport
     // ----------------------------------------------------------------------
     // Protected methods
     // ----------------------------------------------------------------------
+
+    protected Map<String, String> getLicenseMappings()
+    {
+        Map<String, String> map = new HashMap<>();
+        if ( licenseMappings != null )
+        {
+            for ( LicenseMapping mapping : licenseMappings )
+            {
+                for ( String from : mapping.getFroms() )
+                {
+                    map.put( from, mapping.getTo() );
+                }
+            }
+        }
+        return map;
+    }
 
     /**
      * @param coll The collection to be checked.

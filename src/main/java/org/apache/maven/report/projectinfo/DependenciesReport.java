@@ -159,7 +159,7 @@ public class DependenciesReport
         DependenciesRenderer r =
             new DependenciesRenderer( getSink(), locale, getI18N( locale ), getLog(), dependencies,
                                       dependencyNode, config, repoUtils, repositorySystem, projectBuilder,
-                                      buildingRequest );
+                                      buildingRequest, getLicenseMappings() );
         r.render();
     }
 

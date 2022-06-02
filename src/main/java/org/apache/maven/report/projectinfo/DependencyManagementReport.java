@@ -104,7 +104,7 @@ public class DependencyManagementReport
         DependencyManagementRenderer r =
             new DependencyManagementRenderer( getSink(), locale, getI18N( locale ), getLog(),
                                               getManagementDependencies(), artifactMetadataSource, repositorySystem,
-                                              projectBuilder, buildingRequest, repoUtils );
+                                              projectBuilder, buildingRequest, repoUtils, getLicenseMappings() );
         r.render();
     }
 
