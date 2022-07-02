@@ -35,11 +35,13 @@ import java.util.ResourceBundle;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.AbstractMavenReport;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
@@ -91,6 +93,9 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
+    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
+    protected List<ArtifactRepository> remoteRepositories;
+
     /**
      * Plugin repositories used for the project.
      *
@@ -98,14 +103,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
      */
     @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true, required = true)
     protected List<ArtifactRepository> pluginRepositories;
-
-    /**
-     * The reactor projects.
-     *
-     * @since 2.10
-     */
-    @Parameter(defaultValue = "${reactorProjects}", required = true, readonly = true)
-    protected List<MavenProject> reactorProjects;
 
     /**
      * The current user system settings for use in Maven.
@@ -149,12 +146,18 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     @Parameter
     private List<LicenseMapping> licenseMappings;
 
+    /**
+     * The local repository.
+     */
+    @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
+    protected ArtifactRepository localRepository;
+
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         return !skip;
     }
 
@@ -198,6 +201,10 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
 
     protected List<MavenProject> getReactorProjects() {
         return reactorProjects;
+    }
+
+    protected MojoExecution getMojoExecution() {
+        return mojoExecution;
     }
 
     /**
@@ -286,6 +293,7 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
         return getI18nString(locale, "description");
     }
 
+    // TODO Review, especially Locale.getDefault()
     private static class CustomI18N implements I18N {
         private final MavenProject project;
 
