@@ -19,7 +19,7 @@
 File log = new File( basedir, 'build.log' );
 assert !( log.text.contains("org.eclipse.aether.transfer.ArtifactNotFoundException: Failure to find org.eclipse.m2e:lifecycle-mapping:pom") );
 
-plugins = new File( basedir, 'target/site/plugin-management.html' ).text;
+plugins = new File( basedir, 'target/reports/plugin-management.html' ).text;
 
 // maven-javadoc-plugin is defined in pluginManagement and not excluded
 assert plugins.contains( 'maven-javadoc-plugin' );

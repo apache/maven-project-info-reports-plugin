@@ -17,7 +17,7 @@
  * under the License.
  */
 
-dependencies = new File( basedir, 'target/site/dependencies.html' ).text;
+dependencies = new File( basedir, 'target/reports/dependencies.html' ).text;
 
 assert !( dependencies.contains( 'The Apache Software License, Version 2.0' ) );
 assert !( dependencies.contains( 'Apache Public License 2.0' ) );

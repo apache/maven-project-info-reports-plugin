@@ -16,38 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-String html = new File( basedir, 'target/site/dependencies.html' ).text
+String html = new File( basedir, 'target/reports/dependencies.html' ).text
 
+// Revise after DOXIA-704
 def summaryLine = '''\
 <tr class="b">
-<td align="right">compile: 1</td>
-<td align="right">compile: 45.5 kB</td>
-<td align="right">compile: 47</td>
-<td align="right">compile: 36</td>
-<td align="right">compile: 4</td>
-<td rowspan="3" style="vertical-align: middle;" align="center">1.3</td>
-<td align="right">compile: 1</td></tr>
+<td style="text-align: right;">compile: 1</td>
+<td style="text-align: right;">compile: 45.5 kB</td>
+<td style="text-align: right;">compile: 47</td>
+<td style="text-align: right;">compile: 36</td>
+<td style="text-align: right;">compile: 4</td>
+<td rowspan="3" style="text-align: center; vertical-align: middle;">1.3</td>
+<td style="text-align: right;">compile: 1</td></tr>
 <tr class="a">
-<td align="right">runtime: 1</td>
-<td align="right">runtime: 284.2 kB</td>
-<td align="right">runtime: 155</td>
-<td align="right">runtime: 133</td>
-<td align="right">runtime: 10</td>
-<td align="right">runtime: 1</td></tr>
+<td style="text-align: right;">runtime: 1</td>
+<td style="text-align: right;">runtime: 284.2 kB</td>
+<td style="text-align: right;">runtime: 155</td>
+<td style="text-align: right;">runtime: 133</td>
+<td style="text-align: right;">runtime: 10</td>
+<td style="text-align: right;">runtime: 1</td></tr>
 <tr class="b">
-<td align="right">provided: 1</td>
-<td align="right">provided: 85.7 kB</td>
-<td align="right">provided: 209</td>
-<td align="right">provided: 192</td>
-<td align="right">provided: 4</td>
-<td align="right">-</td></tr>
+<td style="text-align: right;">provided: 1</td>
+<td style="text-align: right;">provided: 85.7 kB</td>
+<td style="text-align: right;">provided: 209</td>
+<td style="text-align: right;">provided: 192</td>
+<td style="text-align: right;">provided: 4</td>
+<td style="text-align: right;">-</td></tr>
 <tr class="a">
-<td align="right">test: 3</td>
-<td align="right">test: 2.2 MB</td>
-<td align="right">test: 1619</td>
-<td align="right">test: 1493</td>
-<td align="right">test: 91</td>
-<td align="center">1.8</td>
-<td align="right">test: 3</td></tr>'''
+<td style="text-align: right;">test: 3</td>
+<td style="text-align: right;">test: 2.2 MB</td>
+<td style="text-align: right;">test: 1619</td>
+<td style="text-align: right;">test: 1493</td>
+<td style="text-align: right;">test: 91</td>
+<td style="text-align: center;">1.8</td>
+<td style="text-align: right;">test: 3</td></tr>'''
 
 assert html.contains( summaryLine.replaceAll( "\n", System.lineSeparator() ) )
