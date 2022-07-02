@@ -64,7 +64,8 @@ public class CiManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.ci-management.title" );
+        String expectedTitle = prepareTitle( "ci mangement project info",
+            getString( "report.ci-management.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

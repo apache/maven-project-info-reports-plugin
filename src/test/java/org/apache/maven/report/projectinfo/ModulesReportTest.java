@@ -81,12 +81,14 @@ public class ModulesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.modules.title" );
+        String expectedTitle = prepareTitle( "modules project info",
+            getString( "report.modules.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( 2, textBlocks.length );
+        // Last one is footer noise
+        assertEquals( 2, textBlocks.length - 1 );
         assertEquals( getString( "report.modules.title" ), textBlocks[0].getText() );
         assertEquals( getString( "report.modules.intro" ), textBlocks[1].getText() );
 

@@ -66,12 +66,14 @@ public class ScmReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.scm.title" );
+        String expectedTitle = prepareTitle( "scm project info",
+            getString( "report.scm.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( 6, textBlocks.length );
+        // Last one is footer noise
+        assertEquals( 6, textBlocks.length - 1 );
         assertEquals( getString( "report.scm.overview.title" ), textBlocks[0].getText() );
         assertEquals( getString( "report.scm.general.intro" ), textBlocks[1].getText() );
         assertEquals( getString( "report.scm.webaccess.title" ), textBlocks[2].getText() );

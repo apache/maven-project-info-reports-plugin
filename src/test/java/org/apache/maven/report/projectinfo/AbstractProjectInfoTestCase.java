@@ -38,6 +38,8 @@ import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.LocalRepository;
 
+import com.meterware.httpunit.HttpUnitOptions;
+
 /**
  * Abstract class to test reports generation with <a href="http://www.httpunit.org/">HTTPUnit</a> framework.
  *
@@ -49,7 +51,7 @@ public abstract class AbstractProjectInfoTestCase
     extends AbstractMojoTestCase
 {
     private ArtifactStubFactory artifactStubFactory;
-    
+
     /**
      * The default locale is English.
      */
@@ -72,12 +74,14 @@ public abstract class AbstractProjectInfoTestCase
         // required for mojo lookups to work
         super.setUp();
 
+        HttpUnitOptions.setScriptingEnabled( false );
+
         i18n = getContainer().lookup( I18N.class );
         setVariableValueToObject( i18n, "defaultBundleName", "project-info-reports" );
 
         artifactStubFactory = new DependencyArtifactStubFactory( getTestFile( "target" ), true, false );
         artifactStubFactory.getWorkingDir().mkdirs();
-        
+
         // Set the default Locale
         Locale.setDefault( DEFAULT_LOCALE );
     }
@@ -180,7 +184,7 @@ public abstract class AbstractProjectInfoTestCase
     {
         AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo( goal, pluginXmlFile );
         assertNotNull( "Mojo found.", mojo );
-        
+
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
         DefaultRepositorySystemSession repoSession =
@@ -199,11 +203,10 @@ public abstract class AbstractProjectInfoTestCase
         mojo.execute();
 
         ProjectBuilder builder = lookup( ProjectBuilder.class );
-        
+
         ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
         buildingRequest.setRepositorySession( lookup( LegacySupport.class ).getRepositorySession() );
 
-        assertNotNull( "Local repository", mojo.localRepository );
         testMavenProject = builder.build( pluginXmlFile, buildingRequest ).getProject();
 
         File outputDir = mojo.getReportOutputDirectory();

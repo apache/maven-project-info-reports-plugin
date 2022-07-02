@@ -70,14 +70,16 @@ public class TeamReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.team.title" );
+        String expectedTitle = prepareTitle( "team project info",
+            getString( "report.team.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         assertTrue( response.getText().contains( "gravatar" ));
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( 7, textBlocks.length );
+        // Last one is footer noise
+        assertEquals( 7, textBlocks.length - 1 );
         assertEquals( getString( "report.team.intro.title" ), textBlocks[0].getText() );
         assertEquals( getString( "report.team.intro.description1" ), textBlocks[1].getText() );
         assertEquals( getString( "report.team.intro.description2" ), textBlocks[2].getText() );

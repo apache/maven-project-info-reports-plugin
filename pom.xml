@@ -30,7 +30,7 @@ under the License.
   </parent>
 
   <artifactId>maven-project-info-reports-plugin</artifactId>
-  <version>3.4.1-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Project Info Reports Plugin</name>
@@ -119,28 +119,28 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
+    <doxiaVersion>2.0.0-M3</doxiaVersion>
+    <doxia-sitetoolsVersion>2.0.0-M3</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <scmVersion>1.13.0</scmVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
-    <sitePluginVersion>3.12.0</sitePluginVersion>
+    <sitePluginVersion>4.0.0-M3</sitePluginVersion>
     <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
     <surefire.version>2.22.2</surefire.version>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2022-07-09T21:42:49Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2022-08-06T14:49:27Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.1.0</version>
+      <version>4.0.0-M2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>3.1.0</version>
+      <version>4.0.0-M2</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.maven</groupId>

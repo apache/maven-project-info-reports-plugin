@@ -34,7 +34,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugins.annotations.Component;
@@ -68,14 +67,6 @@ public abstract class AbstractProjectInfoReport
     // ----------------------------------------------------------------------
 
     /**
-     * SiteTool component.
-     *
-     * @since 2.1
-     */
-    @Component
-    protected SiteTool siteTool;
-
-    /**
      * Artifact Resolver component.
      */
     @Component
@@ -102,20 +93,6 @@ public abstract class AbstractProjectInfoReport
 
     @Parameter( defaultValue = "${session}", readonly = true, required = true )
     private MavenSession session;
-
-    /**
-     * Local Repository.
-     */
-    @Parameter( property = "localRepository", required = true, readonly = true )
-    protected ArtifactRepository localRepository;
-
-    /**
-     * Remote repositories used for the project.
-     *
-     * @since 2.1
-     */
-    @Parameter( property = "project.remoteArtifactRepositories" )
-    protected List<ArtifactRepository> remoteRepositories;
 
     /**
      * Plugin repositories used for the project.
