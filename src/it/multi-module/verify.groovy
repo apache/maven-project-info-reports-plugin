@@ -21,5 +21,5 @@ File mainDependencies = new File( basedir, 'main/target/site/dependencies.html' 
 
 // Dependency File Details section should display dep-1.0-SNAPSHOT.jar packaged from previous build (package phase),
 // not dep/target/classes from current build (site phase)
-assert !mainDependencies.text.contains( '<td align="left">dep/target/classes</td>' )
-assert mainDependencies.text.contains( '<td align="left">dep-1.0-SNAPSHOT.jar</td>' )
+assert !mainDependencies.text.contains( '<td style="text-align: left;">dep/target/classes</td>' )
+assert mainDependencies.text.contains( '<td style="text-align: left;">dep-1.0-SNAPSHOT.jar</td>' )

@@ -59,7 +59,7 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("modules", "modules-plugin-config.xml");
+        generateReport(getGoal(), "modules-plugin-config.xml");
         assertTrue("Test html generated", getGeneratedReport("modules.html").exists());
 
         URL reportURL = getGeneratedReport("modules.html").toURI().toURL();
@@ -79,9 +79,10 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(2, textBlocks.length);
-        assertEquals(getString("report.modules.title"), textBlocks[0].getText());
-        assertEquals(getString("report.modules.intro"), textBlocks[1].getText());
+        // Last one is footer noise
+        assertEquals(4, textBlocks.length - 1);
+        assertEquals(getString("report.modules.title"), textBlocks[1].getText());
+        assertEquals(getString("report.modules.intro"), textBlocks[2].getText());
 
         String[][] cellTexts = response.getTables()[0].asText();
         assertEquals(3, cellTexts.length);
@@ -102,7 +103,7 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
     public void testReportModuleLinksVariableSettingsInterpolated() throws Exception {
         String pluginXml = "modules-variable-settings-interpolated-plugin-config.xml";
         File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + pluginXml);
-        AbstractProjectInfoReport mojo = createReportMojo("modules", pluginXmlFile);
+        AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
 
         class SubProjectStub extends SubProject1Stub {
             @Override
@@ -125,5 +126,10 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
                 "Variable 'sitePublishLocation' should be interpolated",
                 new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8)
                         .contains("sitePublishLocation"));
+    }
+
+    @Override
+    protected String getGoal() {
+        return "modules";
     }
 }

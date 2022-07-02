@@ -114,13 +114,14 @@ under the License.
   </distributionManagement>
 
   <properties>
+    <javaVersion>8</javaVersion>
     <mavenVersion>3.6.3</mavenVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxiaSitetoolsVersion>1.11.1</doxiaSitetoolsVersion>
-    <scmVersion>2.1.0</scmVersion>
     <resolverVersion>1.4.1</resolverVersion>
-    <sitePluginVersion>3.12.1</sitePluginVersion>
-    <fluidoSkinVersion>1.12.0</fluidoSkinVersion>
+    <doxiaVersion>2.0.0-M12</doxiaVersion>
+    <doxiaSitetoolsVersion>2.0.0-M19</doxiaSitetoolsVersion>
+    <scmVersion>2.1.0</scmVersion>
+    <sitePluginVersion>3.20.0</sitePluginVersion>
+    <fluidoSkinVersion>2.0.0-M10</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2024-07-11T18:06:39Z</project.build.outputTimestamp>
   </properties>
@@ -129,18 +130,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.1.1</version>
+      <version>4.0.0-M12</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>3.2.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>4.0.0-M15</version>
     </dependency>
 
     <!-- Maven -->
@@ -258,23 +253,11 @@ under the License.
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-sink-api</artifactId>
       <version>${doxiaVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-core</artifactId>
       <version>${doxiaVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Doxia Sitetools -->
@@ -282,12 +265,6 @@ under the License.
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-integration-tools</artifactId>
       <version>${doxiaSitetoolsVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Plexus -->
@@ -427,6 +404,13 @@ under the License.
             <keyalg>RSA</keyalg>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <argLine>-Dfile.encoding=UTF-8</argLine>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -491,6 +475,35 @@ under the License.
       </properties>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <!--
+            This is necessary if "mvn site" has been invoked previously with 3.x
+            and leaves 0-byte files in the local repository for MRM Maven Plugin
+            to serve which are broken from a consumer's PoV.
+            -->
+            <executions>
+              <execution>
+                <id>delete-0-byte-site-descriptors</id>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${settings.localRepository}/org/apache/apache</directory>
+                      <includes>
+                        <include>**/*-site*.xml</include>
+                      </includes>
+                    </fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>

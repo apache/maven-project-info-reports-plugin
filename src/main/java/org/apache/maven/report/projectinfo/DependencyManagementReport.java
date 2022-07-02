@@ -30,6 +30,7 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
+import org.apache.maven.reporting.MavenReportException;
 
 /**
  * Generates the Project Dependency Management report.
@@ -73,7 +74,7 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             result = getManagementDependencies().hasDependencies();

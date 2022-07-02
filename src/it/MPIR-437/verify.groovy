@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File dependencies = new File( basedir, 'target/site/dependencies.html' )
+File dependencies = new File( basedir, 'target/reports/dependencies.html' )
 def summaryRow = '''\
 <tr class="b">
-<td align="right">1</td>
-<td align="right">78.8 kB</td>
-<td align="right">141</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="center">-</td>
-<td align="right">-</td></tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">78.8 kB</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: right;">-</td></tr>
 '''
 
 assert dependencies.text.contains( summaryRow.replaceAll( "\n", System.lineSeparator() ) )

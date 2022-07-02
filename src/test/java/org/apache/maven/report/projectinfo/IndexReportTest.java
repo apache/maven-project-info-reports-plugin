@@ -43,7 +43,7 @@ public class IndexReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("index", "index-plugin-config.xml");
+        generateReport(getGoal(), "index-plugin-config.xml");
         assertTrue("Test html generated", getGeneratedReport("index.html").exists());
 
         URL reportURL = getGeneratedReport("index.html").toURI().toURL();
@@ -65,7 +65,12 @@ public class IndexReportTest extends AbstractProjectInfoTestCase {
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals(
-                getString("report.index.title") + " " + getTestMavenProject().getName(), textBlocks[0].getText());
-        assertEquals(getString("report.index.nodescription"), textBlocks[1].getText());
+                getString("report.index.title") + " " + getTestMavenProject().getName(), textBlocks[1].getText());
+        assertEquals(getString("report.index.nodescription"), textBlocks[2].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "index";
     }
 }

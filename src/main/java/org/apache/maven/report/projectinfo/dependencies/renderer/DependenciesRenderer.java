@@ -46,7 +46,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
-import org.apache.maven.doxia.util.HtmlTools;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -101,10 +100,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
     private final MessageFormat javaVersionFormat =
             new MessageFormat("{0,choice,0#|1.1#{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
-    /**
-     * @since 2.1.1
-     */
-    private int section;
 
     /** Counter for unique IDs that is consistent across generations. */
     private int idCounter = 0;
@@ -231,117 +226,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         if (configuration.getDependencyDetailsEnabled()) {
             // === Section: Dependency File Details.
             renderSectionDependencyFileDetails();
-        }
-    }
-
-    // ----------------------------------------------------------------------
-    // Protected methods
-    // ----------------------------------------------------------------------
-
-    /** {@inheritDoc} */
-    // workaround for MPIR-140
-    // TODO Remove me when MSHARED-390 has been resolved
-    @Override
-    protected void startSection(String name) {
-        startSection(name, name);
-    }
-
-    /**
-     * Start section with a name and a specific anchor.
-     *
-     * @param anchor not null
-     * @param name not null
-     */
-    // TODO Remove me when MSHARED-390 has been resolved
-    protected void startSection(String name, String anchor) {
-        section = section + 1;
-
-        super.sink.anchor(HtmlTools.encodeId(anchor));
-        super.sink.anchor_();
-
-        switch (section) {
-            case 1:
-                sink.section1();
-                sink.sectionTitle1();
-                break;
-            case 2:
-                sink.section2();
-                sink.sectionTitle2();
-                break;
-            case 3:
-                sink.section3();
-                sink.sectionTitle3();
-                break;
-            case 4:
-                sink.section4();
-                sink.sectionTitle4();
-                break;
-            case 5:
-                sink.section5();
-                sink.sectionTitle5();
-                break;
-
-            default:
-                // TODO: warning - just don't start a section
-                break;
-        }
-
-        text(name);
-
-        switch (section) {
-            case 1:
-                sink.sectionTitle1_();
-                break;
-            case 2:
-                sink.sectionTitle2_();
-                break;
-            case 3:
-                sink.sectionTitle3_();
-                break;
-            case 4:
-                sink.sectionTitle4_();
-                break;
-            case 5:
-                sink.sectionTitle5_();
-                break;
-
-            default:
-                // TODO: warning - just don't start a section
-                break;
-        }
-    }
-
-    /** {@inheritDoc} */
-    // workaround for MPIR-140
-    // TODO Remove me when MSHARED-390 has been resolved
-    @Override
-    protected void endSection() {
-        switch (section) {
-            case 1:
-                sink.section1_();
-                break;
-            case 2:
-                sink.section2_();
-                break;
-            case 3:
-                sink.section3_();
-                break;
-            case 4:
-                sink.section4_();
-                break;
-            case 5:
-                sink.section5_();
-                break;
-
-            default:
-                // TODO: warning - just don't start a section
-                break;
-        }
-
-        section = section - 1;
-
-        if (section < 0) {
-            throw new IllegalStateException("Too many closing sections");
         }
     }
 

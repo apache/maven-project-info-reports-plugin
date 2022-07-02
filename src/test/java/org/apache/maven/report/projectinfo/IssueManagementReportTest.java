@@ -44,7 +44,7 @@ public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("issue-management", "issue-management-plugin-config.xml");
+        generateReport(getGoal(), "issue-management-plugin-config.xml");
         assertTrue(
                 "Test html generated",
                 getGeneratedReport("issue-management.html").exists());
@@ -67,7 +67,7 @@ public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the links
         WebLink[] weblinks = response.getLinks();
-        assertEquals(3, weblinks.length);
+        assertEquals(4, weblinks.length);
 
         assertEquals("JIRA", weblinks[1].getText());
 
@@ -75,8 +75,13 @@ public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.issue-management.overview.title"), textBlocks[0].getText());
-        assertEquals("This project uses JIRA.", textBlocks[1].getText()); // due to link pattern
-        assertEquals(getString("report.issue-management.name"), textBlocks[2].getText());
+        assertEquals(getString("report.issue-management.overview.title"), textBlocks[1].getText());
+        assertEquals("This project uses JIRA.", textBlocks[2].getText()); // due to link pattern
+        assertEquals(getString("report.issue-management.name"), textBlocks[3].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "issue-management";
     }
 }

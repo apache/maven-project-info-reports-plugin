@@ -42,6 +42,7 @@ import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
@@ -109,7 +110,7 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             // This seems to be a bit too much but the DependenciesRenderer applies the same logic

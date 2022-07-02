@@ -45,7 +45,7 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("scm", "scm-plugin-config.xml");
+        generateReport(getGoal(), "scm-plugin-config.xml");
         assertTrue("Test html generated", getGeneratedReport("scm.html").exists());
 
         URL reportURL = getGeneratedReport("scm.html").toURI().toURL();
@@ -65,13 +65,14 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(6, textBlocks.length);
-        assertEquals(getString("report.scm.overview.title"), textBlocks[0].getText());
-        assertEquals(getString("report.scm.general.intro"), textBlocks[1].getText());
-        assertEquals(getString("report.scm.webaccess.title"), textBlocks[2].getText());
-        assertEquals(getString("report.scm.webaccess.nourl"), textBlocks[3].getText());
-        assertEquals(getString("report.scm.accessbehindfirewall.title"), textBlocks[4].getText());
-        assertEquals(getString("report.scm.accessbehindfirewall.general.intro"), textBlocks[5].getText());
+        // Last one is footer noise
+        assertEquals(8, textBlocks.length - 1);
+        assertEquals(getString("report.scm.overview.title"), textBlocks[1].getText());
+        assertEquals(getString("report.scm.general.intro"), textBlocks[2].getText());
+        assertEquals(getString("report.scm.webaccess.title"), textBlocks[3].getText());
+        assertEquals(getString("report.scm.webaccess.nourl"), textBlocks[4].getText());
+        assertEquals(getString("report.scm.accessbehindfirewall.title"), textBlocks[5].getText());
+        assertEquals(getString("report.scm.accessbehindfirewall.general.intro"), textBlocks[6].getText());
     }
 
     /**
@@ -82,7 +83,7 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
     public void testReportWithWrongUrl() throws Exception {
         File pluginXmlFile =
                 new File(getBasedir(), "src/test/resources/plugin-configs/" + "scm-wrong-url-plugin-config.xml");
-        Mojo mojo = createReportMojo("scm", pluginXmlFile);
+        Mojo mojo = createReportMojo(getGoal(), pluginXmlFile);
 
         setVariableValueToObject(mojo, "anonymousConnection", "scm:svn");
         try {
@@ -117,5 +118,10 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
         } catch (Exception e) {
             assertTrue("IllegalArgumentException catched", true);
         }
+    }
+
+    @Override
+    protected String getGoal() {
+        return "scm";
     }
 }

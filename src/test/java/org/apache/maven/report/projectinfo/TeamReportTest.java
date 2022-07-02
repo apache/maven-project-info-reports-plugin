@@ -48,7 +48,7 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
      */
     public void testReport() throws Exception {
         File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml");
-        AbstractProjectInfoReport mojo = createReportMojo("team", pluginXmlFile);
+        AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
         setVariableValueToObject(mojo, "showAvatarImages", Boolean.TRUE);
         generateReport(mojo, pluginXmlFile);
         assertTrue("Test html generated", getGeneratedReport("team.html").exists());
@@ -72,14 +72,15 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(7, textBlocks.length);
-        assertEquals(getString("report.team.intro.title"), textBlocks[0].getText());
-        assertEquals(getString("report.team.intro.description1"), textBlocks[1].getText());
-        assertEquals(getString("report.team.intro.description2"), textBlocks[2].getText());
-        assertEquals(getString("report.team.developers.title"), textBlocks[3].getText());
-        assertEquals(getString("report.team.developers.intro"), textBlocks[4].getText());
-        assertEquals(getString("report.team.contributors.title"), textBlocks[5].getText());
-        assertEquals(getString("report.team.nocontributor"), textBlocks[6].getText());
+        // Last one is footer noise
+        assertEquals(9, textBlocks.length - 1);
+        assertEquals(getString("report.team.intro.title"), textBlocks[1].getText());
+        assertEquals(getString("report.team.intro.description1"), textBlocks[2].getText());
+        assertEquals(getString("report.team.intro.description2"), textBlocks[3].getText());
+        assertEquals(getString("report.team.developers.title"), textBlocks[4].getText());
+        assertEquals(getString("report.team.developers.intro"), textBlocks[5].getText());
+        assertEquals(getString("report.team.contributors.title"), textBlocks[6].getText());
+        assertEquals(getString("report.team.nocontributor"), textBlocks[7].getText());
 
         WebTable[] tables = response.getTables();
         assertEquals(1, tables.length);
@@ -88,5 +89,10 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
         WebLink[] links = emailCell.getLinks();
         assertEquals(1, links.length);
         assertEquals("mailto:vsiveton@apache.org", links[0].getURLString());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "team";
     }
 }

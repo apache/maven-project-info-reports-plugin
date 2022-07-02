@@ -44,7 +44,7 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("licenses", "licenses-plugin-config.xml");
+        generateReport(getGoal(), "licenses-plugin-config.xml");
         assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
 
         URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
@@ -64,19 +64,19 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.licenses.overview.title"), textBlocks[0].getText());
-        assertEquals(getString("report.licenses.overview.intro"), textBlocks[1].getText());
-        assertEquals(getString("report.licenses.title"), textBlocks[2].getText());
-        assertEquals("The Apache Software License, Version 2.0", textBlocks[3].getText());
+        assertEquals(getString("report.licenses.overview.title"), textBlocks[1].getText());
+        assertEquals(getString("report.licenses.overview.intro"), textBlocks[2].getText());
+        assertEquals(getString("report.licenses.title"), textBlocks[3].getText());
+        assertEquals("The Apache Software License, Version 2.0", textBlocks[4].getText());
 
         // only 1 link in default report
         final WebLink[] links = response.getLinks();
-        assertEquals(1, links.length);
-        assertEquals("http://maven.apache.org/", links[0].getURLString());
+        assertEquals(2, links.length);
+        assertEquals("https://maven.apache.org/", links[1].getURLString());
     }
 
     public void testReportLinksOnly() throws Exception {
-        generateReport("licenses", "licenses-plugin-config-linkonly.xml");
+        generateReport(getGoal(), "licenses-plugin-config-linkonly.xml");
         assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
 
         URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
@@ -96,16 +96,21 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.licenses.overview.title"), textBlocks[0].getText());
-        assertEquals(getString("report.licenses.overview.intro"), textBlocks[1].getText());
-        assertEquals(getString("report.licenses.title"), textBlocks[2].getText());
-        assertEquals("The Apache Software License, Version 2.0", textBlocks[3].getText());
+        assertEquals(getString("report.licenses.overview.title"), textBlocks[1].getText());
+        assertEquals(getString("report.licenses.overview.intro"), textBlocks[2].getText());
+        assertEquals(getString("report.licenses.title"), textBlocks[3].getText());
+        assertEquals("The Apache Software License, Version 2.0", textBlocks[4].getText());
 
         // here's our specific test
         final WebLink[] links = response.getLinks();
-        assertEquals(2, links.length);
-        assertEquals("http://maven.apache.org/", links[0].getURLString());
+        assertEquals(3, links.length);
+        assertEquals("http://maven.apache.org", links[0].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "licenses";
     }
 }

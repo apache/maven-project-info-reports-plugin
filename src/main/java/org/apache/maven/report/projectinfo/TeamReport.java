@@ -33,6 +33,7 @@ import org.apache.maven.model.Developer;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -62,7 +63,7 @@ public class TeamReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             result = !isEmpty(getProject().getModel().getDevelopers())
@@ -233,7 +234,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                     if (id == null) {
                         tableCell(null);
                     } else {
-                        tableCell("<a name=\"" + id + "\"></a>" + id, true);
+                        tableCell("<a id=\"" + id + "\"></a>" + id, true);
                     }
                 }
             }

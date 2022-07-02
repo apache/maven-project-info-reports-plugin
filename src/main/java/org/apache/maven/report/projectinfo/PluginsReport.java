@@ -37,6 +37,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -54,7 +55,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             result = !isEmpty(getProject().getBuildPlugins())

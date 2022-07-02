@@ -17,7 +17,7 @@
  * under the License.
  */
 
-plugins = new File( basedir, 'target/site/plugins.html' ).text;
+plugins = new File( basedir, 'target/reports/plugins.html' ).text;
 
 // version of maven-invoker-plugin is defined in pluginManagement
 assert plugins.contains( '<td>1.invoker-pluginManagement</td>' );

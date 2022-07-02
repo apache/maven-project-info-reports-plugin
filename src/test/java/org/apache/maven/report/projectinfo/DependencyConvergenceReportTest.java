@@ -43,7 +43,7 @@ public class DependencyConvergenceReportTest extends AbstractProjectInfoTestCase
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("dependency-convergence", "dependency-convergence-plugin-config.xml");
+        generateReport(getGoal(), "dependency-convergence-plugin-config.xml");
         assertTrue(
                 "Test html generated",
                 getGeneratedReport("dependency-convergence.html").exists());
@@ -67,6 +67,11 @@ public class DependencyConvergenceReportTest extends AbstractProjectInfoTestCase
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.dependency-convergence.reactor.name"), textBlocks[0].getText());
+        assertEquals(getString("report.dependency-convergence.reactor.name"), textBlocks[1].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "dependency-convergence";
     }
 }

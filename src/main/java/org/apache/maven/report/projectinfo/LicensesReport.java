@@ -29,11 +29,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.maven.doxia.sink.Sink;
-import org.apache.maven.doxia.util.HtmlTools;
+import org.apache.maven.doxia.util.DoxiaUtils;
 import org.apache.maven.model.License;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -79,7 +80,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             result = !isEmpty(getProject().getModel().getLicenses());
@@ -255,7 +256,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                         }
 
                         sink.listItem();
-                        link("#" + HtmlTools.encodeId(name), name);
+                        link("#" + DoxiaUtils.encodeId(name), name);
                         sink.listItem_();
                     }
                     sink.list_();

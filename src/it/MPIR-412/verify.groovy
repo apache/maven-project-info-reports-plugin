@@ -22,5 +22,5 @@ import groovy.xml.XmlParser
 // should be able to parse the output as XML
 parser = new XmlParser();
 parser.setFeature( 'http://apache.org/xml/features/disallow-doctype-decl', false );
-result = parser.parse( new File( basedir, 'target/site/dependencies.html' ) );
+result = parser.parse( new File( basedir, 'target/reports/dependencies.html' ) );
 assert result instanceof Node;

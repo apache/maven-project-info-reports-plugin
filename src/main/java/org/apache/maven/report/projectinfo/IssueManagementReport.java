@@ -24,6 +24,7 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -39,7 +40,7 @@ public class IssueManagementReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             result = getProject().getModel().getIssueManagement() != null;
