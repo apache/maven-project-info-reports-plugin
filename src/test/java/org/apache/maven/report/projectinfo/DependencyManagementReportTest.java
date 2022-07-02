@@ -44,7 +44,7 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("dependency-management", "dependency-management-plugin-config.xml");
+        generateReport(getGoal(), "dependency-management-plugin-config.xml");
         assertTrue(
                 "Test html generated",
                 getGeneratedReport("dependency-management.html").exists());
@@ -80,7 +80,12 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.dependency-management.title"), textBlocks[0].getText());
-        assertEquals("test", textBlocks[1].getText());
+        assertEquals(getString("report.dependency-management.title"), textBlocks[1].getText());
+        assertEquals("test", textBlocks[2].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "dependency-management";
     }
 }

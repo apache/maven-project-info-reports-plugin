@@ -19,7 +19,6 @@
 package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
-import java.util.Locale;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
@@ -45,7 +44,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("mailing-lists", "mailing-lists-plugin-config.xml");
+        generateReport(getGoal(), "mailing-lists-plugin-config.xml");
         assertTrue(
                 "Test html generated", getGeneratedReport("mailing-lists.html").exists());
 
@@ -66,8 +65,8 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.mailing-lists.title"), textBlocks[0].getText());
-        assertEquals(getString("report.mailing-lists.intro"), textBlocks[1].getText());
+        assertEquals(getString("report.mailing-lists.title"), textBlocks[1].getText());
+        assertEquals(getString("report.mailing-lists.intro"), textBlocks[2].getText());
 
         // MPIR-385 + MPIR-401: Test links are URIs otherwise assume a plain email address
         String post = getString("report.mailing-lists.column.post");
@@ -107,8 +106,8 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.mailing-lists.title"), textBlocks[0].getText());
-        assertEquals("mail list intro text foo", textBlocks[1].getText());
+        assertEquals(getString("report.mailing-lists.title"), textBlocks[1].getText());
+        assertEquals("mail list intro text foo", textBlocks[2].getText());
     }
 
     /**
@@ -117,18 +116,9 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testFrenchReport() throws Exception {
-        Locale oldLocale = Locale.getDefault();
-
-        try {
-            Locale.setDefault(Locale.FRENCH);
-
-            generateReport("mailing-lists", "mailing-lists-plugin-config.xml");
-            assertTrue(
-                    "Test html generated",
-                    getGeneratedReport("mailing-lists.html").exists());
-        } finally {
-            Locale.setDefault(oldLocale);
-        }
+        generateReport(getGoal(), "mailing-lists-plugin-config-fr.xml");
+        assertTrue(
+                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
     }
 
     /**
@@ -137,8 +127,13 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testInvalidLink() throws Exception {
-        generateReport("mailing-lists", "mailing-lists-plugin-config-invalidlink.xml");
+        generateReport(getGoal(), "mailing-lists-plugin-config-invalidlink.xml");
         assertTrue(
                 "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "mailing-lists";
     }
 }

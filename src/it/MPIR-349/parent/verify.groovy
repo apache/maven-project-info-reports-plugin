@@ -17,8 +17,8 @@
  * under the License.
  */
 
-File indexPage = new File( basedir, 'target/site/index.html' )
+File indexPage = new File( basedir, 'target/reports/index.html' )
 assert !indexPage.text.contains( 'sitePublishLocation' )
 
-File modulesPage = new File( basedir, 'target/site/modules.html' )
+File modulesPage = new File( basedir, 'target/reports/modules.html' )
 assert !modulesPage.text.contains( 'sitePublishLocation' )

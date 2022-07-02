@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-def report = new File( basedir, 'target/site/dependency-info.html' ).text
+def report = new File( basedir, 'target/reports/dependency-info.html' ).text
 
 assert report.contains('<pre>&lt;plugin&gt;')
 assert report.contains('&lt;/plugin&gt;</pre>')
