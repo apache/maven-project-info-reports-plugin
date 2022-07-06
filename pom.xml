@@ -121,9 +121,9 @@ under the License.
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
-    <scmVersion>1.12.2</scmVersion>
+    <scmVersion>1.13.0</scmVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
-    <sitePluginVersion>3.11.0</sitePluginVersion>
+    <sitePluginVersion>3.12.0</sitePluginVersion>
     <surefire.version>2.22.2</surefire.version>
     <javaVersion>8</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
@@ -188,7 +188,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-dependency-tree</artifactId>
-      <version>3.1.0</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -233,7 +233,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
-      <version>3.2.0</version>
+      <version>3.3.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.sonatype.sisu</groupId>
@@ -392,7 +392,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -470,7 +470,7 @@ under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.32</version>
+      <version>1.7.36</version>
       <scope>test</scope>
     </dependency>
 
