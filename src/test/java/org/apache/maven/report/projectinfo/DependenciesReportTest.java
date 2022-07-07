@@ -64,8 +64,7 @@ public class DependenciesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.dependencies.name" ),
-            getString( "report.dependencies.title" ) );
+        String expectedTitle = getString( "report.dependencies.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the tables

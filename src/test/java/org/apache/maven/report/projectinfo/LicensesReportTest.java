@@ -64,8 +64,7 @@ public class LicensesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.licenses.name" ),
-            getString( "report.licenses.title" ) );
+        String expectedTitle = getString( "report.licenses.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
@@ -99,8 +98,7 @@ public class LicensesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.licenses.name" ),
-            getString( "report.licenses.title" ) );
+        String expectedTitle = getString( "report.licenses.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

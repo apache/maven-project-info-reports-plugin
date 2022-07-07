@@ -53,16 +53,14 @@ public class PluginManagementReportTest
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
 
-    
-    
     @Override
     protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )
         throws Exception
     {
         AbstractProjectInfoReport mojo = super.createReportMojo( goal, pluginXmlFile );
-        
+
         ProjectBuilder builder = mock( ProjectBuilder.class );
-        
+
         when( builder.build( isA( Artifact.class ),
                              isA( ProjectBuildingRequest.class ) ) ).thenAnswer( new Answer<ProjectBuildingResult>()
                              {
@@ -70,16 +68,16 @@ public class PluginManagementReportTest
                                  public ProjectBuildingResult answer( InvocationOnMock invocation )
                                      throws Throwable
                                  {
-                                     return createProjectBuildingResult( (Artifact) invocation.getArgument( 0 ), 
+                                     return createProjectBuildingResult( (Artifact) invocation.getArgument( 0 ),
                                                                          "http://m.a.o/" );
                                  }
                              } );
 
         setVariableValueToObject( mojo, "projectBuilder", builder );
-        
+
         return mojo;
     }
-    
+
     /**
      * Test report
      *
@@ -103,8 +101,7 @@ public class PluginManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.plugin-management.name" ),
-            getString( "report.plugin-management.title" ) );
+        String expectedTitle = getString( "report.plugin-management.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the tables
@@ -142,8 +139,7 @@ public class PluginManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.plugin-management.name" ),
-            getString( "report.plugin-management.title" ) );
+        String expectedTitle = getString( "report.plugin-management.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the tables

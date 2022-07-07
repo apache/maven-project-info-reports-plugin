@@ -20,10 +20,7 @@ package org.apache.maven.report.projectinfo;
  */
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -36,26 +33,15 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.doxia.site.decoration.Body;
-import org.apache.maven.doxia.site.decoration.DecorationModel;
-import org.apache.maven.doxia.siterenderer.Renderer;
-import org.apache.maven.doxia.siterenderer.RendererException;
-import org.apache.maven.doxia.siterenderer.RenderingContext;
-import org.apache.maven.doxia.siterenderer.SiteRenderingContext;
-import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
 import org.apache.maven.doxia.tools.SiteTool;
-import org.apache.maven.doxia.tools.SiteToolException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.AbstractMavenReport;
-import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
@@ -65,7 +51,6 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PrefixedObjectValueSource;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
@@ -201,63 +186,6 @@ public abstract class AbstractProjectInfoReport
     }
 
     @Override
-    public void execute()
-        throws MojoExecutionException
-    {
-        if ( !canGenerateReport() )
-        {
-            return;
-        }
-
-        // TODO: push to a helper? Could still be improved by taking more of the site information from the site plugin
-        Writer writer = null;
-        try
-        {
-            String filename = getOutputName() + ".html";
-
-            DecorationModel model = new DecorationModel();
-            model.setBody( new Body() );
-
-            Map<String, Object> attributes = new HashMap<>();
-            attributes.put( "outputEncoding", "UTF-8" );
-            attributes.put( "project", project );
-
-            Locale locale = Locale.getDefault();
-            Artifact defaultSkin =
-                siteTool.getDefaultSkinArtifact( localRepository, project.getRemoteArtifactRepositories() );
-
-            SiteRenderingContext siteContext = siteRenderer.createContextForSkin( defaultSkin, attributes,
-                                                                                  model, getName( locale ), locale );
-
-            RenderingContext context = new RenderingContext( outputDirectory, filename, null );
-
-            SiteRendererSink sink = new SiteRendererSink( context );
-
-            generate( sink, null, locale );
-
-            outputDirectory.mkdirs();
-
-            writer = new OutputStreamWriter( new FileOutputStream( new File( outputDirectory, filename ) ), "UTF-8" );
-
-            siteRenderer.mergeDocumentIntoSite( writer, sink, siteContext );
-
-            siteRenderer.copyResources( siteContext, outputDirectory );
-
-            writer.close();
-            writer = null;
-        }
-        catch ( RendererException | IOException | SiteToolException | MavenReportException e )
-        {
-            throw new MojoExecutionException( "An error has occurred in " + getName( Locale.ENGLISH )
-                + " report generation.", e );
-        }
-        finally
-        {
-            IOUtil.close( writer );
-        }
-    }
-
-    @Override
     public String getCategoryName()
     {
         return CATEGORY_PROJECT_INFORMATION;
@@ -372,15 +300,6 @@ public abstract class AbstractProjectInfoReport
         }
 
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Renderer getSiteRenderer()
-    {
-        return siteRenderer;
     }
 
     /**

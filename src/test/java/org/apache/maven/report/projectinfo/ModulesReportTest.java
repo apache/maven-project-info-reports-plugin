@@ -46,15 +46,15 @@ public class ModulesReportTest
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
-    
+
     @Override
     protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )
         throws Exception
     {
         AbstractProjectInfoReport mojo = super.createReportMojo( goal, pluginXmlFile );
-        
+
         mojo.setLog( new SilentLog() );
-        
+
         return mojo;
     }
 
@@ -81,7 +81,7 @@ public class ModulesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.modules.name" ), getString( "report.modules.title" ) );
+        String expectedTitle = getString( "report.modules.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

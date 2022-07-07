@@ -63,8 +63,7 @@ public class DependencyConvergenceReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.dependency-convergence.name" ),
-            getString( "report.dependency-convergence.reactor.title" ) );
+        String expectedTitle = getString( "report.dependency-convergence.reactor.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

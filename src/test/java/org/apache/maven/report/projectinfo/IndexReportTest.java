@@ -64,8 +64,7 @@ public class IndexReportTest
 
         // Test the Page title
         // Index does not have a 'name' but 'title' only
-        String expectedTitle = prepareTitle( getString( "report.index.title" ),
-            getString( "report.index.title" ) );
+        String expectedTitle = getString( "report.index.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

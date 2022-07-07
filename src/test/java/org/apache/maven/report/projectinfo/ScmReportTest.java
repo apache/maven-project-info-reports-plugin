@@ -66,15 +66,12 @@ public class ScmReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.scm.name" ),
-            getString( "report.scm.title" ) );
+        String expectedTitle = getString( "report.scm.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-
-        assertEquals( textBlocks.length, 6 );
-
+        assertEquals( 6, textBlocks.length );
         assertEquals( getString( "report.scm.overview.title" ), textBlocks[0].getText() );
         assertEquals( getString( "report.scm.general.intro" ), textBlocks[1].getText() );
         assertEquals( getString( "report.scm.webaccess.title" ), textBlocks[2].getText() );
@@ -93,8 +90,7 @@ public class ScmReportTest
     {
         File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/"
                 + "scm-wrong-url-plugin-config.xml" );
-        Mojo mojo = lookupMojo( "scm", pluginXmlFile );
-        assertNotNull( "Mojo found.", mojo );
+        Mojo mojo = createReportMojo( "scm", pluginXmlFile );
 
         setVariableValueToObject( mojo, "anonymousConnection", "scm:svn" );
         try

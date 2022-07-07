@@ -172,7 +172,7 @@ public abstract class AbstractProjectInfoTestCase
     {
         File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/" + pluginXml );
         AbstractProjectInfoReport mojo  = createReportMojo( goal, pluginXmlFile );
-        return generateReport( mojo, pluginXmlFile);
+        return generateReport( mojo, pluginXmlFile );
     }
 
     protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )

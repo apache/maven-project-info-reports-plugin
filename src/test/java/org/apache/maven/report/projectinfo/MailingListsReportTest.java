@@ -65,8 +65,7 @@ public class MailingListsReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.mailing-lists.name" ),
-            getString( "report.mailing-lists.title" ) );
+        String expectedTitle = getString( "report.mailing-lists.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

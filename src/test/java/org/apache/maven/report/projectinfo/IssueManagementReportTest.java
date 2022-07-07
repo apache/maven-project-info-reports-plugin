@@ -64,8 +64,7 @@ public class IssueManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.issue-management.name" ),
-            getString( "report.issue-management.title" ) );
+        String expectedTitle = getString( "report.issue-management.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the links

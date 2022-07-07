@@ -63,8 +63,7 @@ public class SummaryReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = prepareTitle( getString( "report.summary.name" ),
-            getString( "report.summary.title" ) );
+        String expectedTitle = getString( "report.summary.title" );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
