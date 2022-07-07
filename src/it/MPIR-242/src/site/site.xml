@@ -21,6 +21,11 @@ under the License.
 
 <project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <publishDate position="right" />
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>${fluidoSkinVersion}</version>
+  </skin>
   <body>
     <breadcrumbs>
       <item name="MPIR" href="http://maven.apache.org/plugins/maven-project-info-reports-plugin/index.html" />

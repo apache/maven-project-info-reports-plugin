@@ -32,6 +32,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <some.property>TEST</some.property>
     <artifacts.url>http://maven.apache.org/plugins/it/${some.property}</artifacts.url>
+    <fluidoSkinVersion>@fluidoSkinVersion@</fluidoSkinVersion>
   </properties>
 
   <url>${artifacts.url}</url>

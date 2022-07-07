@@ -118,14 +118,15 @@ under the License.
   </distributionManagement>
 
   <properties>
+    <javaVersion>8</javaVersion>
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <scmVersion>1.13.0</scmVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <sitePluginVersion>3.12.0</sitePluginVersion>
+    <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
     <surefire.version>2.22.2</surefire.version>
-    <javaVersion>8</javaVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-04-23T10:30:05Z</project.build.outputTimestamp>
   </properties>
