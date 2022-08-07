@@ -101,7 +101,8 @@ public class PluginManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.plugin-management.title" );
+        String expectedTitle = prepareTitle( "plugin management project info",
+            getString( "report.plugin-management.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the tables
@@ -139,7 +140,8 @@ public class PluginManagementReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.plugin-management.title" );
+        String expectedTitle = prepareTitle( "plugin management project info",
+            getString( "report.plugin-management.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the tables

@@ -66,7 +66,8 @@ public class ScmReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.scm.title" );
+        String expectedTitle = prepareTitle( "scm project info",
+            getString( "report.scm.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts

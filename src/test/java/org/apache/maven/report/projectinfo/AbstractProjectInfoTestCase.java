@@ -49,7 +49,7 @@ public abstract class AbstractProjectInfoTestCase
     extends AbstractMojoTestCase
 {
     private ArtifactStubFactory artifactStubFactory;
-    
+
     /**
      * The default locale is English.
      */
@@ -77,7 +77,7 @@ public abstract class AbstractProjectInfoTestCase
 
         artifactStubFactory = new DependencyArtifactStubFactory( getTestFile( "target" ), true, false );
         artifactStubFactory.getWorkingDir().mkdirs();
-        
+
         // Set the default Locale
         Locale.setDefault( DEFAULT_LOCALE );
     }
@@ -180,7 +180,7 @@ public abstract class AbstractProjectInfoTestCase
     {
         AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo( goal, pluginXmlFile );
         assertNotNull( "Mojo found.", mojo );
-        
+
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
         DefaultRepositorySystemSession repoSession =
@@ -199,11 +199,10 @@ public abstract class AbstractProjectInfoTestCase
         mojo.execute();
 
         ProjectBuilder builder = lookup( ProjectBuilder.class );
-        
+
         ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
         buildingRequest.setRepositorySession( lookup( LegacySupport.class ).getRepositorySession() );
 
-        assertNotNull( "Local repository", mojo.localRepository );
         testMavenProject = builder.build( pluginXmlFile, buildingRequest ).getProject();
 
         File outputDir = mojo.getReportOutputDirectory();

@@ -81,7 +81,8 @@ public class ModulesReportTest
         assertTrue( response.getContentLength() > 0 );
 
         // Test the Page title
-        String expectedTitle = getString( "report.modules.title" );
+        String expectedTitle = prepareTitle( "modules project info",
+            getString( "report.modules.title" ) );
         assertEquals( expectedTitle, response.getTitle() );
 
         // Test the texts
