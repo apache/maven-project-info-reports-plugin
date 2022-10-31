@@ -119,12 +119,12 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <doxiaVersion>2.0.0-M3</doxiaVersion>
-    <doxia-sitetoolsVersion>2.0.0-M3</doxia-sitetoolsVersion>
+    <doxiaVersion>2.0.0-M4</doxiaVersion>
+    <doxia-sitetoolsVersion>2.0.0-M4-SNAPSHOT</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <scmVersion>1.13.0</scmVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
-    <sitePluginVersion>4.0.0-M3</sitePluginVersion>
+    <sitePluginVersion>4.0.0-M4-SNAPSHOT</sitePluginVersion>
     <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
     <surefire.version>2.22.2</surefire.version>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
@@ -135,12 +135,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>4.0.0-M2</version>
+      <version>4.0.0-M3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>4.0.0-M2</version>
+      <version>4.0.0-M3-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.maven</groupId>
@@ -393,7 +393,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.4.2</version>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
