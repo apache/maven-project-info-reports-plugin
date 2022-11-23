@@ -329,6 +329,7 @@ public abstract class AbstractProjectInfoReport
         return getI18nString( locale, "description" );
     }
 
+    // TODO Review, especially Locale.getDefault()
     private static class CustomI18N
         implements I18N
     {
