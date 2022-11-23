@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>16</version>
+    <version>28</version>
   </parent>
 
   <groupId>org.apache.maven.plugins.project-info-reports.its</groupId>
@@ -79,9 +79,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>@sitePluginVersion@</version>
-        <configuration>
-          <locales>en</locales>
-        </configuration>
       </plugin>
     </plugins>
   </build>

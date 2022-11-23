@@ -857,7 +857,7 @@ public class DependenciesRenderer
 
         String javascript = String.format( "<img id=\"%s\" src=\"%s\" alt=\"%s\""
                 + " onclick=\"toggleDependencyDetails( '%s', '%s' );\""
-                + " style=\"cursor: pointer; vertical-align: text-bottom;\"></img>",
+                + " style=\"cursor: pointer; vertical-align: text-bottom;\" />",
                 imgId, IMG_INFO_URL, getI18nString( "graph.icon.information" ), dependencyDetailId, imgId );
 
         sink.rawText( javascript );
@@ -911,6 +911,7 @@ public class DependenciesRenderer
                 List<License> licenses = artifactProject.getLicenses();
 
                 sink.table();
+                sink.tableRows( null, false );
 
                 sink.tableRow();
                 sink.tableHeaderCell();
@@ -1007,10 +1008,12 @@ public class DependenciesRenderer
                 sink.tableCell_();
                 sink.tableRow_();
 
+                sink.tableRows_();
                 sink.table_();
             }
             catch ( ProjectBuildingException e )
             {
+                sink.text( getI18nString( "index", "nodescription" ) );
                 if ( log.isDebugEnabled() )
                 {
                     log.debug( "Unable to create Maven project from repository for artifact '"
@@ -1026,6 +1029,7 @@ public class DependenciesRenderer
         else
         {
             sink.table();
+            sink.tableRows( null,  false );
 
             sink.tableRow();
             sink.tableHeaderCell();
@@ -1056,6 +1060,7 @@ public class DependenciesRenderer
             sink.tableCell_();
             sink.tableRow_();
 
+            sink.tableRows_();
             sink.table_();
         }
 

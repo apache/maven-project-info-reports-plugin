@@ -135,9 +135,9 @@ public class DependenciesReport
         }
         catch ( IOException e )
         {
-            getLog().error( "Cannot copy ressources", e );
+            getLog().error( "Cannot copy resources", e );
         }
-        
+
         ProjectBuildingRequest buildingRequest =
             new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
         buildingRequest.setLocalRepository( localRepository );
