@@ -119,7 +119,7 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
+    <doxiaVersion>1.12.0-SNAPSHOT</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <scmVersion>1.13.0</scmVersion>
@@ -140,7 +140,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>3.2.0</version>
+      <version>3.3.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.maven</groupId>
