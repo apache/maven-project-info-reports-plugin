@@ -105,5 +105,41 @@ public abstract class AbstractProjectInfoRenderer
         }
     }
 
+    /* FIXME The next two methods need to be retained until Doxia and Maven Reporting Impl properly implement
+     * the difference of a (boxed) real verbatim text and (boxed) source code.
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void verbatimText( String text )
+    {
+        sink.verbatim( null );
+
+        text( text );
+
+        sink.verbatim_();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void verbatimLink( String text, String href )
+    {
+        if ( StringUtils.isEmpty( href ) )
+        {
+            verbatimText( text );
+        }
+        else
+        {
+            sink.verbatim( null );
+
+            link( href, text );
+
+            sink.verbatim_();
+        }
+    }
+
     protected abstract String getI18Nsection();
 }
