@@ -157,7 +157,8 @@ public class ModulesReport
 
             ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
             buildingRequest.setLocalRepository( localRepository );
-            
+            buildingRequest.setProcessPlugins( false );
+
             for ( String module : modules )
             {
                 MavenProject moduleProject = getModuleFromReactor( project, reactorProjects, module );

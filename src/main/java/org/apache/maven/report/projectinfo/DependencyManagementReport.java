@@ -95,7 +95,8 @@ public class DependencyManagementReport
         buildingRequest.setLocalRepository( localRepository );
         buildingRequest.setRemoteRepositories( remoteRepositories );
         buildingRequest.setPluginArtifactRepositories( pluginRepositories );
-        
+        buildingRequest.setProcessPlugins( false );
+
         RepositoryUtils repoUtils =
             new RepositoryUtils( getLog(), projectBuilder, repositorySystem, resolver,
                                  project.getRemoteArtifactRepositories(), project.getPluginArtifactRepositories(),

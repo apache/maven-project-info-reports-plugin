@@ -206,6 +206,7 @@ public class PluginManagementReport
 
             ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
             buildRequest.setRemoteRepositories( project.getPluginArtifactRepositories() );
+            buildRequest.setProcessPlugins( false );
 
             for ( Plugin plugin : pluginManagement )
             {
