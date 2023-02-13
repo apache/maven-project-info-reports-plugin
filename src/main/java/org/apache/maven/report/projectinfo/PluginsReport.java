@@ -192,6 +192,7 @@ public class PluginsReport
 
             ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
             buildRequest.setRemoteRepositories( project.getPluginArtifactRepositories() );
+            buildRequest.setProcessPlugins( false );
 
             for ( GAV plugin : list )
             {
