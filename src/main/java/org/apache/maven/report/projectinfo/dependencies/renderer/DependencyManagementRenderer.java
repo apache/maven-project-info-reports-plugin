@@ -18,6 +18,7 @@
  */
 package org.apache.maven.report.projectinfo.dependencies.renderer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -194,7 +196,13 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             String[] tableHeader = getDependencyTableHeader(hasClassifier);
             tableHeader(tableHeader);
 
+            List<ArtifactRepository> remoteRpositories = new ArrayList<>(buildingRequest.getRemoteRepositories());
+            List<ArtifactRepository> pluginRpositories = new ArrayList<>(
+                    buildingRequest.getPluginArtifactRepositories());
+
             for (Dependency dependency : artifacts) {
+                buildingRequest.setRemoteRepositories(remoteRpositories);
+                buildingRequest.setPluginArtifactRepositories(pluginRpositories);
                 tableRow(getDependencyRow(dependency, hasClassifier));
             }
             endTable();
