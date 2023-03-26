@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,28 +27,23 @@ import org.apache.maven.model.Dependency;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class DependencyConvergenceStub
-    extends ProjectInfoProjectStub
-{
+public class DependencyConvergenceStub extends ProjectInfoProjectStub {
     /**
      *
      */
-    public DependencyConvergenceStub()
-    {
+    public DependencyConvergenceStub() {
         super();
 
-        setExecutionRoot( true );
+        setExecutionRoot(true);
     }
 
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "dependency-convergence-plugin-config.xml";
     }
 
     @Override
-    public List<Dependency> getDependencies()
-    {
+    public List<Dependency> getDependencies() {
         return Collections.emptyList();
     }
 }

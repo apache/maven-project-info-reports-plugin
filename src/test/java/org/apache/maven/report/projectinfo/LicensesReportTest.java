@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
 
@@ -33,9 +32,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class LicensesReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class LicensesReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -46,75 +43,69 @@ public class LicensesReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        generateReport( "licenses", "licenses-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "licenses.html" ).exists() );
+    public void testReport() throws Exception {
+        generateReport("licenses", "licenses-plugin-config.xml");
+        assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
 
-        URL reportURL = getGeneratedReport( "licenses.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "licenses project info",
-            getString( "report.licenses.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle = prepareTitle("licenses project info", getString("report.licenses.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( getString( "report.licenses.overview.title" ), textBlocks[0].getText() );
-        assertEquals( getString( "report.licenses.overview.intro" ), textBlocks[1].getText() );
-        assertEquals( getString( "report.licenses.title" ), textBlocks[2].getText() );
-        assertEquals( "The Apache Software License, Version 2.0", textBlocks[3].getText() );
+        assertEquals(getString("report.licenses.overview.title"), textBlocks[0].getText());
+        assertEquals(getString("report.licenses.overview.intro"), textBlocks[1].getText());
+        assertEquals(getString("report.licenses.title"), textBlocks[2].getText());
+        assertEquals("The Apache Software License, Version 2.0", textBlocks[3].getText());
 
         // only 1 link in default report
         final WebLink[] links = response.getLinks();
-        assertEquals( 1, links.length );
-        assertEquals( "http://maven.apache.org/", links[0].getURLString() );
+        assertEquals(1, links.length);
+        assertEquals("http://maven.apache.org/", links[0].getURLString());
     }
 
-    public void testReportLinksOnly()
-        throws Exception
-    {
-        generateReport( "licenses", "licenses-plugin-config-linkonly.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "licenses.html" ).exists() );
+    public void testReportLinksOnly() throws Exception {
+        generateReport("licenses", "licenses-plugin-config-linkonly.xml");
+        assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
 
-        URL reportURL = getGeneratedReport( "licenses.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle =  prepareTitle( "licenses project info",
-            getString( "report.licenses.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle = prepareTitle("licenses project info", getString("report.licenses.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( getString( "report.licenses.overview.title" ), textBlocks[0].getText() );
-        assertEquals( getString( "report.licenses.overview.intro" ), textBlocks[1].getText() );
-        assertEquals( getString( "report.licenses.title" ), textBlocks[2].getText() );
-        assertEquals( "The Apache Software License, Version 2.0", textBlocks[3].getText() );
+        assertEquals(getString("report.licenses.overview.title"), textBlocks[0].getText());
+        assertEquals(getString("report.licenses.overview.intro"), textBlocks[1].getText());
+        assertEquals(getString("report.licenses.title"), textBlocks[2].getText());
+        assertEquals("The Apache Software License, Version 2.0", textBlocks[3].getText());
 
         // here's our specific test
         final WebLink[] links = response.getLinks();
-        assertEquals( 2, links.length );
-        assertEquals( "http://maven.apache.org/", links[0].getURLString() );
-        assertEquals( "https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString() );
-        assertEquals( "https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText() );
+        assertEquals(2, links.length);
+        assertEquals("http://maven.apache.org/", links[0].getURLString());
+        assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString());
+        assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText());
     }
 }

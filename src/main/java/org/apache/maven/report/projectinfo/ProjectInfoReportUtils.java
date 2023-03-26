@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,15 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,14 +38,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.validator.routines.RegexValidator;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -64,11 +63,9 @@ import org.codehaus.plexus.util.StringUtils;
  * @version $Id$
  * @since 2.1
  */
-public class ProjectInfoReportUtils
-{
-    private static final UrlValidator URL_VALIDATOR = new UrlValidator( new String[] { "http", "https" },
-                                                                        new RegexValidator( "^([" + "\\p{Alnum}\\-\\."
-                                                                            + "]*)(:\\d*)?(.*)?" ), 0 );
+public class ProjectInfoReportUtils {
+    private static final UrlValidator URL_VALIDATOR = new UrlValidator(
+            new String[] {"http", "https"}, new RegexValidator("^([" + "\\p{Alnum}\\-\\." + "]*)(:\\d*)?(.*)?"), 0);
 
     /** The timeout when getting the url input stream */
     private static final int TIMEOUT = 1000 * 5;
@@ -85,10 +82,8 @@ public class ProjectInfoReportUtils
      * @throws IOException if any
      * @see #getContent(URL, Settings, String)
      */
-    public static String getContent( URL url, Settings settings )
-        throws IOException
-    {
-        return getContent( url, settings, DEFAULT_ENCODING );
+    public static String getContent(URL url, Settings settings) throws IOException {
+        return getContent(url, settings, DEFAULT_ENCODING);
     }
 
     /**
@@ -100,10 +95,8 @@ public class ProjectInfoReportUtils
      * @return the input stream decoded with the wanted encoding as string
      * @throws IOException if any
      */
-    public static String getContent( URL url, Settings settings, String encoding )
-        throws IOException
-    {
-        return getContent( url, null, settings, encoding );
+    public static String getContent(URL url, Settings settings, String encoding) throws IOException {
+        return getContent(url, null, settings, encoding);
     }
 
     /**
@@ -117,94 +110,76 @@ public class ProjectInfoReportUtils
      * @throws IOException if any
      * @since 2.3
      */
-    public static String getContent( URL url, MavenProject project, Settings settings, String encoding )
-        throws IOException
-    {
+    public static String getContent(URL url, MavenProject project, Settings settings, String encoding)
+            throws IOException {
         String scheme = url.getProtocol();
 
-        if ( StringUtils.isEmpty( encoding ) )
-        {
+        if (StringUtils.isEmpty(encoding)) {
             encoding = DEFAULT_ENCODING;
         }
 
-        if ( "file".equals( scheme ) )
-        {
+        if ("file".equals(scheme)) {
             InputStream in = null;
-            try
-            {
+            try {
                 URLConnection conn = url.openConnection();
                 in = conn.getInputStream();
 
-                final String content = IOUtil.toString( in, encoding );
+                final String content = IOUtil.toString(in, encoding);
 
                 in.close();
                 in = null;
 
                 return content;
-            }
-            finally
-            {
-                IOUtil.close( in );
+            } finally {
+                IOUtil.close(in);
             }
         }
 
         Proxy proxy = settings.getActiveProxy();
-        if ( proxy != null )
-        {
-            if ( "http".equals( scheme ) || "https".equals( scheme ) || "ftp".equals( scheme ) )
-            {
+        if (proxy != null) {
+            if ("http".equals(scheme) || "https".equals(scheme) || "ftp".equals(scheme)) {
                 scheme += ".";
-            }
-            else
-            {
+            } else {
                 scheme = "";
             }
 
             String host = proxy.getHost();
-            if ( !StringUtils.isEmpty( host ) )
-            {
+            if (!StringUtils.isEmpty(host)) {
                 Properties p = System.getProperties();
-                p.setProperty( scheme + "proxySet", "true" );
-                p.setProperty( scheme + "proxyHost", host );
-                p.setProperty( scheme + "proxyPort", String.valueOf( proxy.getPort() ) );
-                if ( !StringUtils.isEmpty( proxy.getNonProxyHosts() ) )
-                {
-                    p.setProperty( scheme + "nonProxyHosts", proxy.getNonProxyHosts() );
+                p.setProperty(scheme + "proxySet", "true");
+                p.setProperty(scheme + "proxyHost", host);
+                p.setProperty(scheme + "proxyPort", String.valueOf(proxy.getPort()));
+                if (!StringUtils.isEmpty(proxy.getNonProxyHosts())) {
+                    p.setProperty(scheme + "nonProxyHosts", proxy.getNonProxyHosts());
                 }
 
                 final String userName = proxy.getUsername();
-                if ( !StringUtils.isEmpty( userName ) )
-                {
-                    final String pwd = StringUtils.isEmpty( proxy.getPassword() ) ? "" : proxy.getPassword();
-                    Authenticator.setDefault( new Authenticator()
-                    {
+                if (!StringUtils.isEmpty(userName)) {
+                    final String pwd = StringUtils.isEmpty(proxy.getPassword()) ? "" : proxy.getPassword();
+                    Authenticator.setDefault(new Authenticator() {
                         /** {@inheritDoc} */
                         @Override
-                        protected PasswordAuthentication getPasswordAuthentication()
-                        {
-                            return new PasswordAuthentication( userName, pwd.toCharArray() );
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(userName, pwd.toCharArray());
                         }
-                    } );
+                    });
                 }
             }
         }
 
         InputStream in = null;
-        try
-        {
-            URLConnection conn = getURLConnection( url, project, settings );
+        try {
+            URLConnection conn = getURLConnection(url, project, settings);
             in = conn.getInputStream();
 
-            final String string = IOUtil.toString( in, encoding );
+            final String string = IOUtil.toString(in, encoding);
 
             in.close();
             in = null;
 
             return string;
-        }
-        finally
-        {
-            IOUtil.close( in );
+        } finally {
+            IOUtil.close(in);
         }
     }
 
@@ -215,34 +190,30 @@ public class ProjectInfoReportUtils
      * @param buildingRequest not null
      * @return the artifact url or null if an error occurred.
      */
-    public static String getArtifactUrl( RepositorySystem repositorySystem, Artifact artifact,
-                                         ProjectBuilder projectBuilder, ProjectBuildingRequest buildingRequest )
-    {
-        if ( Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) )
-        {
+    public static String getArtifactUrl(
+            RepositorySystem repositorySystem,
+            Artifact artifact,
+            ProjectBuilder projectBuilder,
+            ProjectBuildingRequest buildingRequest) {
+        if (Artifact.SCOPE_SYSTEM.equals(artifact.getScope())) {
             return null;
         }
 
-        Artifact copyArtifact = ArtifactUtils.copyArtifact( artifact );
-        if ( !"pom".equals( copyArtifact.getType() ) )
-        {
-            copyArtifact =
-                repositorySystem.createProjectArtifact( copyArtifact.getGroupId(), copyArtifact.getArtifactId(),
-                                                        copyArtifact.getVersion() );
+        Artifact copyArtifact = ArtifactUtils.copyArtifact(artifact);
+        if (!"pom".equals(copyArtifact.getType())) {
+            copyArtifact = repositorySystem.createProjectArtifact(
+                    copyArtifact.getGroupId(), copyArtifact.getArtifactId(), copyArtifact.getVersion());
         }
-        try
-        {
-            MavenProject pluginProject = projectBuilder.build( copyArtifact, buildingRequest ).getProject();
+        try {
+            MavenProject pluginProject =
+                    projectBuilder.build(copyArtifact, buildingRequest).getProject();
 
-            if ( isArtifactUrlValid( pluginProject.getUrl() ) )
-            {
+            if (isArtifactUrlValid(pluginProject.getUrl())) {
                 return pluginProject.getUrl();
             }
 
             return null;
-        }
-        catch ( ProjectBuildingException e )
-        {
+        } catch (ProjectBuildingException e) {
             return null;
         }
     }
@@ -253,10 +224,8 @@ public class ProjectInfoReportUtils
      * @return the artifactId cell with or without a link pattern
      * @see AbstractMavenReportRenderer#linkPatternedText(String)
      */
-    public static String getArtifactIdCell( String artifactId, String link )
-    {
-        if ( StringUtils.isEmpty( link ) )
-        {
+    public static String getArtifactIdCell(String artifactId, String link) {
+        if (StringUtils.isEmpty(link)) {
             return artifactId;
         }
 
@@ -267,14 +236,12 @@ public class ProjectInfoReportUtils
      * @param url not null
      * @return <code>true</code> if the url is valid, <code>false</code> otherwise.
      */
-    public static boolean isArtifactUrlValid( String url )
-    {
-        if ( StringUtils.isEmpty( url ) )
-        {
+    public static boolean isArtifactUrlValid(String url) {
+        if (StringUtils.isEmpty(url)) {
             return false;
         }
 
-        return URL_VALIDATOR.isValid( url );
+        return URL_VALIDATOR.isValid(url);
     }
 
     /**
@@ -285,13 +252,11 @@ public class ProjectInfoReportUtils
      * @param uri the URI parse
      * @return the server host of a web-based mailing list archive server
      */
-    public static String getArchiveServer( String uri )
-    {
-        if ( uri == null )
-        {
+    public static String getArchiveServer(String uri) {
+        if (uri == null) {
             return "???UNKNOWN???";
         }
-        return URI.create( uri ).getHost();
+        return URI.create(uri).getHost();
     }
 
     /**
@@ -301,91 +266,87 @@ public class ProjectInfoReportUtils
      * @return the url connection with auth if required. Don't check the certificate if SSL scheme.
      * @throws IOException if any
      */
-    private static URLConnection getURLConnection( URL url, MavenProject project, Settings settings )
-        throws IOException
-    {
+    private static URLConnection getURLConnection(URL url, MavenProject project, Settings settings) throws IOException {
         URLConnection conn = url.openConnection();
-        conn.setConnectTimeout( TIMEOUT );
-        conn.setReadTimeout( TIMEOUT );
+        conn.setConnectTimeout(TIMEOUT);
+        conn.setReadTimeout(TIMEOUT);
 
         // conn authorization
-        //@formatter:off
-        if ( settings.getServers() != null
-            && !settings.getServers().isEmpty()
-            && project != null
-            && project.getDistributionManagement() != null
-            && (
-                    project.getDistributionManagement().getRepository() != null
-                 || project.getDistributionManagement().getSnapshotRepository() != null
-               )
-            && ( StringUtils.isNotEmpty( project.getDistributionManagement().getRepository().getUrl() )
-                 || StringUtils.isNotEmpty( project.getDistributionManagement().getSnapshotRepository().getUrl() ) )
-               )
-        //@formatter:on
+        // @formatter:off
+        if (settings.getServers() != null
+                && !settings.getServers().isEmpty()
+                && project != null
+                && project.getDistributionManagement() != null
+                && (project.getDistributionManagement().getRepository() != null
+                        || project.getDistributionManagement().getSnapshotRepository() != null)
+                && (StringUtils.isNotEmpty(project.getDistributionManagement()
+                                .getRepository()
+                                .getUrl())
+                        || StringUtils.isNotEmpty(project.getDistributionManagement()
+                                .getSnapshotRepository()
+                                .getUrl())))
+        // @formatter:on
         {
             Server server = null;
-            if ( url.toString().contains( project.getDistributionManagement().getRepository().getUrl() ) )
-            {
-                server = settings.getServer( project.getDistributionManagement().getRepository().getId() );
+            if (url.toString()
+                    .contains(
+                            project.getDistributionManagement().getRepository().getUrl())) {
+                server = settings.getServer(
+                        project.getDistributionManagement().getRepository().getId());
             }
-            if ( server == null
-                && url.toString().contains( project.getDistributionManagement().getSnapshotRepository().getUrl() ) )
-            {
-                server = settings.getServer( project.getDistributionManagement().getSnapshotRepository().getId() );
+            if (server == null
+                    && url.toString()
+                            .contains(project.getDistributionManagement()
+                                    .getSnapshotRepository()
+                                    .getUrl())) {
+                server = settings.getServer(project.getDistributionManagement()
+                        .getSnapshotRepository()
+                        .getId());
             }
 
-            if ( server != null && StringUtils.isNotEmpty( server.getUsername() )
-                && StringUtils.isNotEmpty( server.getPassword() ) )
-            {
-                String up = server.getUsername().trim() + ":" + server.getPassword().trim();
-                String upEncoded = new String( Base64.encodeBase64Chunked( up.getBytes() ) ).trim();
+            if (server != null
+                    && StringUtils.isNotEmpty(server.getUsername())
+                    && StringUtils.isNotEmpty(server.getPassword())) {
+                String up =
+                        server.getUsername().trim() + ":" + server.getPassword().trim();
+                String upEncoded = new String(Base64.encodeBase64Chunked(up.getBytes())).trim();
 
-                conn.setRequestProperty( "Authorization", "Basic " + upEncoded );
+                conn.setRequestProperty("Authorization", "Basic " + upEncoded);
             }
         }
 
-        if ( conn instanceof HttpsURLConnection )
-        {
-            HostnameVerifier hostnameverifier = new HostnameVerifier()
-            {
+        if (conn instanceof HttpsURLConnection) {
+            HostnameVerifier hostnameverifier = new HostnameVerifier() {
                 /** {@inheritDoc} */
-                public boolean verify( String urlHostName, SSLSession session )
-                {
+                public boolean verify(String urlHostName, SSLSession session) {
                     return true;
                 }
             };
-            ( (HttpsURLConnection) conn ).setHostnameVerifier( hostnameverifier );
+            ((HttpsURLConnection) conn).setHostnameVerifier(hostnameverifier);
 
-            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
-            {
-                /** {@inheritDoc} */
-                public void checkClientTrusted( final X509Certificate[] chain, final String authType )
-                {
+            TrustManager[] trustAllCerts = new TrustManager[] {
+                new X509TrustManager() {
+                    /** {@inheritDoc} */
+                    public void checkClientTrusted(final X509Certificate[] chain, final String authType) {}
+
+                    /** {@inheritDoc} */
+                    public void checkServerTrusted(final X509Certificate[] chain, final String authType) {}
+
+                    /** {@inheritDoc} */
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
                 }
+            };
 
-                /** {@inheritDoc} */
-                public void checkServerTrusted( final X509Certificate[] chain, final String authType )
-                {
-                }
-
-                /** {@inheritDoc} */
-                public X509Certificate[] getAcceptedIssuers()
-                {
-                    return null;
-                }
-            } };
-
-            try
-            {
-                SSLContext sslContext = SSLContext.getInstance( "SSL" );
-                sslContext.init( null, trustAllCerts, new SecureRandom() );
+            try {
+                SSLContext sslContext = SSLContext.getInstance("SSL");
+                sslContext.init(null, trustAllCerts, new SecureRandom());
 
                 SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-                ( (HttpsURLConnection) conn ).setSSLSocketFactory( sslSocketFactory );
-            }
-            catch ( NoSuchAlgorithmException | KeyManagementException e1 )
-            {
+                ((HttpsURLConnection) conn).setSSLSocketFactory(sslSocketFactory);
+            } catch (NoSuchAlgorithmException | KeyManagementException e1) {
                 // ignore
             }
         }

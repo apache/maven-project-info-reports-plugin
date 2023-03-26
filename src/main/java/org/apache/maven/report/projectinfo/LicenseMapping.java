@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,36 +16,31 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.util.List;
 
 /**
  * License mapping
  */
-public class LicenseMapping
-{
+public class LicenseMapping {
 
     private List<String> froms;
     private String to;
 
-    public List<String> getFroms()
-    {
+    public List<String> getFroms() {
         return froms;
     }
 
-    public void setFroms( List<String> froms )
-    {
+    public void setFroms(List<String> froms) {
         this.froms = froms;
     }
 
-    public String getTo()
-    {
+    public String getTo() {
         return to;
     }
 
-    public void setTo( String to )
-    {
+    public void setTo(String to) {
         this.to = to;
     }
-
 }

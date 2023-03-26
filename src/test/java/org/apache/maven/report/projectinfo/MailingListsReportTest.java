@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
 import java.util.Locale;
@@ -34,9 +33,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class MailingListsReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class MailingListsReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -47,46 +44,44 @@ public class MailingListsReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        generateReport( "mailing-lists", "mailing-lists-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
+    public void testReport() throws Exception {
+        generateReport("mailing-lists", "mailing-lists-plugin-config.xml");
+        assertTrue(
+                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
 
-        URL reportURL = getGeneratedReport( "mailing-lists.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "mailing lists project info",
-            getString( "report.mailing-lists.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle = prepareTitle("mailing lists project info", getString("report.mailing-lists.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( getString( "report.mailing-lists.title" ), textBlocks[0].getText() );
-        assertEquals( getString( "report.mailing-lists.intro" ), textBlocks[1].getText() );
+        assertEquals(getString("report.mailing-lists.title"), textBlocks[0].getText());
+        assertEquals(getString("report.mailing-lists.intro"), textBlocks[1].getText());
 
         // MPIR-385 + MPIR-401: Test links are URIs otherwise assume a plain email address
         String post = getString("report.mailing-lists.column.post");
-        WebLink[] postLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, post );
-        assertEquals( "mailto:test@maven.apache.org", postLinks[0].getAttribute( "href" ) );
-        assertEquals( "mailto:test2@maven.apache.org", postLinks[1].getAttribute( "href" ) );
+        WebLink[] postLinks = response.getMatchingLinks(WebLink.MATCH_CONTAINED_TEXT, post);
+        assertEquals("mailto:test@maven.apache.org", postLinks[0].getAttribute("href"));
+        assertEquals("mailto:test2@maven.apache.org", postLinks[1].getAttribute("href"));
         String subscribe = getString("report.mailing-lists.column.subscribe");
-        WebLink[] subscribeLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, subscribe );
-        assertEquals( "MAILTO:test-subscribe@maven.apache.org", subscribeLinks[0].getAttribute( "href" ) );
-        assertEquals( "MAILTO:test-subscribe2@maven.apache.org", subscribeLinks[1].getAttribute( "href" ) );
+        WebLink[] subscribeLinks = response.getMatchingLinks(WebLink.MATCH_CONTAINED_TEXT, subscribe);
+        assertEquals("MAILTO:test-subscribe@maven.apache.org", subscribeLinks[0].getAttribute("href"));
+        assertEquals("MAILTO:test-subscribe2@maven.apache.org", subscribeLinks[1].getAttribute("href"));
         String unsubscribe = getString("report.mailing-lists.column.unsubscribe");
-        WebLink[] unsubscribeLinks = response.getMatchingLinks( WebLink.MATCH_CONTAINED_TEXT, unsubscribe );
-        assertTrue( unsubscribeLinks.length == 1 );
-        assertEquals( "https://example.com/unsubscribe", unsubscribeLinks[0].getAttribute( "href" ) );
+        WebLink[] unsubscribeLinks = response.getMatchingLinks(WebLink.MATCH_CONTAINED_TEXT, unsubscribe);
+        assertTrue(unsubscribeLinks.length == 1);
+        assertEquals("https://example.com/unsubscribe", unsubscribeLinks[0].getAttribute("href"));
     }
 
     /**
@@ -94,21 +89,18 @@ public class MailingListsReportTest
      *
      * @throws Exception if any
      */
-    public void testFrenchReport()
-        throws Exception
-    {
+    public void testFrenchReport() throws Exception {
         Locale oldLocale = Locale.getDefault();
 
-        try
-        {
-            Locale.setDefault( Locale.FRENCH );
+        try {
+            Locale.setDefault(Locale.FRENCH);
 
-            generateReport( "mailing-lists", "mailing-lists-plugin-config.xml" );
-            assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
-        }
-        finally
-        {
-            Locale.setDefault( oldLocale );
+            generateReport("mailing-lists", "mailing-lists-plugin-config.xml");
+            assertTrue(
+                    "Test html generated",
+                    getGeneratedReport("mailing-lists.html").exists());
+        } finally {
+            Locale.setDefault(oldLocale);
         }
     }
 
@@ -117,10 +109,9 @@ public class MailingListsReportTest
      * Those should only lead to a WARN but not an exception
      * @throws Exception if any
      */
-    public void testInvalidLink()
-        throws Exception
-    {
-        generateReport( "mailing-lists", "mailing-lists-plugin-config-invalidlink.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "mailing-lists.html" ).exists() );
+    public void testInvalidLink() throws Exception {
+        generateReport("mailing-lists", "mailing-lists-plugin-config-invalidlink.xml");
+        assertTrue(
+                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
     }
 }

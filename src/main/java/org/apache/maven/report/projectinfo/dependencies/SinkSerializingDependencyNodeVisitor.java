@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.dependencies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.dependencies;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.dependencies;
 
 import java.util.List;
 
@@ -31,48 +30,36 @@ import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
  *
  * @author <a href="mailto:wangyf2010@gmail.com">Simon Wang</a>
  */
-public class SinkSerializingDependencyNodeVisitor
-    implements DependencyNodeVisitor
-{
+public class SinkSerializingDependencyNodeVisitor implements DependencyNodeVisitor {
     // classes ----------------------------------------------------------------
 
     /**
      * Provides tokens to use when serializing the dependency tree.
      */
-    private class TreeTokens
-    {
+    private class TreeTokens {
         private final Sink sink;
 
-        TreeTokens( Sink sink )
-        {
+        TreeTokens(Sink sink) {
             this.sink = sink;
         }
 
-        void addNodeIndent( boolean last )
-        {
-            if ( last )
-            {
-                sink.text( "\\-" );
+        void addNodeIndent(boolean last) {
+            if (last) {
+                sink.text("\\-");
                 sink.nonBreakingSpace();
-            }
-            else
-            {
-                sink.text( "+-" );
+            } else {
+                sink.text("+-");
                 sink.nonBreakingSpace();
             }
         }
 
-        void fillIndent( boolean last )
-        {
-            if ( last )
-            {
+        void fillIndent(boolean last) {
+            if (last) {
                 sink.nonBreakingSpace();
                 sink.nonBreakingSpace();
                 sink.nonBreakingSpace();
-            }
-            else
-            {
-                sink.text( "|" );
+            } else {
+                sink.text("|");
                 sink.nonBreakingSpace();
                 sink.nonBreakingSpace();
             }
@@ -104,10 +91,9 @@ public class SinkSerializingDependencyNodeVisitor
      *
      * @param sink the writer to serialize to
      */
-    public SinkSerializingDependencyNodeVisitor( Sink sink )
-    {
+    public SinkSerializingDependencyNodeVisitor(Sink sink) {
         this.sink = sink;
-        this.tokens = new TreeTokens( sink );
+        this.tokens = new TreeTokens(sink);
         depth = 0;
     }
 
@@ -116,11 +102,10 @@ public class SinkSerializingDependencyNodeVisitor
     /**
      * {@inheritDoc}
      */
-    public boolean visit( DependencyNode node )
-    {
-        indent( node );
+    public boolean visit(DependencyNode node) {
+        indent(node);
 
-        sink.text( node.toNodeString() );
+        sink.text(node.toNodeString());
         sink.lineBreak();
 
         depth++;
@@ -131,8 +116,7 @@ public class SinkSerializingDependencyNodeVisitor
     /**
      * {@inheritDoc}
      */
-    public boolean endVisit( DependencyNode node )
-    {
+    public boolean endVisit(DependencyNode node) {
         depth--;
 
         return true;
@@ -145,16 +129,13 @@ public class SinkSerializingDependencyNodeVisitor
      *
      * @param node the dependency node to indent
      */
-    private void indent( DependencyNode node )
-    {
-        for ( int i = 1; i < depth; i++ )
-        {
-            tokens.fillIndent( isLast( node, i ) );
+    private void indent(DependencyNode node) {
+        for (int i = 1; i < depth; i++) {
+            tokens.fillIndent(isLast(node, i));
         }
 
-        if ( depth > 0 )
-        {
-            tokens.addNodeIndent( isLast( node ) );
+        if (depth > 0) {
+            tokens.addNodeIndent(isLast(node));
         }
     }
 
@@ -164,23 +145,19 @@ public class SinkSerializingDependencyNodeVisitor
      * @param node the dependency node to check
      * @return <code>true</code> if the specified dependency node is the last of its last siblings
      */
-    private boolean isLast( DependencyNode node )
-    {
+    private boolean isLast(DependencyNode node) {
         // TODO: remove node argument and calculate from visitor calls only
 
         DependencyNode parent = node.getParent();
 
         boolean last;
 
-        if ( parent == null )
-        {
+        if (parent == null) {
             last = true;
-        }
-        else
-        {
+        } else {
             List<DependencyNode> siblings = parent.getChildren();
 
-            last = ( siblings.indexOf( node ) == siblings.size() - 1 );
+            last = (siblings.indexOf(node) == siblings.size() - 1);
         }
 
         return last;
@@ -193,17 +170,15 @@ public class SinkSerializingDependencyNodeVisitor
      * @param ancestorDepth the depth of the ancestor of the specified dependency node to check
      * @return <code>true</code> if the specified dependency node ancestor is the last of its siblings
      */
-    private boolean isLast( DependencyNode node, int ancestorDepth )
-    {
+    private boolean isLast(DependencyNode node, int ancestorDepth) {
         // TODO: remove node argument and calculate from visitor calls only
 
         int distance = depth - ancestorDepth;
 
-        while ( distance-- > 0 )
-        {
+        while (distance-- > 0) {
             node = node.getParent();
         }
 
-        return isLast( node );
+        return isLast(node);
     }
 }

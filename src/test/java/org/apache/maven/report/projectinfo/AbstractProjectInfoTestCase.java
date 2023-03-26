@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +33,8 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
-import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 
 /**
@@ -45,9 +44,7 @@ import org.eclipse.aether.repository.LocalRepository;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public abstract class AbstractProjectInfoTestCase
-    extends AbstractMojoTestCase
-{
+public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
     private ArtifactStubFactory artifactStubFactory;
 
     /**
@@ -66,26 +63,22 @@ public abstract class AbstractProjectInfoTestCase
     private I18N i18n;
 
     @Override
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         // required for mojo lookups to work
         super.setUp();
 
-        i18n = getContainer().lookup( I18N.class );
-        setVariableValueToObject( i18n, "defaultBundleName", "project-info-reports" );
+        i18n = getContainer().lookup(I18N.class);
+        setVariableValueToObject(i18n, "defaultBundleName", "project-info-reports");
 
-        artifactStubFactory = new DependencyArtifactStubFactory( getTestFile( "target" ), true, false );
+        artifactStubFactory = new DependencyArtifactStubFactory(getTestFile("target"), true, false);
         artifactStubFactory.getWorkingDir().mkdirs();
 
         // Set the default Locale
-        Locale.setDefault( DEFAULT_LOCALE );
+        Locale.setDefault(DEFAULT_LOCALE);
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         super.tearDown();
     }
 
@@ -95,14 +88,12 @@ public abstract class AbstractProjectInfoTestCase
      * @param key the key for the desired string
      * @return the string for the given key
      */
-    protected String getString( String key )
-    {
-        if ( StringUtils.isEmpty( key ) )
-        {
-            throw new IllegalArgumentException( "The key cannot be empty" );
+    protected String getString(String key) {
+        if (StringUtils.isEmpty(key)) {
+            throw new IllegalArgumentException("The key cannot be empty");
         }
 
-        return i18n.getString( key, Locale.getDefault() ).trim();
+        return i18n.getString(key, Locale.getDefault()).trim();
     }
 
     /**
@@ -113,19 +104,16 @@ public abstract class AbstractProjectInfoTestCase
      * @return the prepared title as per Doxia 1.6
      * @since 2.8
      */
-    protected String prepareTitle( String name, String title )
-    {
-        if ( StringUtils.isEmpty( name ) )
-        {
-            throw new IllegalArgumentException( "The name cannot be empty" );
+    protected String prepareTitle(String name, String title) {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("The name cannot be empty");
         }
 
-        if ( StringUtils.isEmpty( title ) )
-        {
-            throw new IllegalArgumentException( "The title cannot be empty" );
+        if (StringUtils.isEmpty(title)) {
+            throw new IllegalArgumentException("The title cannot be empty");
         }
 
-        return String.format( "%s \u2013 %s", name, title );
+        return String.format("%s \u2013 %s", name, title);
     }
 
     /**
@@ -133,8 +121,7 @@ public abstract class AbstractProjectInfoTestCase
      *
      * @return the maven project
      */
-    protected MavenProject getTestMavenProject()
-    {
+    protected MavenProject getTestMavenProject() {
         return testMavenProject;
     }
 
@@ -145,15 +132,13 @@ public abstract class AbstractProjectInfoTestCase
      * @return the generated report as file
      * @throws IOException if the return file doesnt exist
      */
-    protected File getGeneratedReport( String name )
-        throws IOException
-    {
-        String outputDirectory = getBasedir() + "/target/test-harness/" + getTestMavenProject().getArtifactId();
+    protected File getGeneratedReport(String name) throws IOException {
+        String outputDirectory =
+                getBasedir() + "/target/test-harness/" + getTestMavenProject().getArtifactId();
 
-        File report = new File( outputDirectory, name );
-        if ( !report.exists() )
-        {
-            throw new IOException( "File not found. Attempted :" + report );
+        File report = new File(outputDirectory, name);
+        if (!report.exists()) {
+            throw new IOException("File not found. Attempted :" + report);
         }
 
         return report;
@@ -167,49 +152,42 @@ public abstract class AbstractProjectInfoTestCase
      * @return the generated HTML file
      * @throws Exception if any
      */
-    protected File generateReport( String goal, String pluginXml )
-        throws Exception
-    {
-        File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/" + pluginXml );
-        AbstractProjectInfoReport mojo  = createReportMojo( goal, pluginXmlFile );
-        return generateReport( mojo, pluginXmlFile );
+    protected File generateReport(String goal, String pluginXml) throws Exception {
+        File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + pluginXml);
+        AbstractProjectInfoReport mojo = createReportMojo(goal, pluginXmlFile);
+        return generateReport(mojo, pluginXmlFile);
     }
 
-    protected AbstractProjectInfoReport createReportMojo( String goal, File pluginXmlFile )
-        throws Exception
-    {
-        AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo( goal, pluginXmlFile );
-        assertNotNull( "Mojo found.", mojo );
+    protected AbstractProjectInfoReport createReportMojo(String goal, File pluginXmlFile) throws Exception {
+        AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo(goal, pluginXmlFile);
+        assertNotNull("Mojo found.", mojo);
 
-        LegacySupport legacySupport = lookup( LegacySupport.class );
-        legacySupport.setSession( newMavenSession( new MavenProjectStub() ) );
+        LegacySupport legacySupport = lookup(LegacySupport.class);
+        legacySupport.setSession(newMavenSession(new MavenProjectStub()));
         DefaultRepositorySystemSession repoSession =
-            (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
-        repoSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory().newInstance( repoSession, new LocalRepository( artifactStubFactory.getWorkingDir() ) ) );
+                (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
+        repoSession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                .newInstance(repoSession, new LocalRepository(artifactStubFactory.getWorkingDir())));
 
-        setVariableValueToObject( mojo, "session", legacySupport.getSession() );
-        setVariableValueToObject( mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories() );
-        setVariableValueToObject( mojo, "pluginRepositories", mojo.getProject().getPluginArtifactRepositories() );
+        setVariableValueToObject(mojo, "session", legacySupport.getSession());
+        setVariableValueToObject(mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories());
+        setVariableValueToObject(mojo, "pluginRepositories", mojo.getProject().getPluginArtifactRepositories());
         return mojo;
     }
 
-    protected File generateReport( AbstractProjectInfoReport mojo, File pluginXmlFile )
-        throws Exception
-    {
+    protected File generateReport(AbstractProjectInfoReport mojo, File pluginXmlFile) throws Exception {
         mojo.execute();
 
-        ProjectBuilder builder = lookup( ProjectBuilder.class );
+        ProjectBuilder builder = lookup(ProjectBuilder.class);
 
         ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
-        buildingRequest.setRepositorySession( lookup( LegacySupport.class ).getRepositorySession() );
+        buildingRequest.setRepositorySession(lookup(LegacySupport.class).getRepositorySession());
 
-        testMavenProject = builder.build( pluginXmlFile, buildingRequest ).getProject();
+        testMavenProject = builder.build(pluginXmlFile, buildingRequest).getProject();
 
         File outputDir = mojo.getReportOutputDirectory();
         String filename = mojo.getOutputName() + ".html";
 
-        return new File( outputDir, filename );
+        return new File(outputDir, filename);
     }
-
-
 }

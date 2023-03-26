@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.util.Locale;
 
@@ -38,10 +37,8 @@ import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManag
  * @author Nick Stolwijk
  * @since 2.1
  */
-@Mojo( name = "dependency-management", requiresDependencyResolution = ResolutionScope.TEST )
-public class DependencyManagementReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "dependency-management", requiresDependencyResolution = ResolutionScope.TEST)
+public class DependencyManagementReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Mojo components
     // ----------------------------------------------------------------------
@@ -76,11 +73,9 @@ public class DependencyManagementReport
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
+        if (result && skipEmptyReport) {
             result = getManagementDependencies().hasDependencies();
         }
 
@@ -88,38 +83,48 @@ public class DependencyManagementReport
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
+    public void executeReport(Locale locale) {
         ProjectBuildingRequest buildingRequest =
-            new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
-        buildingRequest.setLocalRepository( localRepository );
-        buildingRequest.setRemoteRepositories( remoteRepositories );
-        buildingRequest.setPluginArtifactRepositories( pluginRepositories );
-        buildingRequest.setProcessPlugins( false );
+                new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
+        buildingRequest.setLocalRepository(localRepository);
+        buildingRequest.setRemoteRepositories(remoteRepositories);
+        buildingRequest.setPluginArtifactRepositories(pluginRepositories);
+        buildingRequest.setProcessPlugins(false);
 
-        RepositoryUtils repoUtils =
-            new RepositoryUtils( getLog(), projectBuilder, repositorySystem, resolver,
-                                 project.getRemoteArtifactRepositories(), project.getPluginArtifactRepositories(),
-                                 buildingRequest, repositoryMetadataManager );
+        RepositoryUtils repoUtils = new RepositoryUtils(
+                getLog(),
+                projectBuilder,
+                repositorySystem,
+                resolver,
+                project.getRemoteArtifactRepositories(),
+                project.getPluginArtifactRepositories(),
+                buildingRequest,
+                repositoryMetadataManager);
 
-        DependencyManagementRenderer r =
-            new DependencyManagementRenderer( getSink(), locale, getI18N( locale ), getLog(),
-                                              getManagementDependencies(), artifactMetadataSource, repositorySystem,
-                                              projectBuilder, buildingRequest, repoUtils, getLicenseMappings() );
+        DependencyManagementRenderer r = new DependencyManagementRenderer(
+                getSink(),
+                locale,
+                getI18N(locale),
+                getLog(),
+                getManagementDependencies(),
+                artifactMetadataSource,
+                repositorySystem,
+                projectBuilder,
+                buildingRequest,
+                repoUtils,
+                getLicenseMappings());
         r.render();
     }
 
     /**
      * {@inheritDoc}
      */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "dependency-management";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "dependency-management";
     }
 
@@ -127,20 +132,16 @@ public class DependencyManagementReport
     // Private methods
     // ----------------------------------------------------------------------
 
-    private ManagementDependencies getManagementDependencies()
-    {
-        if ( managementDependencies != null )
-        {
+    private ManagementDependencies getManagementDependencies() {
+        if (managementDependencies != null) {
             return managementDependencies;
         }
 
-        if ( project.getDependencyManagement() == null )
-        {
-            managementDependencies = new ManagementDependencies( null );
-        }
-        else
-        {
-            managementDependencies = new ManagementDependencies( project.getDependencyManagement().getDependencies() );
+        if (project.getDependencyManagement() == null) {
+            managementDependencies = new ManagementDependencies(null);
+        } else {
+            managementDependencies =
+                    new ManagementDependencies(project.getDependencyManagement().getDependencies());
         }
 
         return managementDependencies;

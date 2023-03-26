@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,9 +49,7 @@ import org.codehaus.plexus.util.xml.XmlStreamReader;
  * @author Nick Stolwijk
  * @version $Id$
  */
-public abstract class ProjectInfoProjectStub
-    extends MavenProjectStub
-{
+public abstract class ProjectInfoProjectStub extends MavenProjectStub {
     private Model model;
 
     private Build build;
@@ -60,55 +57,50 @@ public abstract class ProjectInfoProjectStub
     /**
      * Default constructor
      */
-    public ProjectInfoProjectStub()
-    {
+    public ProjectInfoProjectStub() {
         MavenXpp3Reader pomReader = new MavenXpp3Reader();
         XmlStreamReader reader = null;
-        try
-        {
-            reader = ReaderFactory.newXmlReader( new File( getBasedir(), getPOM() ) );
-            model = pomReader.read( reader );
+        try {
+            reader = ReaderFactory.newXmlReader(new File(getBasedir(), getPOM()));
+            model = pomReader.read(reader);
             reader.close();
             reader = null;
-            setModel( model );
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
-        finally
-        {
-            IOUtil.close( reader );
+            setModel(model);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtil.close(reader);
         }
 
-        setGroupId( model.getGroupId() );
-        setArtifactId( model.getArtifactId() );
-        setVersion( model.getVersion() );
-        setName( model.getName() );
-        setUrl( model.getUrl() );
-        setPackaging( model.getPackaging() );
+        setGroupId(model.getGroupId());
+        setArtifactId(model.getArtifactId());
+        setVersion(model.getVersion());
+        setName(model.getName());
+        setUrl(model.getUrl());
+        setPackaging(model.getPackaging());
 
-        String type = Objects.toString( super.getPackaging(), "jar" );
-        Artifact artifact = new ProjectInfoPluginArtifactStub( getGroupId(), getArtifactId(), getVersion(), type );
-        artifact.setArtifactHandler( new DefaultArtifactHandlerStub() );
-        setArtifact( artifact );
+        String type = Objects.toString(super.getPackaging(), "jar");
+        Artifact artifact = new ProjectInfoPluginArtifactStub(getGroupId(), getArtifactId(), getVersion(), type);
+        artifact.setArtifactHandler(new DefaultArtifactHandlerStub());
+        setArtifact(artifact);
 
         Build build = new Build();
-        build.setFinalName( model.getArtifactId() );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target" );
-        build.setSourceDirectory( getBasedir() + "/src/main/java" );
-        build.setOutputDirectory( super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target/classes" );
-        build.setTestSourceDirectory( getBasedir() + "/src/test/java" );
-        build.setTestOutputDirectory( super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target/test-classes" );
-        setBuild( build );
+        build.setFinalName(model.getArtifactId());
+        build.setDirectory(super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target");
+        build.setSourceDirectory(getBasedir() + "/src/main/java");
+        build.setOutputDirectory(super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target/classes");
+        build.setTestSourceDirectory(getBasedir() + "/src/test/java");
+        build.setTestOutputDirectory(
+                super.getBasedir() + "/target/test/unit/" + model.getArtifactId() + "/target/test-classes");
+        setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/src/main/java" );
-        setCompileSourceRoots( compileSourceRoots );
+        compileSourceRoots.add(getBasedir() + "/src/main/java");
+        setCompileSourceRoots(compileSourceRoots);
 
         List<String> testCompileSourceRoots = new ArrayList<>();
-        testCompileSourceRoots.add( getBasedir() + "/src/test/java" );
-        setTestCompileSourceRoots( testCompileSourceRoots );
+        testCompileSourceRoots.add(getBasedir() + "/src/test/java");
+        setTestCompileSourceRoots(testCompileSourceRoots);
     }
 
     /**
@@ -117,73 +109,72 @@ public abstract class ProjectInfoProjectStub
     protected abstract String getPOM();
 
     @Override
-    public Model getModel()
-    {
+    public Model getModel() {
         return model;
     }
 
     @Override
-    public Build getBuild()
-    {
+    public Build getBuild() {
         return build;
     }
 
     @Override
-    public void setBuild( Build build )
-    {
+    public void setBuild(Build build) {
         this.build = build;
     }
 
     @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/plugin-configs/" );
+    public File getBasedir() {
+        return new File(super.getBasedir() + "/src/test/resources/plugin-configs/");
     }
 
     @Override
-    public File getFile()
-    {
-        return new File( getBasedir(), getPOM() );
+    public File getFile() {
+        return new File(getBasedir(), getPOM());
     }
 
     @Override
-    public Set<Artifact> getArtifacts()
-    {
+    public Set<Artifact> getArtifacts() {
         return Collections.emptySet();
     }
 
     @Override
-    public List<ArtifactRepository> getRemoteArtifactRepositories()
-    {
-        ArtifactRepository repository = new MavenArtifactRepository( "central", "https://repo1.maven.org/maven2",
-                                                                       new DefaultRepositoryLayout(), new ArtifactRepositoryPolicy(), new ArtifactRepositoryPolicy() );
+    public List<ArtifactRepository> getRemoteArtifactRepositories() {
+        ArtifactRepository repository = new MavenArtifactRepository(
+                "central",
+                "https://repo1.maven.org/maven2",
+                new DefaultRepositoryLayout(),
+                new ArtifactRepositoryPolicy(),
+                new ArtifactRepositoryPolicy());
 
-        return Collections.singletonList( repository );
+        return Collections.singletonList(repository);
     }
 
     @Override
-    public Set<Artifact> getDependencyArtifacts()
-    {
-        Artifact artifact =
-            new DefaultArtifact( "junit", "junit", VersionRange.createFromVersion( "3.8.1" ), Artifact.SCOPE_TEST,
-                                 "jar", null, new DefaultArtifactHandler( "jar" ), false );
-        return Collections.singleton( artifact );
+    public Set<Artifact> getDependencyArtifacts() {
+        Artifact artifact = new DefaultArtifact(
+                "junit",
+                "junit",
+                VersionRange.createFromVersion("3.8.1"),
+                Artifact.SCOPE_TEST,
+                "jar",
+                null,
+                new DefaultArtifactHandler("jar"),
+                false);
+        return Collections.singleton(artifact);
     }
 
     @Override
-    public DependencyManagement getDependencyManagement()
-    {
+    public DependencyManagement getDependencyManagement() {
         return model.getDependencyManagement();
     }
 
     @Override
-    public PluginManagement getPluginManagement()
-    {
+    public PluginManagement getPluginManagement() {
         PluginManagement pluginMgmt = null;
 
         Build build = model.getBuild();
-        if ( build != null )
-        {
+        if (build != null) {
             pluginMgmt = build.getPluginManagement();
         }
 

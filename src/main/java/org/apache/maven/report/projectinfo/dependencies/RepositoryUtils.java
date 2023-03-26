@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.dependencies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.dependencies;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.dependencies;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +42,7 @@ import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
  * @version $Id$
  * @since 2.1
  */
-public class RepositoryUtils
-{
+public class RepositoryUtils {
     private final Log log;
 
     private final ProjectBuilder projectBuilder;
@@ -69,11 +67,15 @@ public class RepositoryUtils
      * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repositoryMetadataManager {@link RepositoryMetadataManager}
      */
-    public RepositoryUtils( Log log, ProjectBuilder projectBuilder, RepositorySystem repositorySystem,
-                            ArtifactResolver resolver, List<ArtifactRepository> remoteRepositories,
-                            List<ArtifactRepository> pluginRepositories, ProjectBuildingRequest buildingRequest,
-                            RepositoryMetadataManager repositoryMetadataManager )
-    {
+    public RepositoryUtils(
+            Log log,
+            ProjectBuilder projectBuilder,
+            RepositorySystem repositorySystem,
+            ArtifactResolver resolver,
+            List<ArtifactRepository> remoteRepositories,
+            List<ArtifactRepository> pluginRepositories,
+            ProjectBuildingRequest buildingRequest,
+            RepositoryMetadataManager repositoryMetadataManager) {
         this.log = log;
         this.projectBuilder = projectBuilder;
         this.repositorySystem = repositorySystem;
@@ -85,21 +87,18 @@ public class RepositoryUtils
 
     /**
      * @param artifact not null
-     * @throws ArtifactResolverException if any 
+     * @throws ArtifactResolverException if any
      */
-    public void resolve( Artifact artifact )
-        throws ArtifactResolverException
-    {
-        List<ArtifactRepository> repos =
-            new ArrayList<>( pluginRepositories.size() + remoteRepositories.size() );
-        repos.addAll( pluginRepositories );
-        repos.addAll( remoteRepositories );
+    public void resolve(Artifact artifact) throws ArtifactResolverException {
+        List<ArtifactRepository> repos = new ArrayList<>(pluginRepositories.size() + remoteRepositories.size());
+        repos.addAll(pluginRepositories);
+        repos.addAll(remoteRepositories);
 
-        ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
-        buildRequest.setRemoteRepositories( repos );
+        ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest(buildingRequest);
+        buildRequest.setRemoteRepositories(repos);
 
-        ArtifactResult result = resolver.resolveArtifact( buildRequest , artifact );
-        artifact.setFile( result.getArtifact().getFile() );
+        ArtifactResult result = resolver.resolveArtifact(buildRequest, artifact);
+        artifact.setFile(result.getArtifact().getFile());
     }
 
     /**
@@ -109,20 +108,19 @@ public class RepositoryUtils
      * @return the Maven project for the given artifact
      * @throws ProjectBuildingException if any
      */
-    public MavenProject getMavenProjectFromRepository( Artifact artifact )
-        throws ProjectBuildingException
-    {
+    public MavenProject getMavenProjectFromRepository(Artifact artifact) throws ProjectBuildingException {
         Artifact projectArtifact = artifact;
 
         boolean allowStubModel = false;
-        if ( !"pom".equals( artifact.getType() ) )
-        {
-            projectArtifact = repositorySystem.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                             artifact.getVersion() );
+        if (!"pom".equals(artifact.getType())) {
+            projectArtifact = repositorySystem.createProjectArtifact(
+                    artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
             allowStubModel = true;
         }
 
-        return projectBuilder.build( projectArtifact, allowStubModel, buildingRequest ).getProject();
+        return projectBuilder
+                .build(projectArtifact, allowStubModel, buildingRequest)
+                .getProject();
     }
 
     /**
@@ -131,34 +129,27 @@ public class RepositoryUtils
      * @return the URL in the given repo for the given artifact. If it is a snapshot artifact, the version
      * will be the timestamp and the build number from the metadata. Could return null if the repo is blacklisted.
      */
-    public String getDependencyUrlFromRepository( Artifact artifact, ArtifactRepository repo )
-    {
-        if ( repo.isBlacklisted() )
-        {
+    public String getDependencyUrlFromRepository(Artifact artifact, ArtifactRepository repo) {
+        if (repo.isBlacklisted()) {
             return null;
         }
 
-        Artifact copyArtifact = ArtifactUtils.copyArtifact( artifact );
+        Artifact copyArtifact = ArtifactUtils.copyArtifact(artifact);
         // Try to get the last artifact repo name depending the snapshot version
-        if ( ( artifact.isSnapshot() && repo.getSnapshots().isEnabled() ) )
-        {
-            if ( artifact.getBaseVersion().equals( artifact.getVersion() ) )
-            {
+        if ((artifact.isSnapshot() && repo.getSnapshots().isEnabled())) {
+            if (artifact.getBaseVersion().equals(artifact.getVersion())) {
                 // Try to resolve it if not already done
-                if ( artifact.getMetadataList() == null || artifact.getMetadataList().isEmpty() )
-                {
-                    try
-                    {
-                        resolve( artifact );
-                    }
-                    catch ( ArtifactResolverException e )
-                    {
-                        log.error( "Artifact: " + artifact.getId() + " could not be resolved." );
+                if (artifact.getMetadataList() == null
+                        || artifact.getMetadataList().isEmpty()) {
+                    try {
+                        resolve(artifact);
+                    } catch (ArtifactResolverException e) {
+                        log.error("Artifact: " + artifact.getId() + " could not be resolved.");
                     }
                 }
             }
         }
 
-        return repo.getUrl() + "/" + repo.pathOf( copyArtifact );
+        return repo.getUrl() + "/" + repo.pathOf(copyArtifact);
     }
 }

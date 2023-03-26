@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,42 +44,44 @@ import org.codehaus.plexus.i18n.I18N;
  * @author ltheussl
  * @since 2.2
  */
-@Mojo( name = "modules" )
-public class ModulesReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "modules")
+public class ModulesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
-            result = !isEmpty( getProject().getModel().getModules() );
+        if (result && skipEmptyReport) {
+            result = !isEmpty(getProject().getModel().getModules());
         }
 
         return result;
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
-        new ModulesRenderer( getSink(), getProject(), getReactorProjects(), projectBuilder, localRepository,
-                             getI18N( locale ), locale, getLog(), siteTool ).render();
+    public void executeReport(Locale locale) {
+        new ModulesRenderer(
+                        getSink(),
+                        getProject(),
+                        getReactorProjects(),
+                        projectBuilder,
+                        localRepository,
+                        getI18N(locale),
+                        locale,
+                        getLog(),
+                        siteTool)
+                .render();
     }
 
     /** {@inheritDoc} */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "modules";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "modules";
     }
 
@@ -91,9 +92,7 @@ public class ModulesReport
     /**
      * Internal renderer class
      */
-    static class ModulesRenderer
-        extends AbstractProjectInfoRenderer
-    {
+    static class ModulesRenderer extends AbstractProjectInfoRenderer {
 
         protected final Log log;
 
@@ -107,11 +106,17 @@ public class ModulesReport
 
         protected SiteTool siteTool;
 
-        ModulesRenderer( Sink sink, MavenProject project, List<MavenProject> reactorProjects,
-                         ProjectBuilder projectBuilder, ArtifactRepository localRepository, I18N i18n,
-                         Locale locale, Log log, SiteTool siteTool )
-        {
-            super( sink, i18n, locale );
+        ModulesRenderer(
+                Sink sink,
+                MavenProject project,
+                List<MavenProject> reactorProjects,
+                ProjectBuilder projectBuilder,
+                ArtifactRepository localRepository,
+                I18N i18n,
+                Locale locale,
+                Log log,
+                SiteTool siteTool) {
+            super(sink, i18n, locale);
 
             this.project = project;
             this.reactorProjects = reactorProjects;
@@ -122,78 +127,68 @@ public class ModulesReport
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "modules";
         }
 
         @Override
-        public void renderBody()
-        {
+        public void renderBody() {
             List<String> modules = project.getModel().getModules();
 
-            if ( modules == null || modules.isEmpty() )
-            {
-                startSection( getTitle() );
+            if (modules == null || modules.isEmpty()) {
+                startSection(getTitle());
 
-                paragraph( getI18nString( "nolist" ) );
+                paragraph(getI18nString("nolist"));
 
                 endSection();
 
                 return;
             }
 
-            startSection( getTitle() );
+            startSection(getTitle());
 
-            paragraph( getI18nString( "intro" ) );
+            paragraph(getI18nString("intro"));
 
             startTable();
 
-            String name = getI18nString( "header.name" );
-            String description = getI18nString( "header.description" );
-            tableHeader( new String[] { name, description } );
+            String name = getI18nString("header.name");
+            String description = getI18nString("header.description");
+            tableHeader(new String[] {name, description});
 
-            final String baseUrl = getDistMgmntSiteUrl( project );
+            final String baseUrl = getDistMgmntSiteUrl(project);
 
             ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
-            buildingRequest.setLocalRepository( localRepository );
-            buildingRequest.setProcessPlugins( false );
+            buildingRequest.setLocalRepository(localRepository);
+            buildingRequest.setProcessPlugins(false);
 
-            for ( String module : modules )
-            {
-                MavenProject moduleProject = getModuleFromReactor( project, reactorProjects, module );
+            for (String module : modules) {
+                MavenProject moduleProject = getModuleFromReactor(project, reactorProjects, module);
 
-                if ( moduleProject == null )
-                {
-                    log.warn( "Module " + module + " not found in reactor: loading locally" );
+                if (moduleProject == null) {
+                    log.warn("Module " + module + " not found in reactor: loading locally");
 
-                    File f = new File( project.getBasedir(), module + "/pom.xml" );
-                    if ( f.exists() )
-                    {
-                        try
-                        {
-                            moduleProject = projectBuilder.build( f, buildingRequest ).getProject();
+                    File f = new File(project.getBasedir(), module + "/pom.xml");
+                    if (f.exists()) {
+                        try {
+                            moduleProject =
+                                    projectBuilder.build(f, buildingRequest).getProject();
+                        } catch (ProjectBuildingException e) {
+                            throw new IllegalStateException("Unable to read local module POM", e);
                         }
-                        catch ( ProjectBuildingException e )
-                        {
-                            throw new IllegalStateException( "Unable to read local module POM", e );
-                        }
-                    }
-                    else
-                    {
+                    } else {
                         moduleProject = new MavenProject();
-                        moduleProject.setName( module );
-                        moduleProject.setDistributionManagement( new DistributionManagement() );
-                        moduleProject.getDistributionManagement().setSite( new Site() );
-                        moduleProject.getDistributionManagement().getSite().setUrl( module );
+                        moduleProject.setName(module);
+                        moduleProject.setDistributionManagement(new DistributionManagement());
+                        moduleProject.getDistributionManagement().setSite(new Site());
+                        moduleProject.getDistributionManagement().getSite().setUrl(module);
                     }
                 }
                 final String moduleName =
-                    ( moduleProject.getName() == null ) ? moduleProject.getArtifactId() : moduleProject.getName();
+                        (moduleProject.getName() == null) ? moduleProject.getArtifactId() : moduleProject.getName();
                 final String moduleHref =
-                    getRelativeLink( baseUrl, getDistMgmntSiteUrl( moduleProject ), moduleProject.getArtifactId() );
+                        getRelativeLink(baseUrl, getDistMgmntSiteUrl(moduleProject), moduleProject.getArtifactId());
 
-                tableRow( new String[] { linkedName( moduleName, moduleHref ), moduleProject.getDescription() } );
+                tableRow(new String[] {linkedName(moduleName, moduleHref), moduleProject.getDescription()});
             }
 
             endTable();
@@ -201,29 +196,22 @@ public class ModulesReport
             endSection();
         }
 
-        private MavenProject getModuleFromReactor( MavenProject project, List<MavenProject> reactorProjects,
-                                                   String module )
-        {
+        private MavenProject getModuleFromReactor(
+                MavenProject project, List<MavenProject> reactorProjects, String module) {
             // Mainly case of unit test
-            if ( reactorProjects == null )
-            {
+            if (reactorProjects == null) {
                 return null;
             }
-            try
-            {
-                File moduleBasedir = new File( project.getBasedir(), module ).getCanonicalFile();
+            try {
+                File moduleBasedir = new File(project.getBasedir(), module).getCanonicalFile();
 
-                for ( MavenProject reactorProject : reactorProjects )
-                {
-                    if ( moduleBasedir.equals( reactorProject.getBasedir() ) )
-                    {
+                for (MavenProject reactorProject : reactorProjects) {
+                    if (moduleBasedir.equals(reactorProject.getBasedir())) {
                         return reactorProject;
                     }
                 }
-            }
-            catch ( IOException e )
-            {
-                log.error( "Error while populating modules menu: " + e.getMessage(), e );
+            } catch (IOException e) {
+                log.error("Error while populating modules menu: " + e.getMessage(), e);
             }
             // module not found in reactor
             return null;
@@ -235,67 +223,54 @@ public class ModulesReport
          * @param project not null
          * @return could be null
          */
-        private static String getDistMgmntSiteUrl( MavenProject project )
-        {
-            return getDistMgmntSiteUrl( project.getDistributionManagement() );
+        private static String getDistMgmntSiteUrl(MavenProject project) {
+            return getDistMgmntSiteUrl(project.getDistributionManagement());
         }
 
-        private static String getDistMgmntSiteUrl( DistributionManagement distMgmnt )
-        {
-            if ( distMgmnt != null && distMgmnt.getSite() != null && distMgmnt.getSite().getUrl() != null )
-            {
-                return urlEncode( distMgmnt.getSite().getUrl() );
+        private static String getDistMgmntSiteUrl(DistributionManagement distMgmnt) {
+            if (distMgmnt != null
+                    && distMgmnt.getSite() != null
+                    && distMgmnt.getSite().getUrl() != null) {
+                return urlEncode(distMgmnt.getSite().getUrl());
             }
 
             return null;
         }
 
-        private static String urlEncode( final String url )
-        {
-            if ( url == null )
-            {
+        private static String urlEncode(final String url) {
+            if (url == null) {
                 return null;
             }
 
-            try
-            {
-                return new File( url ).toURI().toURL().toExternalForm();
-            }
-            catch ( MalformedURLException ex )
-            {
+            try {
+                return new File(url).toURI().toURL().toExternalForm();
+            } catch (MalformedURLException ex) {
                 return url; // this will then throw somewhere else
             }
         }
 
         // adapted from DefaultSiteTool#appendMenuItem
-        private String getRelativeLink( String baseUrl, String href, String defaultHref )
-        {
+        private String getRelativeLink(String baseUrl, String href, String defaultHref) {
             String selectedHref = href;
 
-            if ( selectedHref == null )
-            {
+            if (selectedHref == null) {
                 selectedHref = defaultHref;
             }
 
-            if ( baseUrl != null )
-            {
-                selectedHref = siteTool.getRelativePath( selectedHref, baseUrl );
+            if (baseUrl != null) {
+                selectedHref = siteTool.getRelativePath(selectedHref, baseUrl);
             }
 
-            if ( selectedHref.endsWith( "/" ) )
-            {
-                selectedHref = selectedHref.concat( "index.html" );
-            }
-            else
-            {
-                selectedHref = selectedHref.concat( "/index.html" );
+            if (selectedHref.endsWith("/")) {
+                selectedHref = selectedHref.concat("index.html");
+            } else {
+                selectedHref = selectedHref.concat("/index.html");
             }
 
             return selectedHref;
         }
 
-        private String linkedName( String name, String link )
-        {
+        private String linkedName(String name, String link) {
             return "{" + name + ", ./" + link + "}";
         }
     }

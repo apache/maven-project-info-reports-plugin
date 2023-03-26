@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.dependencies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.dependencies;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.dependencies;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,32 +30,28 @@ import org.apache.maven.model.Dependency;
  * @author Nick Stolwijk
  * @since 2.1
  */
-public class ManagementDependencies
-{
+public class ManagementDependencies {
     private final List<Dependency> dependencies;
 
     /**
      * @param projectDependencies the list of dependencies.
      */
-    public ManagementDependencies( List<Dependency> projectDependencies )
-    {
+    public ManagementDependencies(List<Dependency> projectDependencies) {
         this.dependencies = projectDependencies;
     }
 
     /**
      * @return <code>true</code> if dependencies is not null and not empty.
      */
-    public boolean hasDependencies()
-    {
-        return ( dependencies != null ) && ( !this.dependencies.isEmpty() );
+    public boolean hasDependencies() {
+        return (dependencies != null) && (!this.dependencies.isEmpty());
     }
 
     /**
      * @return dependencies
      */
-    public List<Dependency> getManagementDependencies()
-    {
-        return new ArrayList<>( dependencies );
+    public List<Dependency> getManagementDependencies() {
+        return new ArrayList<>(dependencies);
     }
 
     /**
@@ -67,19 +62,16 @@ public class ManagementDependencies
      * @see Artifact#SCOPE_SYSTEM
      * @see Artifact#SCOPE_TEST
      */
-    public Map<String, List<Dependency>> getManagementDependenciesByScope()
-    {
+    public Map<String, List<Dependency>> getManagementDependenciesByScope() {
         Map<String, List<Dependency>> dependenciesByScope = new HashMap<>();
-        for ( Dependency dependency : dependencies )
-        {
+        for (Dependency dependency : dependencies) {
             String scope = dependency.getScope() != null ? dependency.getScope() : Artifact.SCOPE_COMPILE;
-            List<Dependency> multiValue = dependenciesByScope.get( scope );
-            if ( multiValue == null )
-            {
+            List<Dependency> multiValue = dependenciesByScope.get(scope);
+            if (multiValue == null) {
                 multiValue = new ArrayList<>();
             }
-            multiValue.add( dependency );
-            dependenciesByScope.put( scope, multiValue );
+            multiValue.add(dependency);
+            dependenciesByScope.put(scope, multiValue);
         }
 
         return dependenciesByScope;

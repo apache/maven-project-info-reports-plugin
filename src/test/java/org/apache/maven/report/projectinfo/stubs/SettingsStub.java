@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 import org.apache.maven.settings.Settings;
 
@@ -25,8 +24,6 @@ import org.apache.maven.settings.Settings;
  * @author Edwin Punzalan
  * @version $Id$
  */
-public class SettingsStub
-    extends Settings
-{
+public class SettingsStub extends Settings {
     // nop
 }

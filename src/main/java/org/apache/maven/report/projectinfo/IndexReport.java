@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,10 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.doxia.sink.Sink;
@@ -28,9 +30,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.codehaus.plexus.i18n.I18N;
 
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Generates the Project Index report.
  *
@@ -38,55 +37,54 @@ import java.util.Locale;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "index" )
-public class IndexReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "index")
+public class IndexReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
     @Override
-    public String getName( Locale locale )
-    {
-        return getI18nString( locale, "title" );
+    public String getName(Locale locale) {
+        return getI18nString(locale, "title");
     }
 
     @Override
-    public String getDescription( Locale locale )
-    {
+    public String getDescription(Locale locale) {
         String desc;
-        if ( project.getDescription() != null )
-        {
+        if (project.getDescription() != null) {
             // TODO How to handle i18n?
             desc = project.getDescription();
-        }
-        else
-        {
-            return getI18nString( locale, "nodescription" );
+        } else {
+            return getI18nString(locale, "nodescription");
         }
         return desc;
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
-        ProjectIndexRenderer r = new ProjectIndexRenderer( project, getReactorProjects(), projectBuilder,
-                                                           localRepository, getName( locale ), getDescription( locale ),
-                                                           getSink(), getI18N( locale ), locale, getLog(), siteTool );
+    public void executeReport(Locale locale) {
+        ProjectIndexRenderer r = new ProjectIndexRenderer(
+                project,
+                getReactorProjects(),
+                projectBuilder,
+                localRepository,
+                getName(locale),
+                getDescription(locale),
+                getSink(),
+                getI18N(locale),
+                locale,
+                getLog(),
+                siteTool);
 
         r.render();
     }
 
     /** {@inheritDoc} */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "index";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "index";
     }
 
@@ -97,20 +95,26 @@ public class IndexReport
     /**
      * Internal renderer class
      */
-    private static class ProjectIndexRenderer
-        extends ModulesReport.ModulesRenderer
-    {
+    private static class ProjectIndexRenderer extends ModulesReport.ModulesRenderer {
         private final String title;
 
         private final String description;
 
         private boolean modules = false;
 
-        ProjectIndexRenderer( MavenProject project, List<MavenProject> reactorProjects,
-                              ProjectBuilder projectBuilder, ArtifactRepository localRepository, String title,
-                              String description, Sink sink, I18N i18n, Locale locale, Log log, SiteTool siteTool )
-        {
-            super( sink, project, reactorProjects, projectBuilder, localRepository, i18n, locale, log, siteTool );
+        ProjectIndexRenderer(
+                MavenProject project,
+                List<MavenProject> reactorProjects,
+                ProjectBuilder projectBuilder,
+                ArtifactRepository localRepository,
+                String title,
+                String description,
+                Sink sink,
+                I18N i18n,
+                Locale locale,
+                Log log,
+                SiteTool siteTool) {
+            super(sink, project, reactorProjects, projectBuilder, localRepository, i18n, locale, log, siteTool);
 
             this.title = title;
 
@@ -118,20 +122,17 @@ public class IndexReport
         }
 
         @Override
-        public String getTitle()
-        {
+        public String getTitle() {
             return modules ? super.getTitle() : title;
         }
 
         @Override
-        public void renderBody()
-        {
-            startSection( title.trim() + " " + project.getName() );
+        public void renderBody() {
+            startSection(title.trim() + " " + project.getName());
 
-            paragraph( description );
+            paragraph(description);
 
-            if ( !project.getModel().getModules().isEmpty() )
-            {
+            if (!project.getModel().getModules().isEmpty()) {
                 modules = true;
                 super.renderBody();
             }

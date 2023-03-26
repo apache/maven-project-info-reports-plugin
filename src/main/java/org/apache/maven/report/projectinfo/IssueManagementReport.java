@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,9 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.util.Locale;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.IssueManagement;
@@ -26,28 +27,22 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.util.Locale;
-
 /**
  * Generates the Project Issue Management report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "issue-management" )
-public class IssueManagementReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "issue-management")
+public class IssueManagementReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
+        if (result && skipEmptyReport) {
             result = getProject().getModel().getIssueManagement() != null;
         }
 
@@ -55,23 +50,20 @@ public class IssueManagementReport
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
+    public void executeReport(Locale locale) {
         IssueManagementRenderer r =
-            new IssueManagementRenderer( getSink(), getProject().getModel(), getI18N( locale ), locale );
+                new IssueManagementRenderer(getSink(), getProject().getModel(), getI18N(locale), locale);
 
         r.render();
     }
 
     /** {@inheritDoc} */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "issue-management";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "issue-management";
     }
 
@@ -82,33 +74,27 @@ public class IssueManagementReport
     /**
      * Internal renderer class
      */
-    private static class IssueManagementRenderer
-        extends AbstractProjectInfoRenderer
-    {
+    private static class IssueManagementRenderer extends AbstractProjectInfoRenderer {
         private Model model;
 
-        IssueManagementRenderer( Sink sink, Model model, I18N i18n, Locale locale )
-        {
-            super( sink, i18n, locale );
+        IssueManagementRenderer(Sink sink, Model model, I18N i18n, Locale locale) {
+            super(sink, i18n, locale);
 
             this.model = model;
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "issue-management";
         }
 
         @Override
-        public void renderBody()
-        {
+        public void renderBody() {
             IssueManagement issueManagement = model.getIssueManagement();
-            if ( issueManagement == null )
-            {
-                startSection( getTitle() );
+            if (issueManagement == null) {
+                startSection(getTitle());
 
-                paragraph( getI18nString( "noissueManagement" ) );
+                paragraph(getI18nString("noissueManagement"));
 
                 endSection();
 
@@ -119,43 +105,34 @@ public class IssueManagementReport
             String url = issueManagement.getUrl();
 
             // Overview
-            startSection( getI18nString( "overview.title" ) );
+            startSection(getI18nString("overview.title"));
 
-            if ( isIssueManagementSystem( system, "jira" ) )
-            {
+            if (isIssueManagementSystem(system, "jira")) {
                 sink.paragraph();
-                linkPatternedText( getI18nString( "jira.intro" ) );
+                linkPatternedText(getI18nString("jira.intro"));
                 sink.paragraph_();
-            }
-            else if ( isIssueManagementSystem( system, "bugzilla" ) )
-            {
+            } else if (isIssueManagementSystem(system, "bugzilla")) {
                 sink.paragraph();
-                linkPatternedText( getI18nString( "bugzilla.intro" ) );
+                linkPatternedText(getI18nString("bugzilla.intro"));
                 sink.paragraph_();
-            }
-            else if ( isIssueManagementSystem( system, "scarab" ) )
-            {
+            } else if (isIssueManagementSystem(system, "scarab")) {
                 sink.paragraph();
-                linkPatternedText( getI18nString( "scarab.intro" ) );
+                linkPatternedText(getI18nString("scarab.intro"));
                 sink.paragraph_();
-            }
-            else if ( system == null || "".equals( system.trim() ) )
-            {
-                paragraph( getI18nString( "general.intro" ) );
-            }
-            else
-            {
-                paragraph( getI18nString( "custom.intro" ).replaceFirst( "%issueManagementSystem%", system ) );
+            } else if (system == null || "".equals(system.trim())) {
+                paragraph(getI18nString("general.intro"));
+            } else {
+                paragraph(getI18nString("custom.intro").replaceFirst("%issueManagementSystem%", system));
             }
 
             endSection();
 
             // Connection
-            startSection( getTitle() );
+            startSection(getTitle());
 
-            paragraph( getI18nString( "intro" ) );
+            paragraph(getI18nString("intro"));
 
-            verbatimLink( url, url );
+            verbatimLink(url, url);
 
             endSection();
         }
@@ -167,19 +144,16 @@ public class IssueManagementReport
          * @param actual
          * @return true if the issue management system is Jira, bugzilla, false otherwise.
          */
-        private boolean isIssueManagementSystem( String system, String actual )
-        {
-            if ( StringUtils.isEmpty( system ) )
-            {
+        private boolean isIssueManagementSystem(String system, String actual) {
+            if (StringUtils.isEmpty(system)) {
                 return false;
             }
 
-            if ( StringUtils.isEmpty( actual ) )
-            {
+            if (StringUtils.isEmpty(actual)) {
                 return false;
             }
 
-            return system.toLowerCase( Locale.ENGLISH ).startsWith( actual.toLowerCase( Locale.ENGLISH ) );
+            return system.toLowerCase(Locale.ENGLISH).startsWith(actual.toLowerCase(Locale.ENGLISH));
         }
     }
 }
