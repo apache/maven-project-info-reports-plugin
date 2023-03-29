@@ -18,7 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;

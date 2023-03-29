@@ -18,8 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
-
 public class MailingListsInvalidLinkStub extends ProjectInfoProjectStub {
     @Override
     protected String getPOM() {

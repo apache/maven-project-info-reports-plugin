@@ -18,7 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 
 /**

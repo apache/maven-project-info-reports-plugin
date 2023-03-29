@@ -18,8 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
-
 import java.io.File;
 import java.io.IOException;
 

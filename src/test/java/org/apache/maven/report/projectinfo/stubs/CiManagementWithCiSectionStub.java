@@ -18,8 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
-
 public class CiManagementWithCiSectionStub extends ProjectInfoProjectStub {
     @Override
     protected String getPOM() {

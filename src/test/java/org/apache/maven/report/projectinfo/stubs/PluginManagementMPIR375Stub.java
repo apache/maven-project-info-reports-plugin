@@ -18,8 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
-
 /**
  * @author Gabriel Belingueres
  * @version $Id$

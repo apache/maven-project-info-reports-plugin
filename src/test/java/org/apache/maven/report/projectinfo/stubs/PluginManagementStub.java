@@ -18,8 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
-
 /**
  * @author Nick Stolwijk
  * @version $Id$

@@ -18,7 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-
 import java.util.Collections;
 import java.util.List;
 
