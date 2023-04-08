@@ -487,7 +487,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         String debugInformationTitle = getI18nString("file.details.columntitle.debuginformation");
         String debugInformationCellYes = getI18nString("file.details.cell.debuginformation.yes");
         String debugInformationCellNo = getI18nString("file.details.cell.debuginformation.no");
-        String sealed = getI18nString("file.details.column.sealed");
+        String aSealed = getI18nString("file.details.column.sealed");
         String sealedCellYes = getI18nString("file.details.cell.sealed.yes");
         String sealedCellNo = getI18nString("file.details.cell.sealed.no");
 
@@ -520,7 +520,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         String[] tableHeaderTitles;
         if (hasSealed) {
             tableHeader =
-                    new String[] {filename, size, entries, classes, packages, javaVersion, debugInformation, sealed};
+                    new String[] {filename, size, entries, classes, packages, javaVersion, debugInformation, aSealed};
             tableHeaderTitles = new String[] {null, null, null, null, null, null, debugInformationTitle, null};
         } else {
             tableHeader = new String[] {filename, size, entries, classes, packages, javaVersion, debugInformation};
