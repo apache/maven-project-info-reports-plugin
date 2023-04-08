@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.dependencies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,29 +16,27 @@ package org.apache.maven.report.projectinfo.dependencies;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.dependencies;
 
 /**
  * Wrap DependenciesReport Mojo parameters.
  *
  * @since 2.1
  */
-public class DependenciesReportConfiguration
-{
+public class DependenciesReportConfiguration {
     private boolean dependencyDetailsEnabled;
 
     /**
      * @param detailsEnabled whether details is enabled.
      */
-    public DependenciesReportConfiguration( boolean detailsEnabled )
-    {
+    public DependenciesReportConfiguration(boolean detailsEnabled) {
         this.dependencyDetailsEnabled = detailsEnabled;
     }
 
     /**
      * @return value of Mojo dependencyDetailsEnabled parameter.
      */
-    public boolean getDependencyDetailsEnabled()
-    {
+    public boolean getDependencyDetailsEnabled() {
         return dependencyDetailsEnabled;
     }
 }

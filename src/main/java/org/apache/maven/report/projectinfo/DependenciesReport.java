@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,10 +56,8 @@ import org.codehaus.plexus.util.ReaderFactory;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "dependencies", requiresDependencyResolution = ResolutionScope.TEST )
-public class DependenciesReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "dependencies", requiresDependencyResolution = ResolutionScope.TEST)
+public class DependenciesReport extends AbstractProjectInfoReport {
     /**
      * Images resources dir
      */
@@ -75,7 +72,7 @@ public class DependenciesReport
      *
      * @since 2.5
      */
-    @Component( hint = "default" )
+    @Component(hint = "default")
     private DependencyGraphBuilder dependencyGraphBuilder;
 
     /**
@@ -104,7 +101,7 @@ public class DependenciesReport
      *
      * @since 2.1
      */
-    @Parameter( property = "dependency.details.enabled", defaultValue = "true" )
+    @Parameter(property = "dependency.details.enabled", defaultValue = "true")
     private boolean dependencyDetailsEnabled;
 
     // ----------------------------------------------------------------------
@@ -112,14 +109,12 @@ public class DependenciesReport
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
+        if (result && skipEmptyReport) {
             // This seems to be a bit too much but the DependenciesRenderer applies the same logic
             DependencyNode dependencyNode = resolveProject();
-            Dependencies dependencies = new Dependencies( project, dependencyNode, classesAnalyzer );
+            Dependencies dependencies = new Dependencies(project, dependencyNode, classesAnalyzer);
             result = dependencies.hasDependencies();
         }
 
@@ -127,53 +122,60 @@ public class DependenciesReport
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
-        try
-        {
-            copyResources( new File( getOutputDirectory() ) );
-        }
-        catch ( IOException e )
-        {
-            getLog().error( "Cannot copy resources", e );
+    public void executeReport(Locale locale) {
+        try {
+            copyResources(new File(getOutputDirectory()));
+        } catch (IOException e) {
+            getLog().error("Cannot copy resources", e);
         }
 
         ProjectBuildingRequest buildingRequest =
-            new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
-        buildingRequest.setLocalRepository( localRepository );
-        buildingRequest.setRemoteRepositories( remoteRepositories );
-        buildingRequest.setPluginArtifactRepositories( pluginRepositories );
+                new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
+        buildingRequest.setLocalRepository(localRepository);
+        buildingRequest.setRemoteRepositories(remoteRepositories);
+        buildingRequest.setPluginArtifactRepositories(pluginRepositories);
 
-        RepositoryUtils repoUtils =
-            new RepositoryUtils( getLog(), projectBuilder, repositorySystem, resolver,
-                                 project.getRemoteArtifactRepositories(), project.getPluginArtifactRepositories(),
-                                 buildingRequest, repositoryMetadataManager );
+        RepositoryUtils repoUtils = new RepositoryUtils(
+                getLog(),
+                projectBuilder,
+                repositorySystem,
+                resolver,
+                project.getRemoteArtifactRepositories(),
+                project.getPluginArtifactRepositories(),
+                buildingRequest,
+                repositoryMetadataManager);
 
         DependencyNode dependencyNode = resolveProject();
 
-        Dependencies dependencies = new Dependencies( project, dependencyNode, classesAnalyzer );
+        Dependencies dependencies = new Dependencies(project, dependencyNode, classesAnalyzer);
 
-        DependenciesReportConfiguration config =
-            new DependenciesReportConfiguration( dependencyDetailsEnabled );
+        DependenciesReportConfiguration config = new DependenciesReportConfiguration(dependencyDetailsEnabled);
 
-        DependenciesRenderer r =
-            new DependenciesRenderer( getSink(), locale, getI18N( locale ), getLog(), dependencies,
-                                      dependencyNode, config, repoUtils, repositorySystem, projectBuilder,
-                                      buildingRequest, getLicenseMappings() );
+        DependenciesRenderer r = new DependenciesRenderer(
+                getSink(),
+                locale,
+                getI18N(locale),
+                getLog(),
+                dependencies,
+                dependencyNode,
+                config,
+                repoUtils,
+                repositorySystem,
+                projectBuilder,
+                buildingRequest,
+                getLicenseMappings());
         r.render();
     }
 
     /**
      * {@inheritDoc}
      */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "dependencies";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "dependencies";
     }
 
@@ -184,19 +186,15 @@ public class DependenciesReport
     /**
      * @return resolve the dependency tree
      */
-    private DependencyNode resolveProject()
-    {
-        try
-        {
-            ArtifactFilter artifactFilter = new ScopeArtifactFilter( Artifact.SCOPE_TEST );
+    private DependencyNode resolveProject() {
+        try {
+            ArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_TEST);
             ProjectBuildingRequest buildingRequest =
-                new DefaultProjectBuildingRequest( getSession().getProjectBuildingRequest() );
-            buildingRequest.setProject( project );
-            return dependencyGraphBuilder.buildDependencyGraph( buildingRequest, artifactFilter );
-        }
-        catch ( DependencyGraphBuilderException e )
-        {
-            getLog().error( "Unable to build dependency tree.", e );
+                    new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
+            buildingRequest.setProject(project);
+            return dependencyGraphBuilder.buildDependencyGraph(buildingRequest, artifactFilter);
+        } catch (DependencyGraphBuilderException e) {
+            getLog().error("Unable to build dependency tree.", e);
             return null;
         }
     }
@@ -205,39 +203,32 @@ public class DependenciesReport
      * @param outputDirectory the wanted output directory
      * @throws IOException if any
      */
-    private void copyResources( File outputDirectory )
-        throws IOException
-    {
+    private void copyResources(File outputDirectory) throws IOException {
         InputStream resourceList = null;
         InputStream in = null;
         BufferedReader reader = null;
         OutputStream out = null;
-        try
-        {
-            resourceList = getClass().getClassLoader().getResourceAsStream( RESOURCES_DIR + "/resources.txt" );
+        try {
+            resourceList = getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/resources.txt");
 
-            if ( resourceList != null )
-            {
-                reader = new LineNumberReader( new InputStreamReader( resourceList, ReaderFactory.US_ASCII ) );
+            if (resourceList != null) {
+                reader = new LineNumberReader(new InputStreamReader(resourceList, ReaderFactory.US_ASCII));
 
-                for ( String line = reader.readLine(); line != null; line = reader.readLine() )
-                {
-                    in = getClass().getClassLoader().getResourceAsStream( RESOURCES_DIR + "/" + line );
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    in = getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/" + line);
 
-                    if ( in == null )
-                    {
-                        throw new IOException( "The resource " + line + " doesn't exist." );
+                    if (in == null) {
+                        throw new IOException("The resource " + line + " doesn't exist.");
                     }
 
-                    File outputFile = new File( outputDirectory, line );
+                    File outputFile = new File(outputDirectory, line);
 
-                    if ( !outputFile.getParentFile().exists() )
-                    {
+                    if (!outputFile.getParentFile().exists()) {
                         outputFile.getParentFile().mkdirs();
                     }
 
-                    out = new FileOutputStream( outputFile );
-                    IOUtil.copy( in, out );
+                    out = new FileOutputStream(outputFile);
+                    IOUtil.copy(in, out);
                     out.close();
                     out = null;
                     in.close();
@@ -247,13 +238,11 @@ public class DependenciesReport
                 reader.close();
                 reader = null;
             }
-        }
-        finally
-        {
-            IOUtil.close( out );
-            IOUtil.close( reader );
-            IOUtil.close( in );
-            IOUtil.close( resourceList );
+        } finally {
+            IOUtil.close(out);
+            IOUtil.close(reader);
+            IOUtil.close(in);
+            IOUtil.close(resourceList);
         }
     }
 }

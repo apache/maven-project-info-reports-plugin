@@ -1,9 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
-import java.util.Arrays;
-import java.util.List;
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,23 +16,23 @@ import java.util.List;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author ltheussl
  * @version $Id$
  */
-public class ModulesStub
-    extends ProjectInfoProjectStub
-{
+public class ModulesStub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "modules-plugin-config.xml";
     }
 
     @Override
-    public List<String> getModules()
-    {
-        return Arrays.asList( "subproject1", "subproject2" );
+    public List<String> getModules() {
+        return Arrays.asList("subproject1", "subproject2");
     }
 }

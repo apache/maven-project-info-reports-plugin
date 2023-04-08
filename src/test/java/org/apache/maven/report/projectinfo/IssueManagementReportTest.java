@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
 
@@ -33,9 +32,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class IssueManagementReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -46,40 +43,40 @@ public class IssueManagementReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        generateReport( "issue-management", "issue-management-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "issue-management.html" ).exists() );
+    public void testReport() throws Exception {
+        generateReport("issue-management", "issue-management-plugin-config.xml");
+        assertTrue(
+                "Test html generated",
+                getGeneratedReport("issue-management.html").exists());
 
-        URL reportURL = getGeneratedReport( "issue-management.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("issue-management.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "issue management project info",
-            getString( "report.issue-management.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle =
+                prepareTitle("issue management project info", getString("report.issue-management.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the links
         WebLink[] weblinks = response.getLinks();
-        assertEquals( 3, weblinks.length );
+        assertEquals(3, weblinks.length);
 
-        assertEquals( "JIRA", weblinks[1].getText() );
+        assertEquals("JIRA", weblinks[1].getText());
 
-        assertEquals( "http://localhost/jira", weblinks[2].getText() );
+        assertEquals("http://localhost/jira", weblinks[2].getText());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( getString( "report.issue-management.overview.title" ), textBlocks[0].getText() );
-        assertEquals( "This project uses JIRA.", textBlocks[1].getText() ); // due to link pattern
-        assertEquals( getString( "report.issue-management.name" ), textBlocks[2].getText() );
+        assertEquals(getString("report.issue-management.overview.title"), textBlocks[0].getText());
+        assertEquals("This project uses JIRA.", textBlocks[1].getText()); // due to link pattern
+        assertEquals(getString("report.issue-management.name"), textBlocks[2].getText());
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,26 +16,22 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Alix Lourme
  */
-public class ModulesVariableSettingInterpolationStub
-    extends ProjectInfoProjectStub
-{
+public class ModulesVariableSettingInterpolationStub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "modules-variable-settings-interpolated-plugin-config.xml";
     }
 
     @Override
-    public List<String> getModules()
-    {
-        return Collections.singletonList( "subproject-site-url" );
+    public List<String> getModules() {
+        return Collections.singletonList("subproject-site-url");
     }
 }

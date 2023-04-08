@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
 
@@ -33,9 +32,7 @@ import com.meterware.httpunit.WebTable;
  * @version $Id$
  * @since 2.1
  */
-public class DependencyManagementReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class DependencyManagementReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -46,39 +43,44 @@ public class DependencyManagementReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        generateReport( "dependency-management", "dependency-management-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "dependency-management.html" ).exists() );
+    public void testReport() throws Exception {
+        generateReport("dependency-management", "dependency-management-plugin-config.xml");
+        assertTrue(
+                "Test html generated",
+                getGeneratedReport("dependency-management.html").exists());
 
-        URL reportURL = getGeneratedReport( "dependency-management.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("dependency-management.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "dependency management project info",
-            getString( "report.dependency-management.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle =
+                prepareTitle("dependency management project info", getString("report.dependency-management.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the tables
         WebTable[] webTables = response.getTables();
-        assertEquals( webTables.length, 1 );
+        assertEquals(webTables.length, 1);
 
-        assertEquals( webTables[0].getColumnCount(), 5 );
-        assertEquals( webTables[0].getRowCount(),
-                      1 + getTestMavenProject().getDependencyManagement().getDependencies().size() );
+        assertEquals(webTables[0].getColumnCount(), 5);
+        assertEquals(
+                webTables[0].getRowCount(),
+                1
+                        + getTestMavenProject()
+                                .getDependencyManagement()
+                                .getDependencies()
+                                .size());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( getString( "report.dependency-management.title" ), textBlocks[0].getText() );
-        assertEquals( "test", textBlocks[1].getText() );
+        assertEquals(getString("report.dependency-management.title"), textBlocks[0].getText());
+        assertEquals("test", textBlocks[1].getText());
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,13 +16,11 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
-public class CiManagementWithCiSectionStub
-    extends ProjectInfoProjectStub
-{
+public class CiManagementWithCiSectionStub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "ci-management-plugin-with-ci-section-config.xml";
     }
 }

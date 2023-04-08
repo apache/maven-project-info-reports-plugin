@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -18,14 +17,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>36</version>
+    <artifactId>maven-plugins</artifactId>
+    <version>39</version>
     <relativePath />
   </parent>
 
@@ -34,10 +32,8 @@ under the License.
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Project Info Reports Plugin</name>
-  <description>
-    The Maven Project Info Reports Plugin generates standard reports
-    for the specified project.
-  </description>
+  <description>The Maven Project Info Reports Plugin generates standard reports
+    for the specified project.</description>
   <inceptionYear>2005</inceptionYear>
 
   <contributors>
@@ -99,8 +95,8 @@ under the License.
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-project-info-reports-plugin.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-project-info-reports-plugin.git</developerConnection>
-    <url>https://github.com/apache/maven-project-info-reports-plugin/tree/${project.scm.tag}</url>
     <tag>HEAD</tag>
+    <url>https://github.com/apache/maven-project-info-reports-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
     <system>JIRA</system>
@@ -118,7 +114,6 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
@@ -200,7 +195,8 @@ under the License.
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-jar</artifactId>
       <version>1.2</version>
-      <exclusions><!-- Replace problematic BCEL version until MSHARED JAR has been updated -->
+      <exclusions>
+        <!-- Replace problematic BCEL version until MSHARED JAR has been updated -->
         <exclusion>
           <groupId>com.google.code.findbugs</groupId>
           <artifactId>bcel-findbugs</artifactId>
@@ -524,7 +520,8 @@ under the License.
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/DependenciesReportTest*</exclude><!-- FIXME: missing Maven 3 class or conflict -->
+            <exclude>**/DependenciesReportTest*</exclude>
+            <!-- FIXME: missing Maven 3 class or conflict -->
           </excludes>
         </configuration>
       </plugin>
@@ -535,11 +532,11 @@ under the License.
         <executions>
           <execution>
             <id>init</id>
-            <phase>initialize</phase>
             <goals>
               <goal>clean</goal>
               <goal>generateKeyPair</goal>
             </goals>
+            <phase>initialize</phase>
           </execution>
         </executions>
       </plugin>

@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -31,9 +30,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @author Hervé Boutemy
  *
  */
-public abstract class AbstractProjectInfoRenderer
-    extends AbstractMavenReportRenderer
-{
+public abstract class AbstractProjectInfoRenderer extends AbstractMavenReportRenderer {
     /**
      * {@link I18N}.
      */
@@ -49,9 +46,8 @@ public abstract class AbstractProjectInfoRenderer
      * @param i18n {@link I18N}
      * @param locale {@link Locale}
      */
-    public AbstractProjectInfoRenderer( Sink sink, I18N i18n, Locale locale )
-    {
-        super( sink );
+    public AbstractProjectInfoRenderer(Sink sink, I18N i18n, Locale locale) {
+        super(sink);
 
         this.i18n = i18n;
 
@@ -59,18 +55,16 @@ public abstract class AbstractProjectInfoRenderer
     }
 
     @Override
-    public String getTitle()
-    {
-        return getI18nString( "title" );
+    public String getTitle() {
+        return getI18nString("title");
     }
 
     /**
      * @param key The key.
      * @return The translated string.
      */
-    protected String getI18nString( String key )
-    {
-        return getI18nString( getI18Nsection(), key );
+    protected String getI18nString(String key) {
+        return getI18nString(getI18Nsection(), key);
     }
 
     /**
@@ -78,29 +72,22 @@ public abstract class AbstractProjectInfoRenderer
      * @param key The key to translate.
      * @return the translated key.
      */
-    protected String getI18nString( String section, String key )
-    {
-        return i18n.getString( "project-info-reports", locale, "report." + section + '.' + key );
+    protected String getI18nString(String section, String key) {
+        return i18n.getString("project-info-reports", locale, "report." + section + '.' + key);
     }
 
     @Override
-    protected void text( String text )
-    {
-        if ( StringUtils.isEmpty( text ) ) // Take care of spaces
+    protected void text(String text) {
+        if (StringUtils.isEmpty(text)) // Take care of spaces
         {
-            sink.text( "-" );
-        }
-        else
-        {
+            sink.text("-");
+        } else {
             // custombundle text with xml?
             String regex = "(.+?)<(\"[^\"]*\"|'[^']*'|[^'\">])*>(.+?)";
-            if ( Pattern.matches( regex, text ) )
-            {
-                sink.rawText( text );
-            }
-            else
-            {
-                sink.text( text );
+            if (Pattern.matches(regex, text)) {
+                sink.rawText(text);
+            } else {
+                sink.text(text);
             }
         }
     }
@@ -112,11 +99,10 @@ public abstract class AbstractProjectInfoRenderer
      * {@inheritDoc}
      */
     @Override
-    protected void verbatimText( String text )
-    {
-        sink.verbatim( null );
+    protected void verbatimText(String text) {
+        sink.verbatim(null);
 
-        text( text );
+        text(text);
 
         sink.verbatim_();
     }
@@ -125,17 +111,13 @@ public abstract class AbstractProjectInfoRenderer
      * {@inheritDoc}
      */
     @Override
-    protected void verbatimLink( String text, String href )
-    {
-        if ( StringUtils.isEmpty( href ) )
-        {
-            verbatimText( text );
-        }
-        else
-        {
-            sink.verbatim( null );
+    protected void verbatimLink(String text, String href) {
+        if (StringUtils.isEmpty(href)) {
+            verbatimText(text);
+        } else {
+            sink.verbatim(null);
 
-            link( href, text );
+            link(href, text);
 
             sink.verbatim_();
         }

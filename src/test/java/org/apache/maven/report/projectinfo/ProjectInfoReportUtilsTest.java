@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.io.File;
 import java.net.URL;
@@ -49,9 +48,7 @@ import static org.apache.maven.report.projectinfo.ProjectInfoReportUtils.getArch
  * @author <a href="mailto:vincent.siveton@crim.ca">Vincent Siveton</a>
  * @version $Id$
  */
-public class ProjectInfoReportUtilsTest
-    extends AbstractMojoTestCase
-{
+public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
     private static final int MAX_IDLE_TIME = 30000;
 
     private int port = -1;
@@ -60,28 +57,22 @@ public class ProjectInfoReportUtilsTest
 
     private Server jettyServer;
 
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         super.setUp();
 
         final List<org.apache.maven.settings.Server> servers = new ArrayList<org.apache.maven.settings.Server>();
         org.apache.maven.settings.Server server = new org.apache.maven.settings.Server();
-        server.setId( "localhost" );
-        server.setUsername( "admin" );
-        server.setPassword( "admin" );
-        servers.add( server );
-        settingsStub = new SettingsStub()
-        {
+        server.setId("localhost");
+        server.setUsername("admin");
+        server.setPassword("admin");
+        servers.add(server);
+        settingsStub = new SettingsStub() {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public org.apache.maven.settings.Server getServer( String serverId )
-            {
-                for ( org.apache.maven.settings.Server server : getServers() )
-                {
-                    if ( server.getId().equals( serverId ) )
-                    {
+            public org.apache.maven.settings.Server getServer(String serverId) {
+                for (org.apache.maven.settings.Server server : getServers()) {
+                    if (server.getId().equals(serverId)) {
                         return server;
                     }
                 }
@@ -89,186 +80,170 @@ public class ProjectInfoReportUtilsTest
             }
 
             @Override
-            public List<org.apache.maven.settings.Server> getServers()
-            {
+            public List<org.apache.maven.settings.Server> getServers() {
                 return servers;
             }
         };
-
     }
 
-    private MavenProject getMavenProjectStub( boolean https )
-    {
+    private MavenProject getMavenProjectStub(boolean https) {
         final DistributionManagement distributionManagement = new DistributionManagement();
         DeploymentRepository repository = new DeploymentRepository();
-        repository.setId( "localhost" );
-        repository.setUrl( ( https ? "https" : "http" ) + "://localhost:" + port );
-        distributionManagement.setRepository( repository );
-        distributionManagement.setSnapshotRepository( repository );
-        return new MavenProjectStub()
-        {
+        repository.setId("localhost");
+        repository.setUrl((https ? "https" : "http") + "://localhost:" + port);
+        distributionManagement.setRepository(repository);
+        distributionManagement.setSnapshotRepository(repository);
+        return new MavenProjectStub() {
             @Override
-            public DistributionManagement getDistributionManagement()
-            {
+            public DistributionManagement getDistributionManagement() {
                 return distributionManagement;
             }
         };
     }
 
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         super.tearDown();
     }
 
-    public void testGetInputStreamURL()
-        throws Exception
-    {
-        assertTrue( ProjectInfoReportUtils.isArtifactUrlValid( "http://my.intern.domain:8080/test" ) );
+    public void testGetInputStreamURL() throws Exception {
+        assertTrue(ProjectInfoReportUtils.isArtifactUrlValid("http://my.intern.domain:8080/test"));
 
         // file
-        URL url = new File( getBasedir(), "/target/classes/project-info-reports.properties" ).toURI().toURL();
+        URL url = new File(getBasedir(), "/target/classes/project-info-reports.properties")
+                .toURI()
+                .toURL();
 
-        String content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
-                                                            "ISO-8859-1" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        String content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(false), settingsStub, "ISO-8859-1");
+        assertNotNull(content);
+        assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
         // file
-        url = new File( getBasedir(), "/src/test/resources/iso-8859-5-encoded.txt" ).toURI().toURL();
+        url = new File(getBasedir(), "/src/test/resources/iso-8859-5-encoded.txt")
+                .toURI()
+                .toURL();
 
-        content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
-                                                            "ISO-8859-5" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Свобода всем народам!" ) );
+        content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(false), settingsStub, "ISO-8859-5");
+        assertNotNull(content);
+        assertTrue(content.contains("Свобода всем народам!"));
 
         // http + no auth
-        startJetty( false, false );
+        startJetty(false, false);
 
-        url = new URL( "http://localhost:" + port + "/project-info-reports.properties" );
+        url = new URL("http://localhost:" + port + "/project-info-reports.properties");
 
-        content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
-                                                     "ISO-8859-1" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(false), settingsStub, "ISO-8859-1");
+        assertNotNull(content);
+        assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
         stopJetty();
 
         // http + auth
-        startJetty( false, true );
+        startJetty(false, true);
 
-        url = new URL( "http://localhost:" + port + "/project-info-reports.properties" );
+        url = new URL("http://localhost:" + port + "/project-info-reports.properties");
 
-        content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( false ), settingsStub,
-                                                     "ISO-8859-1" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(false), settingsStub, "ISO-8859-1");
+        assertNotNull(content);
+        assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
         stopJetty();
 
         // https + no auth
-        startJetty( true, false );
+        startJetty(true, false);
 
-        url = new URL( "https://localhost:" + port + "/project-info-reports.properties" );
+        url = new URL("https://localhost:" + port + "/project-info-reports.properties");
 
-        content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( true ), settingsStub,
-                                                     "ISO-8859-1" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(true), settingsStub, "ISO-8859-1");
+        assertNotNull(content);
+        assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
         stopJetty();
 
         // https + auth
-        startJetty( true, true );
+        startJetty(true, true);
 
-        url = new URL( "https://localhost:" + port + "/project-info-reports.properties" );
+        url = new URL("https://localhost:" + port + "/project-info-reports.properties");
 
-        content = ProjectInfoReportUtils.getContent( url, getMavenProjectStub( true ), settingsStub,
-                                                     "ISO-8859-1" );
-        assertNotNull( content );
-        assertTrue( content.contains( "Licensed to the Apache Software Foundation" ) );
+        content = ProjectInfoReportUtils.getContent(url, getMavenProjectStub(true), settingsStub, "ISO-8859-1");
+        assertNotNull(content);
+        assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
         stopJetty();
 
         // TODO need to test with a proxy
     }
 
-    public void testGetArchiveServer()
-    {
-        assertEquals( "???UNKNOWN???", getArchiveServer( null ) );
+    public void testGetArchiveServer() {
+        assertEquals("???UNKNOWN???", getArchiveServer(null));
 
-        assertNull( getArchiveServer( "" ) );
+        assertNull(getArchiveServer(""));
 
-        assertEquals( "mail-archives.apache.org",
-                getArchiveServer( "http://mail-archives.apache.org/mod_mbox/maven-announce/" ) );
+        assertEquals(
+                "mail-archives.apache.org",
+                getArchiveServer("http://mail-archives.apache.org/mod_mbox/maven-announce/"));
 
-        assertEquals( "mail-archives.apache.org",
-                getArchiveServer( "https://mail-archives.apache.org/mod_mbox/maven-announce/" ) );
+        assertEquals(
+                "mail-archives.apache.org",
+                getArchiveServer("https://mail-archives.apache.org/mod_mbox/maven-announce/"));
 
-        assertEquals( "mail-archives.apache.org",
-                getArchiveServer( "http://mail-archives.apache.org/mod_mbox/maven-announce" ) );
+        assertEquals(
+                "mail-archives.apache.org",
+                getArchiveServer("http://mail-archives.apache.org/mod_mbox/maven-announce"));
 
-        assertEquals( "www.mail-archive.com",
-                getArchiveServer( "http://www.mail-archive.com/announce@maven.apache.org" ) );
+        assertEquals("www.mail-archive.com", getArchiveServer("http://www.mail-archive.com/announce@maven.apache.org"));
 
-        assertEquals( "www.nabble.com", getArchiveServer( "http://www.nabble.com/Maven-Announcements-f15617.html" ) );
+        assertEquals("www.nabble.com", getArchiveServer("http://www.nabble.com/Maven-Announcements-f15617.html"));
 
-        assertEquals( "maven.announce.markmail.org", getArchiveServer( "http://maven.announce.markmail.org/" ) );
+        assertEquals("maven.announce.markmail.org", getArchiveServer("http://maven.announce.markmail.org/"));
 
-        assertEquals( "maven.announce.markmail.org", getArchiveServer( "http://maven.announce.markmail.org" ) );
+        assertEquals("maven.announce.markmail.org", getArchiveServer("http://maven.announce.markmail.org"));
     }
 
-    private void startJetty( boolean isSSL, boolean withAuth )
-        throws Exception
-    {
+    private void startJetty(boolean isSSL, boolean withAuth) throws Exception {
         jettyServer = new Server();
-        jettyServer.setStopAtShutdown( true );
+        jettyServer.setStopAtShutdown(true);
 
-        Connector connector = ( isSSL ? getSSLConnector() : getDefaultConnector() );
-        jettyServer.setConnectors( new Connector[] { connector } );
+        Connector connector = (isSSL ? getSSLConnector() : getDefaultConnector());
+        jettyServer.setConnectors(new Connector[] {connector});
 
         WebAppContext webapp = new WebAppContext();
-        webapp.setContextPath( "/" );
-        webapp.setResourceBase( getBasedir() + "/target/classes/" );
+        webapp.setContextPath("/");
+        webapp.setResourceBase(getBasedir() + "/target/classes/");
 
-        webapp.setServer( jettyServer );
+        webapp.setServer(jettyServer);
 
-        if ( withAuth )
-        {
+        if (withAuth) {
             Constraint constraint = new Constraint();
-            constraint.setName( Constraint.__BASIC_AUTH );
-            constraint.setRoles( new String[] { "user", "admin" } );
-            constraint.setAuthenticate( true );
+            constraint.setName(Constraint.__BASIC_AUTH);
+            constraint.setRoles(new String[] {"user", "admin"});
+            constraint.setAuthenticate(true);
 
             ConstraintMapping cm = new ConstraintMapping();
-            cm.setConstraint( constraint );
-            cm.setPathSpec( "/*" );
+            cm.setConstraint(constraint);
+            cm.setPathSpec("/*");
 
             SecurityHandler sh = new SecurityHandler();
-            sh.setUserRealm( new HashUserRealm( "MyRealm", getBasedir() + "/src/test/resources/realm.properties" ) );
-            sh.setConstraintMappings( new ConstraintMapping[] { cm } );
+            sh.setUserRealm(new HashUserRealm("MyRealm", getBasedir() + "/src/test/resources/realm.properties"));
+            sh.setConstraintMappings(new ConstraintMapping[] {cm});
 
-            webapp.addHandler( sh );
+            webapp.addHandler(sh);
         }
 
         DefaultHandler defaultHandler = new DefaultHandler();
-        defaultHandler.setServer( jettyServer );
+        defaultHandler.setServer(jettyServer);
 
         Handler[] handlers = new Handler[2];
         handlers[0] = webapp;
         handlers[1] = defaultHandler;
-        jettyServer.setHandlers( handlers );
+        jettyServer.setHandlers(handlers);
 
         jettyServer.start();
 
         port = connector.getLocalPort();
     }
 
-    private void stopJetty()
-        throws Exception
-    {
-        if ( jettyServer != null )
-        {
+    private void stopJetty() throws Exception {
+        if (jettyServer != null) {
             jettyServer.stop();
 
             jettyServer = null;
@@ -277,21 +252,19 @@ public class ProjectInfoReportUtilsTest
         }
     }
 
-    private Connector getDefaultConnector()
-    {
+    private Connector getDefaultConnector() {
         Connector connector = new SelectChannelConnector();
-        connector.setMaxIdleTime( MAX_IDLE_TIME );
+        connector.setMaxIdleTime(MAX_IDLE_TIME);
         return connector;
     }
 
-    private Connector getSSLConnector()
-    {
+    private Connector getSSLConnector() {
         SslSocketConnector connector = new SslSocketConnector();
-        connector.setKeystore( getBasedir() + "/target/jetty.jks" );
-        connector.setPassword( "apache" );
-        connector.setKeyPassword( "apache" );
-        connector.setTruststore( getBasedir() + "/target/jetty.jks" );
-        connector.setTrustPassword( "apache" );
+        connector.setKeystore(getBasedir() + "/target/jetty.jks");
+        connector.setPassword("apache");
+        connector.setKeyPassword("apache");
+        connector.setTruststore(getBasedir() + "/target/jetty.jks");
+        connector.setTrustPassword("apache");
         return connector;
     }
 }

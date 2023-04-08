@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,17 +16,15 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class IssueManagementStub
-    extends ProjectInfoProjectStub
-{
+public class IssueManagementStub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "issue-management-plugin-config.xml";
     }
 }

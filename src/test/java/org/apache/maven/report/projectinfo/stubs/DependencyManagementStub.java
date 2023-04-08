@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,18 +16,16 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 /**
  * @author Nick Stolwijk
  * @version $Id$
  * @since 2.1
  */
-public class DependencyManagementStub
-    extends ProjectInfoProjectStub
-{
+public class DependencyManagementStub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "dependency-management-plugin-config.xml";
     }
 }

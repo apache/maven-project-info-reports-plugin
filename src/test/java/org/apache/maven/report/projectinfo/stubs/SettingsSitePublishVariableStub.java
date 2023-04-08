@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,23 +27,19 @@ import org.apache.maven.settings.Settings;
 /**
  * @author Alix Lourme
  */
-public class SettingsSitePublishVariableStub
-    extends Settings
-{
+public class SettingsSitePublishVariableStub extends Settings {
     private static final long serialVersionUID = 7852264203210559193L;
 
     @Override
-    public List<Profile> getProfiles()
-    {
+    public List<Profile> getProfiles() {
         Profile p = new Profile();
-        p.setId( "site-location" );
-        p.addProperty( "sitePublishLocation", "file://tmp/sitePublish" );
-        return Collections.singletonList( p );
+        p.setId("site-location");
+        p.addProperty("sitePublishLocation", "file://tmp/sitePublish");
+        return Collections.singletonList(p);
     }
 
     @Override
-    public List<String> getActiveProfiles()
-    {
-        return Collections.singletonList( "site-location" );
+    public List<String> getActiveProfiles() {
+        return Collections.singletonList("site-location");
     }
 }

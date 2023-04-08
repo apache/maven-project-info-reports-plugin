@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,16 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.maven.doxia.sink.Sink;
@@ -30,25 +38,14 @@ import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Generates the Project Licenses report.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.0
  */
-@Mojo( name = "licenses" )
-public class LicensesReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "licenses")
+public class LicensesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
@@ -56,7 +53,7 @@ public class LicensesReport
     /**
      * Whether the system is currently offline.
      */
-    @Parameter( property = "settings.offline" )
+    @Parameter(property = "settings.offline")
     private boolean offline;
 
     /**
@@ -66,7 +63,7 @@ public class LicensesReport
      *
      * @since 2.3
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean linkOnly;
 
     /**
@@ -82,46 +79,37 @@ public class LicensesReport
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
-            result = !isEmpty( getProject().getModel().getLicenses() ) ;
+        if (result && skipEmptyReport) {
+            result = !isEmpty(getProject().getModel().getLicenses());
         }
 
-        if ( !result )
-        {
+        if (!result) {
             return false;
         }
 
-        if ( !offline )
-        {
+        if (!offline) {
             return true;
         }
 
-        for ( License license : project.getModel().getLicenses() )
-        {
+        for (License license : project.getModel().getLicenses()) {
             String url = license.getUrl();
 
             URL licenseUrl = null;
-            try
-            {
-                licenseUrl = getLicenseURL( project, url );
-            }
-            catch ( IOException e )
-            {
-                getLog().error( e.getMessage() );
+            try {
+                licenseUrl = getLicenseURL(project, url);
+            } catch (IOException e) {
+                getLog().error(e.getMessage());
             }
 
-            if ( licenseUrl != null && licenseUrl.getProtocol().equals( "file" ) )
-            {
+            if (licenseUrl != null && licenseUrl.getProtocol().equals("file")) {
                 return true;
             }
 
-            if ( licenseUrl != null
-                && ( licenseUrl.getProtocol().equals( "http" ) || licenseUrl.getProtocol().equals( "https" ) ) )
-            {
+            if (licenseUrl != null
+                    && (licenseUrl.getProtocol().equals("http")
+                            || licenseUrl.getProtocol().equals("https"))) {
                 linkOnly = true;
                 return true;
             }
@@ -131,11 +119,9 @@ public class LicensesReport
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
-        LicensesRenderer r =
-            new LicensesRenderer( getSink(), getProject(), getI18N( locale ), locale, settings,
-                                 linkOnly, licenseFileEncoding );
+    public void executeReport(Locale locale) {
+        LicensesRenderer r = new LicensesRenderer(
+                getSink(), getProject(), getI18N(locale), locale, settings, linkOnly, licenseFileEncoding);
 
         r.render();
     }
@@ -143,14 +129,12 @@ public class LicensesReport
     /**
      * {@inheritDoc}
      */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "licenses";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "licenses";
     }
 
@@ -160,48 +144,33 @@ public class LicensesReport
      * @return a valid URL object from the url string
      * @throws IOException if any
      */
-    protected static URL getLicenseURL( MavenProject project, String url )
-        throws IOException
-    {
+    protected static URL getLicenseURL(MavenProject project, String url) throws IOException {
         URL licenseUrl;
-        UrlValidator urlValidator = new UrlValidator( UrlValidator.ALLOW_ALL_SCHEMES );
+        UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
         // UrlValidator does not accept file URLs because the file
         // URLs do not contain a valid authority (no hostname).
         // As a workaround accept license URLs that start with the
         // file scheme.
-        if ( urlValidator.isValid( url ) || StringUtils.defaultString( url ).startsWith( "file://" ) )
-        {
-            try
-            {
-                licenseUrl = new URL( url );
+        if (urlValidator.isValid(url) || StringUtils.defaultString(url).startsWith("file://")) {
+            try {
+                licenseUrl = new URL(url);
+            } catch (MalformedURLException e) {
+                throw new MalformedURLException("The license url '" + url + "' seems to be invalid: " + e.getMessage());
             }
-            catch ( MalformedURLException e )
-            {
-                throw new MalformedURLException(
-                    "The license url '" + url + "' seems to be invalid: " + e.getMessage() );
-            }
-        }
-        else
-        {
-            File licenseFile = new File( project.getBasedir(), url );
-            if ( !licenseFile.exists() )
-            {
+        } else {
+            File licenseFile = new File(project.getBasedir(), url);
+            if (!licenseFile.exists()) {
                 // Workaround to allow absolute path names while
                 // staying compatible with the way it was...
-                licenseFile = new File( url );
+                licenseFile = new File(url);
             }
-            if ( !licenseFile.exists() )
-            {
-                throw new IOException( "Maven can't find the file '" + licenseFile + "' on the system." );
+            if (!licenseFile.exists()) {
+                throw new IOException("Maven can't find the file '" + licenseFile + "' on the system.");
             }
-            try
-            {
+            try {
                 licenseUrl = licenseFile.toURI().toURL();
-            }
-            catch ( MalformedURLException e )
-            {
-                throw new MalformedURLException(
-                    "The license url '" + url + "' seems to be invalid: " + e.getMessage() );
+            } catch (MalformedURLException e) {
+                throw new MalformedURLException("The license url '" + url + "' seems to be invalid: " + e.getMessage());
             }
         }
 
@@ -215,9 +184,7 @@ public class LicensesReport
     /**
      * Internal renderer class
      */
-    private static class LicensesRenderer
-        extends AbstractProjectInfoRenderer
-    {
+    private static class LicensesRenderer extends AbstractProjectInfoRenderer {
         private final MavenProject project;
 
         private final Settings settings;
@@ -226,10 +193,15 @@ public class LicensesReport
 
         private final String licenseFileEncoding;
 
-        LicensesRenderer( Sink sink, MavenProject project, I18N i18n, Locale locale, Settings settings,
-                         boolean linkOnly, String licenseFileEncoding )
-        {
-            super( sink, i18n, locale );
+        LicensesRenderer(
+                Sink sink,
+                MavenProject project,
+                I18N i18n,
+                Locale locale,
+                Settings settings,
+                boolean linkOnly,
+                String licenseFileEncoding) {
+            super(sink, i18n, locale);
 
             this.project = project;
 
@@ -241,21 +213,18 @@ public class LicensesReport
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "licenses";
         }
 
         @Override
-        public void renderBody()
-        {
+        public void renderBody() {
             List<License> licenses = project.getModel().getLicenses();
 
-            if ( licenses.isEmpty() )
-            {
-                startSection( getTitle() );
+            if (licenses.isEmpty()) {
+                startSection(getTitle());
 
-                paragraph( getI18nString( "nolicense" ) );
+                paragraph(getI18nString("nolicense"));
 
                 endSection();
 
@@ -263,77 +232,63 @@ public class LicensesReport
             }
 
             // Overview
-            startSection( getI18nString( "overview.title" ) );
+            startSection(getI18nString("overview.title"));
 
-            paragraph( getI18nString( "overview.intro" ) );
+            paragraph(getI18nString("overview.intro"));
 
             endSection();
 
             // License
-            startSection( getI18nString( "title" ) );
+            startSection(getI18nString("title"));
 
-            if ( licenses.size() > 1 )
-            {
+            if (licenses.size() > 1) {
                 // multiple licenses
-                paragraph( getI18nString( "multiple" ) );
+                paragraph(getI18nString("multiple"));
 
-                if ( !linkOnly )
-                {
+                if (!linkOnly) {
                     // add an index before licenses content
                     sink.list();
-                    for ( License license : licenses )
-                    {
+                    for (License license : licenses) {
                         String name = license.getName();
-                        if ( StringUtils.isEmpty( name ) )
-                        {
-                            name = getI18nString( "unnamed" );
+                        if (StringUtils.isEmpty(name)) {
+                            name = getI18nString("unnamed");
                         }
 
                         sink.listItem();
-                        link( "#" + HtmlTools.encodeId( name ), name );
+                        link("#" + HtmlTools.encodeId(name), name);
                         sink.listItem_();
                     }
                     sink.list_();
                 }
             }
 
-            for ( License license : licenses )
-            {
+            for (License license : licenses) {
                 String name = license.getName();
-                if ( StringUtils.isEmpty( name ) )
-                {
-                    name = getI18nString( "unnamed" );
+                if (StringUtils.isEmpty(name)) {
+                    name = getI18nString("unnamed");
                 }
 
                 String url = license.getUrl();
                 String comments = license.getComments();
 
-                startSection( name );
+                startSection(name);
 
-                if ( !StringUtils.isEmpty( comments ) )
-                {
-                    paragraph( comments );
+                if (!StringUtils.isEmpty(comments)) {
+                    paragraph(comments);
                 }
 
-                if ( url != null )
-                {
-                    try
-                    {
-                        URL licenseUrl = getLicenseURL( project, url );
+                if (url != null) {
+                    try {
+                        URL licenseUrl = getLicenseURL(project, url);
 
-                        if ( linkOnly )
-                        {
-                            link( licenseUrl.toExternalForm(), licenseUrl.toExternalForm() );
+                        if (linkOnly) {
+                            link(licenseUrl.toExternalForm(), licenseUrl.toExternalForm());
+                        } else {
+                            renderLicenseContent(licenseUrl);
                         }
-                        else
-                        {
-                            renderLicenseContent( licenseUrl );
-                        }
-                    }
-                    catch ( IOException e )
-                    {
+                    } catch (IOException e) {
                         // I18N message
-                        paragraph( e.getMessage() );
+                        paragraph(e.getMessage());
                     }
                 }
 
@@ -348,110 +303,88 @@ public class LicensesReport
          *
          * @param licenseUrl the license URL
          */
-        private void renderLicenseContent( URL licenseUrl )
-        {
-            try
-            {
+        private void renderLicenseContent(URL licenseUrl) {
+            try {
                 // All licenses are supposed to be in English...
-                String licenseContent = ProjectInfoReportUtils.getContent( licenseUrl, settings, licenseFileEncoding );
+                String licenseContent = ProjectInfoReportUtils.getContent(licenseUrl, settings, licenseFileEncoding);
 
-                // TODO: we should check for a text/html mime type instead, and possibly use a html parser to do this a bit more cleanly/reliably.
-                String licenseContentLC = licenseContent.toLowerCase( Locale.ENGLISH );
-                int bodyStart = licenseContentLC.indexOf( "<body" );
-                int bodyEnd = licenseContentLC.indexOf( "</body>" );
+                // TODO: we should check for a text/html mime type instead, and possibly use a html parser to do this a
+                // bit more cleanly/reliably.
+                String licenseContentLC = licenseContent.toLowerCase(Locale.ENGLISH);
+                int bodyStart = licenseContentLC.indexOf("<body");
+                int bodyEnd = licenseContentLC.indexOf("</body>");
 
-                if ( ( licenseContentLC.contains( "<!doctype html" ) || licenseContentLC.contains( "<html>" ) )
-                    && ( ( bodyStart >= 0 ) && ( bodyEnd > bodyStart ) ) )
-                {
-                    bodyStart = licenseContentLC.indexOf( '>', bodyStart ) + 1;
-                    String body = licenseContent.substring( bodyStart, bodyEnd );
+                if ((licenseContentLC.contains("<!doctype html") || licenseContentLC.contains("<html>"))
+                        && ((bodyStart >= 0) && (bodyEnd > bodyStart))) {
+                    bodyStart = licenseContentLC.indexOf('>', bodyStart) + 1;
+                    String body = licenseContent.substring(bodyStart, bodyEnd);
 
-                    link( licenseUrl.toExternalForm(), getI18nString( "originalText" ) );
-                    paragraph( getI18nString( "copy" ) );
+                    link(licenseUrl.toExternalForm(), getI18nString("originalText"));
+                    paragraph(getI18nString("copy"));
 
-                    body = replaceRelativeLinks( body, baseURL( licenseUrl ).toExternalForm() );
-                    sink.rawText( body );
+                    body = replaceRelativeLinks(body, baseURL(licenseUrl).toExternalForm());
+                    sink.rawText(body);
+                } else {
+                    verbatimText(licenseContent);
                 }
-                else
-                {
-                    verbatimText( licenseContent );
-                }
-            }
-            catch ( IOException e )
-            {
-                paragraph( "Can't read the url [" + licenseUrl + "] : " + e.getMessage() );
+            } catch (IOException e) {
+                paragraph("Can't read the url [" + licenseUrl + "] : " + e.getMessage());
             }
         }
 
-        private static URL baseURL( URL aUrl )
-        {
+        private static URL baseURL(URL aUrl) {
             String urlTxt = aUrl.toExternalForm();
-            int lastSlash = urlTxt.lastIndexOf( '/' );
-            if ( lastSlash > -1 )
-            {
-                try
-                {
-                    return new URL( urlTxt.substring( 0, lastSlash + 1 ) );
-                }
-                catch ( MalformedURLException e )
-                {
-                    throw new AssertionError( e );
+            int lastSlash = urlTxt.lastIndexOf('/');
+            if (lastSlash > -1) {
+                try {
+                    return new URL(urlTxt.substring(0, lastSlash + 1));
+                } catch (MalformedURLException e) {
+                    throw new AssertionError(e);
                 }
             }
 
             return aUrl;
         }
 
-        private static String replaceRelativeLinks( String html, String baseURL )
-        {
+        private static String replaceRelativeLinks(String html, String baseURL) {
             String url = baseURL;
-            if ( !url.endsWith( "/" ) )
-            {
+            if (!url.endsWith("/")) {
                 url += "/";
             }
 
-            String serverURL = url.substring( 0, url.indexOf( '/', url.indexOf( "//" ) + 2 ) );
+            String serverURL = url.substring(0, url.indexOf('/', url.indexOf("//") + 2));
 
-            String content = replaceParts( html, url, serverURL, "[aA]", "[hH][rR][eE][fF]" );
-            content = replaceParts( content, url, serverURL, "[iI][mM][gG]", "[sS][rR][cC]" );
+            String content = replaceParts(html, url, serverURL, "[aA]", "[hH][rR][eE][fF]");
+            content = replaceParts(content, url, serverURL, "[iI][mM][gG]", "[sS][rR][cC]");
             return content;
         }
 
-        private static String replaceParts( String html, String baseURL, String serverURL, String tagPattern,
-                                            String attributePattern )
-        {
+        private static String replaceParts(
+                String html, String baseURL, String serverURL, String tagPattern, String attributePattern) {
             Pattern anchor = Pattern.compile(
-                "(<\\s*" + tagPattern + "\\s+[^>]*" + attributePattern + "\\s*=\\s*\")([^\"]*)\"([^>]*>)" );
-            StringBuilder sb = new StringBuilder( html );
+                    "(<\\s*" + tagPattern + "\\s+[^>]*" + attributePattern + "\\s*=\\s*\")([^\"]*)\"([^>]*>)");
+            StringBuilder sb = new StringBuilder(html);
 
             int indx = 0;
             boolean done = false;
-            while ( !done )
-            {
-                Matcher mAnchor = anchor.matcher( sb );
-                if ( mAnchor.find( indx ) )
-                {
-                    indx = mAnchor.end( 3 );
+            while (!done) {
+                Matcher mAnchor = anchor.matcher(sb);
+                if (mAnchor.find(indx)) {
+                    indx = mAnchor.end(3);
 
-                    if ( mAnchor.group( 2 ).startsWith( "#" ) )
-                    {
+                    if (mAnchor.group(2).startsWith("#")) {
                         // relative link - don't want to alter this one!
                     }
-                    if ( mAnchor.group( 2 ).startsWith( "/" ) )
-                    {
+                    if (mAnchor.group(2).startsWith("/")) {
                         // root link
-                        sb.insert( mAnchor.start( 2 ), serverURL );
+                        sb.insert(mAnchor.start(2), serverURL);
                         indx += serverURL.length();
-                    }
-                    else if ( mAnchor.group( 2 ).indexOf( ':' ) < 0 )
-                    {
+                    } else if (mAnchor.group(2).indexOf(':') < 0) {
                         // relative link
-                        sb.insert( mAnchor.start( 2 ), baseURL );
+                        sb.insert(mAnchor.start(2), baseURL);
                         indx += baseURL.length();
                     }
-                }
-                else
-                {
+                } else {
                     done = true;
                 }
             }

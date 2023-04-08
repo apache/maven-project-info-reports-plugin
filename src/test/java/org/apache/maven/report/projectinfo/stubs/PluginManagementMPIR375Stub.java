@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,18 +16,16 @@ package org.apache.maven.report.projectinfo.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.stubs;
 
 /**
  * @author Gabriel Belingueres
  * @version $Id$
  * @since 3.0.1
  */
-public class PluginManagementMPIR375Stub
-    extends ProjectInfoProjectStub
-{
+public class PluginManagementMPIR375Stub extends ProjectInfoProjectStub {
     @Override
-    protected String getPOM()
-    {
+    protected String getPOM() {
         return "plugin-management-plugin-config-MPIR-375.xml";
     }
 }

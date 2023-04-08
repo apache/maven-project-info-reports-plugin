@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.io.File;
 import java.net.URL;
@@ -36,9 +35,7 @@ import com.meterware.httpunit.WebTable;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class TeamReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class TeamReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -49,43 +46,40 @@ public class TeamReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        File pluginXmlFile = new File( getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml" );
-        AbstractProjectInfoReport mojo  = createReportMojo( "team", pluginXmlFile );
-        setVariableValueToObject( mojo, "showAvatarImages", Boolean.TRUE );
-        generateReport( mojo, pluginXmlFile);
-        assertTrue( "Test html generated", getGeneratedReport( "team.html" ).exists() );
+    public void testReport() throws Exception {
+        File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml");
+        AbstractProjectInfoReport mojo = createReportMojo("team", pluginXmlFile);
+        setVariableValueToObject(mojo, "showAvatarImages", Boolean.TRUE);
+        generateReport(mojo, pluginXmlFile);
+        assertTrue("Test html generated", getGeneratedReport("team.html").exists());
 
-        URL reportURL = getGeneratedReport( "team.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("team.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "team project info",
-            getString( "report.team.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle = prepareTitle("team project info", getString("report.team.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
-        assertTrue( response.getText().contains( "gravatar" ));
+        assertTrue(response.getText().contains("gravatar"));
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals( 7, textBlocks.length );
-        assertEquals( getString( "report.team.intro.title" ), textBlocks[0].getText() );
-        assertEquals( getString( "report.team.intro.description1" ), textBlocks[1].getText() );
-        assertEquals( getString( "report.team.intro.description2" ), textBlocks[2].getText() );
-        assertEquals( getString( "report.team.developers.title" ), textBlocks[3].getText() );
-        assertEquals( getString( "report.team.developers.intro" ), textBlocks[4].getText() );
-        assertEquals( getString( "report.team.contributors.title" ), textBlocks[5].getText() );
-        assertEquals( getString( "report.team.nocontributor" ), textBlocks[6].getText() );
+        assertEquals(7, textBlocks.length);
+        assertEquals(getString("report.team.intro.title"), textBlocks[0].getText());
+        assertEquals(getString("report.team.intro.description1"), textBlocks[1].getText());
+        assertEquals(getString("report.team.intro.description2"), textBlocks[2].getText());
+        assertEquals(getString("report.team.developers.title"), textBlocks[3].getText());
+        assertEquals(getString("report.team.developers.intro"), textBlocks[4].getText());
+        assertEquals(getString("report.team.contributors.title"), textBlocks[5].getText());
+        assertEquals(getString("report.team.nocontributor"), textBlocks[6].getText());
 
         WebTable[] tables = response.getTables();
         assertEquals(1, tables.length);

@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
 
 import java.net.URL;
 
@@ -32,9 +31,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class SummaryReportTest
-    extends AbstractProjectInfoTestCase
-{
+public class SummaryReportTest extends AbstractProjectInfoTestCase {
     /**
      * WebConversation object
      */
@@ -45,35 +42,32 @@ public class SummaryReportTest
      *
      * @throws Exception if any
      */
-    public void testReport()
-        throws Exception
-    {
-        generateReport( "summary", "summary-plugin-config.xml" );
-        assertTrue( "Test html generated", getGeneratedReport( "summary.html" ).exists() );
+    public void testReport() throws Exception {
+        generateReport("summary", "summary-plugin-config.xml");
+        assertTrue("Test html generated", getGeneratedReport("summary.html").exists());
 
-        URL reportURL = getGeneratedReport( "summary.html" ).toURI().toURL();
-        assertNotNull( reportURL );
+        URL reportURL = getGeneratedReport("summary.html").toURI().toURL();
+        assertNotNull(reportURL);
 
         // HTTPUnit
-        WebRequest request = new GetMethodWebRequest( reportURL.toString() );
-        WebResponse response = WEB_CONVERSATION.getResponse( request );
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
 
         // Basic HTML tests
-        assertTrue( response.isHTML() );
-        assertTrue( response.getContentLength() > 0 );
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
 
         // Test the Page title
-        String expectedTitle = prepareTitle( "summary project info",
-            getString( "report.summary.title" ) );
-        assertEquals( expectedTitle, response.getTitle() );
+        String expectedTitle = prepareTitle("summary project info", getString("report.summary.title"));
+        assertEquals(expectedTitle, response.getTitle());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
 
-        assertEquals( getString( "report.summary.title" ), textBlocks[0].getText() );
-        assertEquals( getString( "report.summary.general.title" ), textBlocks[1].getText() );
-        assertEquals( getString( "report.summary.organization.title" ), textBlocks[2].getText() );
-        assertEquals( getString( "report.summary.noorganization" ), textBlocks[3].getText() );
-        assertEquals( getString( "report.summary.build.title" ), textBlocks[4].getText() );
+        assertEquals(getString("report.summary.title"), textBlocks[0].getText());
+        assertEquals(getString("report.summary.general.title"), textBlocks[1].getText());
+        assertEquals(getString("report.summary.organization.title"), textBlocks[2].getText());
+        assertEquals(getString("report.summary.noorganization"), textBlocks[3].getText());
+        assertEquals(getString("report.summary.build.title"), textBlocks[4].getText());
     }
 }

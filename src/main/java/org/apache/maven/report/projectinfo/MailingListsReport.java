@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,13 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.MailingList;
@@ -27,12 +32,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Generates the Mailing Lists report.
  *
@@ -40,31 +39,26 @@ import java.util.Locale;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton </a>
  * @since 2.0
  */
-@Mojo( name = "mailing-lists" )
-public class MailingListsReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "mailing-lists")
+public class MailingListsReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean result = super.canGenerateReport();
-        if ( result && skipEmptyReport )
-        {
-            result = !isEmpty( getProject().getModel().getMailingLists() );
+        if (result && skipEmptyReport) {
+            result = !isEmpty(getProject().getModel().getMailingLists());
         }
 
         return result;
     }
 
     @Override
-    public void executeReport( Locale locale )
-    {
+    public void executeReport(Locale locale) {
         MailingListsRenderer r =
-            new MailingListsRenderer( getLog(), getSink(), getProject().getModel(), getI18N( locale ), locale );
+                new MailingListsRenderer(getLog(), getSink(), getProject().getModel(), getI18N(locale), locale);
 
         r.render();
     }
@@ -72,14 +66,12 @@ public class MailingListsReport
     /**
      * {@inheritDoc}
      */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "mailing-lists";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "mailing-lists";
     }
 
@@ -90,173 +82,143 @@ public class MailingListsReport
     /**
      * Internal renderer class
      */
-    protected static class MailingListsRenderer
-        extends AbstractProjectInfoRenderer
-    {
+    protected static class MailingListsRenderer extends AbstractProjectInfoRenderer {
 
         private final Log log;
         private final Model model;
 
-        MailingListsRenderer( Log log, Sink sink, Model model, I18N i18n, Locale locale )
-        {
-            super( sink, i18n, locale );
+        MailingListsRenderer(Log log, Sink sink, Model model, I18N i18n, Locale locale) {
+            super(sink, i18n, locale);
             this.model = model;
             this.log = log;
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "mailing-lists";
         }
 
         @Override
-        public void renderBody()
-        {
+        public void renderBody() {
             List<MailingList> mailingLists = model.getMailingLists();
 
-            if ( mailingLists == null || mailingLists.isEmpty() )
-            {
-                startSection( getTitle() );
+            if (mailingLists == null || mailingLists.isEmpty()) {
+                startSection(getTitle());
 
-                paragraph( getI18nString( "nolist" ) );
+                paragraph(getI18nString("nolist"));
 
                 endSection();
 
                 return;
             }
 
-            startSection( getTitle() );
+            startSection(getTitle());
 
-            paragraph( getI18nString( "intro" ) );
+            paragraph(getI18nString("intro"));
 
             startTable();
 
             // To beautify the display with other archives
             boolean otherArchives = false;
-            for ( MailingList m : mailingLists )
-            {
-                if ( m.getOtherArchives() != null && !m.getOtherArchives().isEmpty() )
-                {
+            for (MailingList m : mailingLists) {
+                if (m.getOtherArchives() != null && !m.getOtherArchives().isEmpty()) {
                     otherArchives = true;
                 }
             }
 
-            String name = getI18nString( "column.name" );
-            String subscribe = getI18nString( "column.subscribe" );
-            String unsubscribe = getI18nString( "column.unsubscribe" );
-            String post = getI18nString( "column.post" );
-            String archive = getI18nString( "column.archive" );
-            String archivesOther = getI18nString( "column.otherArchives" );
+            String name = getI18nString("column.name");
+            String subscribe = getI18nString("column.subscribe");
+            String unsubscribe = getI18nString("column.unsubscribe");
+            String post = getI18nString("column.post");
+            String archive = getI18nString("column.archive");
+            String archivesOther = getI18nString("column.otherArchives");
 
-            if ( otherArchives )
-            {
-                tableHeader( new String[] { name, subscribe, unsubscribe, post, archive, archivesOther } );
-            }
-            else
-            {
-                tableHeader( new String[] { name, subscribe, unsubscribe, post, archive } );
+            if (otherArchives) {
+                tableHeader(new String[] {name, subscribe, unsubscribe, post, archive, archivesOther});
+            } else {
+                tableHeader(new String[] {name, subscribe, unsubscribe, post, archive});
             }
 
-            for ( MailingList mailingList : model.getMailingLists() )
-            {
+            for (MailingList mailingList : model.getMailingLists()) {
                 List<String> textRow = new ArrayList<>();
 
-                if ( StringUtils.isNotEmpty( mailingList.getName() ) )
-                {
-                    textRow.add( mailingList.getName() );
-                }
-                else
-                {
-                    textRow.add( "-" );
+                if (StringUtils.isNotEmpty(mailingList.getName())) {
+                    textRow.add(mailingList.getName());
+                } else {
+                    textRow.add("-");
                 }
 
-                if ( StringUtils.isNotEmpty( mailingList.getSubscribe() ) )
-                {
-                    textRow.add( createURILinkPatternedText( subscribe, mailingList.getSubscribe(), null ) );
-                }
-                else
-                {
-                    textRow.add( "-" );
+                if (StringUtils.isNotEmpty(mailingList.getSubscribe())) {
+                    textRow.add(createURILinkPatternedText(subscribe, mailingList.getSubscribe(), null));
+                } else {
+                    textRow.add("-");
                 }
 
-                if ( StringUtils.isNotEmpty( mailingList.getUnsubscribe() ) )
-                {
-                    textRow.add( createURILinkPatternedText( unsubscribe, mailingList.getUnsubscribe(), null ) );
-                }
-                else
-                {
-                    textRow.add( "-" );
+                if (StringUtils.isNotEmpty(mailingList.getUnsubscribe())) {
+                    textRow.add(createURILinkPatternedText(unsubscribe, mailingList.getUnsubscribe(), null));
+                } else {
+                    textRow.add("-");
                 }
 
-                if ( StringUtils.isNotEmpty( mailingList.getPost() ) )
-                {
-                    textRow.add( createURILinkPatternedText( post, mailingList.getPost(), null ) );
-                }
-                else
-                {
-                    textRow.add( "-" );
+                if (StringUtils.isNotEmpty(mailingList.getPost())) {
+                    textRow.add(createURILinkPatternedText(post, mailingList.getPost(), null));
+                } else {
+                    textRow.add("-");
                 }
 
-                if ( mailingList.getArchive() != null && !mailingList.getArchive().isEmpty() )
-                {
-                    textRow.add( createLinkPatternedText(
-                            ProjectInfoReportUtils.getArchiveServer( mailingList.getArchive() ),
-                            mailingList.getArchive() ) );
-                }
-                else
-                {
-                    textRow.add( "-" );
+                if (mailingList.getArchive() != null
+                        && !mailingList.getArchive().isEmpty()) {
+                    textRow.add(createLinkPatternedText(
+                            ProjectInfoReportUtils.getArchiveServer(mailingList.getArchive()),
+                            mailingList.getArchive()));
+                } else {
+                    textRow.add("-");
                 }
 
-                if ( mailingList.getOtherArchives() != null && !mailingList.getOtherArchives().isEmpty() )
-                {
+                if (mailingList.getOtherArchives() != null
+                        && !mailingList.getOtherArchives().isEmpty()) {
                     // For the first line
                     Iterator<String> it = mailingList.getOtherArchives().iterator();
                     String otherArchive = it.next();
 
-                    textRow.add( createLinkPatternedText(
-                            ProjectInfoReportUtils.getArchiveServer( otherArchive ), otherArchive ) );
+                    textRow.add(createLinkPatternedText(
+                            ProjectInfoReportUtils.getArchiveServer(otherArchive), otherArchive));
 
-                    tableRow( textRow.toArray( new String[textRow.size()] ) );
+                    tableRow(textRow.toArray(new String[textRow.size()]));
 
                     // Other lines...
-                    while ( it.hasNext() )
-                    {
+                    while (it.hasNext()) {
                         otherArchive = it.next();
 
                         // Reinit the list to beautify the display
                         textRow = new ArrayList<>();
 
                         // Name
-                        textRow.add( " " );
+                        textRow.add(" ");
 
                         // Subscribe
-                        textRow.add( " " );
+                        textRow.add(" ");
 
                         // UnSubscribe
-                        textRow.add( " " );
+                        textRow.add(" ");
 
                         // Post
-                        textRow.add( " " );
+                        textRow.add(" ");
 
                         // Archive
-                        textRow.add( " " );
+                        textRow.add(" ");
 
-                        textRow.add( createLinkPatternedText(
-                                ProjectInfoReportUtils.getArchiveServer( otherArchive ), otherArchive ) );
+                        textRow.add(createLinkPatternedText(
+                                ProjectInfoReportUtils.getArchiveServer(otherArchive), otherArchive));
 
-                        tableRow( textRow.toArray( new String[textRow.size()] ) );
+                        tableRow(textRow.toArray(new String[textRow.size()]));
                     }
-                }
-                else
-                {
-                    if ( otherArchives )
-                    {
-                        textRow.add( null );
+                } else {
+                    if (otherArchives) {
+                        textRow.add(null);
                     }
 
-                    tableRow( textRow.toArray( new String[textRow.size()] ) );
+                    tableRow(textRow.toArray(new String[textRow.size()]));
                 }
             }
 
@@ -275,28 +237,20 @@ public class MailingListsReport
          * @return a link pattern.
          * @see #createLinkPatternedText(String,String)
          */
-        private String createURILinkPatternedText( String text, String href, String defaultHref )
-        {
-            if ( href == null || href.isEmpty() )
-            {
-                return createLinkPatternedText( text, defaultHref );
+        private String createURILinkPatternedText(String text, String href, String defaultHref) {
+            if (href == null || href.isEmpty()) {
+                return createLinkPatternedText(text, defaultHref);
             }
 
-            try
-            {
-                URI hrefUri = URI.create( href );
-                if ( StringUtils.isNotEmpty( hrefUri.getScheme() ) )
-                {
-                    return createLinkPatternedText( text, href );
+            try {
+                URI hrefUri = URI.create(href);
+                if (StringUtils.isNotEmpty(hrefUri.getScheme())) {
+                    return createLinkPatternedText(text, href);
+                } else {
+                    return createLinkPatternedText(text, "mailto:" + href);
                 }
-                else
-                {
-                    return createLinkPatternedText( text, "mailto:" + href );
-                }
-            }
-            catch ( IllegalArgumentException e )
-            {
-                log.warn( "Invalid mailing list link provided '" + href + "': " + e.getMessage() );
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid mailing list link provided '" + href + "': " + e.getMessage());
                 return href;
             }
         }

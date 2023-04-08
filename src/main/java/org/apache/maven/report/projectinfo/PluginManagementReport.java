@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,12 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -38,21 +42,14 @@ import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Generates the Project Plugin Management report.
  *
  * @author Nick Stolwijk
  * @since 2.1
  */
-@Mojo( name = "plugin-management", requiresDependencyResolution = ResolutionScope.TEST )
-public class PluginManagementReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "plugin-management", requiresDependencyResolution = ResolutionScope.TEST)
+public class PluginManagementReport extends AbstractProjectInfoReport {
 
     /**
      * Specify the excluded plugins. This can be a list of artifacts in the format
@@ -69,39 +66,40 @@ public class PluginManagementReport
     // ----------------------------------------------------------------------
 
     @Override
-    public void executeReport( Locale locale )
-    {
-        PluginManagementRenderer r =
-            new PluginManagementRenderer( getLog(), getSink(), locale, getI18N( locale ),
-                                          project.getPluginManagement().getPlugins(), project, projectBuilder,
-                                          repositorySystem, getSession().getProjectBuildingRequest(),
-                                          pluginManagementExcludes );
+    public void executeReport(Locale locale) {
+        PluginManagementRenderer r = new PluginManagementRenderer(
+                getLog(),
+                getSink(),
+                locale,
+                getI18N(locale),
+                project.getPluginManagement().getPlugins(),
+                project,
+                projectBuilder,
+                repositorySystem,
+                getSession().getProjectBuildingRequest(),
+                pluginManagementExcludes);
         r.render();
     }
 
     /** {@inheritDoc} */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "plugin-management";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "plugin-management";
     }
 
     @Override
-    public boolean canGenerateReport()
-    {
-          boolean result = super.canGenerateReport();
-          if ( result && skipEmptyReport )
-          {
-              result = getProject().getPluginManagement() != null
-                      && !isEmpty( project.getPluginManagement().getPlugins() );
-          }
+    public boolean canGenerateReport() {
+        boolean result = super.canGenerateReport();
+        if (result && skipEmptyReport) {
+            result = getProject().getPluginManagement() != null
+                    && !isEmpty(project.getPluginManagement().getPlugins());
+        }
 
-          return result;
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -113,9 +111,7 @@ public class PluginManagementReport
      *
      * @author Nick Stolwijk
      */
-    protected static class PluginManagementRenderer
-        extends AbstractProjectInfoRenderer
-    {
+    protected static class PluginManagementRenderer extends AbstractProjectInfoRenderer {
 
         private final Log log;
 
@@ -143,12 +139,18 @@ public class PluginManagementReport
          * @param buildingRequest {@link ProjectBuildingRequest}
          * @param excludes the list of plugins to be excluded from the report
          */
-        public PluginManagementRenderer( Log log, Sink sink, Locale locale, I18N i18n, List<Plugin> plugins,
-                                         MavenProject project, ProjectBuilder projectBuilder,
-                                         RepositorySystem repositorySystem, ProjectBuildingRequest buildingRequest,
-                                         List<String> excludes )
-        {
-            super( sink, i18n, locale );
+        public PluginManagementRenderer(
+                Log log,
+                Sink sink,
+                Locale locale,
+                I18N i18n,
+                List<Plugin> plugins,
+                MavenProject project,
+                ProjectBuilder projectBuilder,
+                RepositorySystem repositorySystem,
+                ProjectBuildingRequest buildingRequest,
+                List<String> excludes) {
+            super(sink, i18n, locale);
 
             this.log = log;
 
@@ -162,26 +164,24 @@ public class PluginManagementReport
 
             this.buildingRequest = buildingRequest;
 
-            this.patternExcludesArtifactFilter = new PatternExcludesArtifactFilter( excludes );
+            this.patternExcludesArtifactFilter = new PatternExcludesArtifactFilter(excludes);
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "plugin-management";
         }
 
         @Override
-        public void renderBody()
-        {
+        public void renderBody() {
             PluginManagement projectPluginManagement = project.getPluginManagement();
 
-            if ( projectPluginManagement == null || projectPluginManagement.getPlugins() == null
-                || projectPluginManagement.getPlugins().isEmpty() )
-            {
-                startSection( getTitle() );
+            if (projectPluginManagement == null
+                    || projectPluginManagement.getPlugins() == null
+                    || projectPluginManagement.getPlugins().isEmpty()) {
+                startSection(getTitle());
 
-                paragraph( getI18nString( "nolist" ) );
+                paragraph(getI18nString("nolist"));
 
                 endSection();
 
@@ -192,57 +192,47 @@ public class PluginManagementReport
             renderSectionPluginManagement();
         }
 
-        private void renderSectionPluginManagement()
-        {
+        private void renderSectionPluginManagement() {
             String[] tableHeader = getPluginTableHeader();
 
-            startSection( getTitle() );
+            startSection(getTitle());
 
             // can't use straight artifact comparison because we want optional last
-            Collections.sort( pluginManagement, getPluginComparator() );
+            Collections.sort(pluginManagement, getPluginComparator());
 
             startTable();
-            tableHeader( tableHeader );
+            tableHeader(tableHeader);
 
-            ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest( buildingRequest );
-            buildRequest.setRemoteRepositories( project.getPluginArtifactRepositories() );
-            buildRequest.setProcessPlugins( false );
+            ProjectBuildingRequest buildRequest = new DefaultProjectBuildingRequest(buildingRequest);
+            buildRequest.setRemoteRepositories(project.getPluginArtifactRepositories());
+            buildRequest.setProcessPlugins(false);
 
-            for ( Plugin plugin : pluginManagement )
-            {
+            for (Plugin plugin : pluginManagement) {
                 VersionRange versionRange;
-                if ( StringUtils.isEmpty( plugin.getVersion() ) )
-                {
-                    versionRange = VersionRange.createFromVersion( Artifact.RELEASE_VERSION );
-                }
-                else
-                {
-                    versionRange = VersionRange.createFromVersion( plugin.getVersion() );
+                if (StringUtils.isEmpty(plugin.getVersion())) {
+                    versionRange = VersionRange.createFromVersion(Artifact.RELEASE_VERSION);
+                } else {
+                    versionRange = VersionRange.createFromVersion(plugin.getVersion());
                 }
 
-                Artifact pluginArtifact = repositorySystem.createProjectArtifact( plugin.getGroupId(), plugin
-                    .getArtifactId(), versionRange.toString() );
+                Artifact pluginArtifact = repositorySystem.createProjectArtifact(
+                        plugin.getGroupId(), plugin.getArtifactId(), versionRange.toString());
 
-                if ( patternExcludesArtifactFilter.include( pluginArtifact ) )
-                {
-                    try
-                    {
-                        MavenProject pluginProject =
-                            projectBuilder.build( pluginArtifact, buildRequest ).getProject();
+                if (patternExcludesArtifactFilter.include(pluginArtifact)) {
+                    try {
+                        MavenProject pluginProject = projectBuilder
+                                .build(pluginArtifact, buildRequest)
+                                .getProject();
 
-                        tableRow( getPluginRow( pluginProject.getGroupId(), pluginProject.getArtifactId(),
-                                                pluginProject.getVersion(), pluginProject.getUrl() ) );
+                        tableRow(getPluginRow(
+                                pluginProject.getGroupId(), pluginProject.getArtifactId(),
+                                pluginProject.getVersion(), pluginProject.getUrl()));
+                    } catch (ProjectBuildingException e) {
+                        log.info("Could not build project for " + plugin.getArtifactId(), e);
+                        tableRow(getPluginRow(plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(), null));
                     }
-                    catch ( ProjectBuildingException e )
-                    {
-                        log.info( "Could not build project for " + plugin.getArtifactId(), e );
-                        tableRow( getPluginRow( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion(),
-                                                null ) );
-                    }
-                }
-                else
-                {
-                    log.debug( "Excluding plugin " + pluginArtifact.getId() + " from report" );
+                } else {
+                    log.debug("Excluding plugin " + pluginArtifact.getId() + " from report");
                 }
             }
             endTable();
@@ -254,37 +244,30 @@ public class PluginManagementReport
         // Private methods
         // ----------------------------------------------------------------------
 
-        private String[] getPluginTableHeader()
-        {
+        private String[] getPluginTableHeader() {
             // reused key...
-            String groupId = getI18nString( "dependency-management", "column.groupId" );
-            String artifactId = getI18nString( "dependency-management", "column.artifactId" );
-            String version = getI18nString( "dependency-management", "column.version" );
-            return new String[] { groupId, artifactId, version };
+            String groupId = getI18nString("dependency-management", "column.groupId");
+            String artifactId = getI18nString("dependency-management", "column.artifactId");
+            String version = getI18nString("dependency-management", "column.version");
+            return new String[] {groupId, artifactId, version};
         }
 
-        private String[] getPluginRow( String groupId, String artifactId, String version, String link )
-        {
-            artifactId = ProjectInfoReportUtils.getArtifactIdCell( artifactId, link );
-            return new String[] { groupId, artifactId, version };
+        private String[] getPluginRow(String groupId, String artifactId, String version, String link) {
+            artifactId = ProjectInfoReportUtils.getArtifactIdCell(artifactId, link);
+            return new String[] {groupId, artifactId, version};
         }
 
-        private Comparator<Plugin> getPluginComparator()
-        {
-            return new Comparator<Plugin>()
-            {
+        private Comparator<Plugin> getPluginComparator() {
+            return new Comparator<Plugin>() {
                 /** {@inheritDoc} */
-                public int compare( Plugin a1, Plugin a2 )
-                {
-                    int result = a1.getGroupId().compareTo( a2.getGroupId() );
-                    if ( result == 0 )
-                    {
-                        result = a1.getArtifactId().compareTo( a2.getArtifactId() );
+                public int compare(Plugin a1, Plugin a2) {
+                    int result = a1.getGroupId().compareTo(a2.getGroupId());
+                    if (result == 0) {
+                        result = a1.getArtifactId().compareTo(a2.getArtifactId());
                     }
                     return result;
                 }
             };
         }
-
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,11 @@ package org.apache.maven.report.projectinfo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.DistributionManagement;
@@ -29,20 +32,14 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-
 /**
  * Generates the Project Summary report.
  *
  * @author Edwin Punzalan
  * @since 2.0
  */
-@Mojo( name = "summary" )
-public class SummaryReport
-    extends AbstractProjectInfoReport
-{
+@Mojo(name = "summary")
+public class SummaryReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
@@ -52,21 +49,17 @@ public class SummaryReport
     // ----------------------------------------------------------------------
 
     @Override
-    protected void executeReport( Locale locale )
-        throws MavenReportException
-    {
-        new ProjectSummaryRenderer( getSink(), locale ).render();
+    protected void executeReport(Locale locale) throws MavenReportException {
+        new ProjectSummaryRenderer(getSink(), locale).render();
     }
 
     /** {@inheritDoc} */
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return "summary";
     }
 
     @Override
-    protected String getI18Nsection()
-    {
+    protected String getI18Nsection() {
         return "summary";
     }
 
@@ -77,75 +70,64 @@ public class SummaryReport
     /**
      * Internal renderer class
      */
-    private class ProjectSummaryRenderer
-        extends AbstractProjectInfoRenderer
-    {
-        ProjectSummaryRenderer( Sink sink, Locale locale )
-        {
-            super( sink, getI18N( locale ), locale );
+    private class ProjectSummaryRenderer extends AbstractProjectInfoRenderer {
+        ProjectSummaryRenderer(Sink sink, Locale locale) {
+            super(sink, getI18N(locale), locale);
         }
 
         @Override
-        protected String getI18Nsection()
-        {
+        protected String getI18Nsection() {
             return "summary";
         }
 
         @Override
-        protected void renderBody()
-        {
-            startSection( getTitle() );
+        protected void renderBody() {
+            startSection(getTitle());
 
             // general information sub-section
-            startSection( getI18nString( "general.title" ) );
+            startSection(getI18nString("general.title"));
             startTable();
-            tableHeader( new String[] { getI18nString( "field" ), getI18nString( "value" ) } );
-            tableRow( new String[] { getI18nString( "general.name" ), project.getName() } );
-            tableRow( new String[] { getI18nString( "general.description" ), project.getDescription() } );
-            tableRowWithLink( new String[] { getI18nString( "general.homepage" ), project.getUrl() } );
+            tableHeader(new String[] {getI18nString("field"), getI18nString("value")});
+            tableRow(new String[] {getI18nString("general.name"), project.getName()});
+            tableRow(new String[] {getI18nString("general.description"), project.getDescription()});
+            tableRowWithLink(new String[] {getI18nString("general.homepage"), project.getUrl()});
             endTable();
             endSection();
 
             // organization sub-section
-            startSection( getI18nString( "organization.title" ) );
+            startSection(getI18nString("organization.title"));
             Organization organization = project.getOrganization();
-            if ( organization == null )
-            {
-                paragraph( getI18nString( "noorganization" ) );
-            }
-            else
-            {
+            if (organization == null) {
+                paragraph(getI18nString("noorganization"));
+            } else {
                 startTable();
-                tableHeader( new String[] { getI18nString( "field" ), getI18nString( "value" ) } );
-                tableRow( new String[] { getI18nString( "organization.name" ), organization.getName() } );
-                tableRowWithLink( new String[] { getI18nString( "organization.url" ), organization.getUrl() } );
+                tableHeader(new String[] {getI18nString("field"), getI18nString("value")});
+                tableRow(new String[] {getI18nString("organization.name"), organization.getName()});
+                tableRowWithLink(new String[] {getI18nString("organization.url"), organization.getUrl()});
                 endTable();
             }
             endSection();
 
             // build section
-            startSection( getI18nString( "build.title" ) );
+            startSection(getI18nString("build.title"));
             startTable();
-            tableHeader( new String[] { getI18nString( "field" ), getI18nString( "value" ) } );
-            tableRow( new String[] { getI18nString( "build.groupid" ), project.getGroupId() } );
-            tableRow( new String[] { getI18nString( "build.artifactid" ), project.getArtifactId() } );
-            tableRow( new String[] { getI18nString( "build.version" ), project.getVersion() } );
-            tableRow( new String[] { getI18nString( "build.type" ), project.getPackaging() } );
-            if ( isJavaProject( project ) )
-            {
-                tableRow( new String[] { getI18nString( "build.javaVersion" ), getMinimumJavaVersion() } );
+            tableHeader(new String[] {getI18nString("field"), getI18nString("value")});
+            tableRow(new String[] {getI18nString("build.groupid"), project.getGroupId()});
+            tableRow(new String[] {getI18nString("build.artifactid"), project.getArtifactId()});
+            tableRow(new String[] {getI18nString("build.version"), project.getVersion()});
+            tableRow(new String[] {getI18nString("build.type"), project.getPackaging()});
+            if (isJavaProject(project)) {
+                tableRow(new String[] {getI18nString("build.javaVersion"), getMinimumJavaVersion()});
             }
             endTable();
             endSection();
 
             // download section
             DistributionManagement distributionManagement = project.getDistributionManagement();
-            if ( distributionManagement != null )
-            {
-                if ( StringUtils.isNotEmpty( distributionManagement.getDownloadUrl() ) )
-                {
-                    startSection( getI18nString( "download" ) );
-                    link( distributionManagement.getDownloadUrl(), distributionManagement.getDownloadUrl() );
+            if (distributionManagement != null) {
+                if (StringUtils.isNotEmpty(distributionManagement.getDownloadUrl())) {
+                    startSection(getI18nString("download"));
+                    link(distributionManagement.getDownloadUrl(), distributionManagement.getDownloadUrl());
                     endSection();
                 }
             }
@@ -153,33 +135,26 @@ public class SummaryReport
             endSection();
         }
 
-        private String getMinimumJavaVersion()
-        {
+        private String getMinimumJavaVersion() {
 
             final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
-            String sourceConfigured = getPluginParameter( pluginId, "source" );
-            String targetConfigured = getPluginParameter( pluginId, "target" );
+            String sourceConfigured = getPluginParameter(pluginId, "source");
+            String targetConfigured = getPluginParameter(pluginId, "target");
 
-            String forkFlag = getPluginParameter( pluginId, "fork" );
+            String forkFlag = getPluginParameter(pluginId, "fork");
             String compilerVersionConfigured = null;
-            if ( "true".equalsIgnoreCase( forkFlag ) )
-            {
-                compilerVersionConfigured = getPluginParameter( pluginId, "compilerVersion" );
+            if ("true".equalsIgnoreCase(forkFlag)) {
+                compilerVersionConfigured = getPluginParameter(pluginId, "compilerVersion");
             }
 
             String minimumJavaVersion = compilerVersionConfigured;
-            if ( targetConfigured != null )
-            {
+            if (targetConfigured != null) {
                 minimumJavaVersion = targetConfigured;
-            }
-            else if ( sourceConfigured != null )
-            {
+            } else if (sourceConfigured != null) {
                 minimumJavaVersion = sourceConfigured;
-            }
-            else
-            {
+            } else {
                 // ${maven.compiler.target} default value
-                minimumJavaVersion = project.getProperties().getProperty( "maven.compiler.target" );
+                minimumJavaVersion = project.getProperties().getProperty("maven.compiler.target");
 
                 // default to 1.5 if not set?
             }
@@ -187,29 +162,22 @@ public class SummaryReport
             return minimumJavaVersion;
         }
 
-        private void tableRowWithLink( String[] content )
-        {
+        private void tableRowWithLink(String[] content) {
             sink.tableRow();
 
-            for ( int ctr = 0; ctr < content.length; ctr++ )
-            {
+            for (int ctr = 0; ctr < content.length; ctr++) {
                 String cell = content[ctr];
 
                 sink.tableCell();
 
-                if ( StringUtils.isEmpty( cell ) )
-                {
-                    sink.text( "-" );
-                }
-                else if ( ctr == content.length - 1 && cell.length() > 0 )
-                {
-                    sink.link( cell );
-                    sink.text( cell );
+                if (StringUtils.isEmpty(cell)) {
+                    sink.text("-");
+                } else if (ctr == content.length - 1 && cell.length() > 0) {
+                    sink.link(cell);
+                    sink.text(cell);
                     sink.link_();
-                }
-                else
-                {
-                    sink.text( cell );
+                } else {
+                    sink.text(cell);
                 }
                 sink.tableCell_();
             }
@@ -223,44 +191,41 @@ public class SummaryReport
          *         packaging (like jar, war...) or java files in the source directory, <code>false</code> otherwise.
          * @since 2.3
          */
-        private boolean isJavaProject( MavenProject project )
-        {
-            String packaging = project.getPackaging().trim().toLowerCase( Locale.ENGLISH );
-            if ( packaging.equals( "pom" ) )
-            {
+        private boolean isJavaProject(MavenProject project) {
+            String packaging = project.getPackaging().trim().toLowerCase(Locale.ENGLISH);
+            if (packaging.equals("pom")) {
                 return false;
             }
 
             // some commons java packaging
-            if ( packaging.equals( "jar" ) || packaging.equals( "ear" ) || packaging.equals( "war" )
-                || packaging.equals( "rar" ) || packaging.equals( "sar" ) || packaging.equals( "har" )
-                || packaging.equals( "par" ) || packaging.equals( "ejb" ) )
-            {
+            if (packaging.equals("jar")
+                    || packaging.equals("ear")
+                    || packaging.equals("war")
+                    || packaging.equals("rar")
+                    || packaging.equals("sar")
+                    || packaging.equals("har")
+                    || packaging.equals("par")
+                    || packaging.equals("ejb")) {
                 return true;
             }
 
             // java files in the source directory?
-            final File sourceDir = new File( project.getBuild().getSourceDirectory() );
-            if ( sourceDir.exists() )
-            {
-                try
-                {
-                    if ( !FileUtils.getFileNames( sourceDir, "**/*.java", null, false ).isEmpty() )
-                    {
+            final File sourceDir = new File(project.getBuild().getSourceDirectory());
+            if (sourceDir.exists()) {
+                try {
+                    if (!FileUtils.getFileNames(sourceDir, "**/*.java", null, false)
+                            .isEmpty()) {
                         return true;
                     }
-                }
-                catch ( IOException e )
-                {
-                    //ignored
+                } catch (IOException e) {
+                    // ignored
                 }
             }
 
             // maven-compiler-plugin ?
             Xpp3Dom pluginConfig =
-                project.getGoalConfiguration( "org.apache.maven.plugins", "maven-compiler-plugin", null, null );
-            if ( pluginConfig != null )
-            {
+                    project.getGoalConfiguration("org.apache.maven.plugins", "maven-compiler-plugin", null, null);
+            if (pluginConfig != null) {
                 return true;
             }
 

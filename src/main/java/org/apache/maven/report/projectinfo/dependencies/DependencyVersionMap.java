@@ -1,5 +1,3 @@
-package org.apache.maven.report.projectinfo.dependencies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.report.projectinfo.dependencies;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.report.projectinfo.dependencies;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,9 +31,7 @@ import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
  * @author Simon Wang
  * @since 2.8
  */
-public class DependencyVersionMap
-    implements DependencyNodeVisitor
-{
+public class DependencyVersionMap implements DependencyNodeVisitor {
     private boolean uniqueVersions;
 
     private Map<String, List<DependencyNode>> idsToNode;
@@ -46,33 +43,29 @@ public class DependencyVersionMap
     /**
      * Create an instance.
      */
-    public DependencyVersionMap()
-    {
+    public DependencyVersionMap() {
         idsToNode = new HashMap<>();
     }
 
     /**
      * @param uniqueVersions {@link #uniqueVersions}
      */
-    public void setUniqueVersions( boolean uniqueVersions )
-    {
+    public void setUniqueVersions(boolean uniqueVersions) {
         this.uniqueVersions = uniqueVersions;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean visit( DependencyNode node )
-    {
-        addDependency( node );
-        return !containsConflicts( node );
+    public boolean visit(DependencyNode node) {
+        addDependency(node);
+        return !containsConflicts(node);
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean endVisit( DependencyNode node )
-    {
+    public boolean endVisit(DependencyNode node) {
         return true;
     }
 
@@ -81,14 +74,11 @@ public class DependencyVersionMap
      *
      * @return conflicting nodes groups
      */
-    public List<List<DependencyNode>> getConflictedVersionNumbers()
-    {
+    public List<List<DependencyNode>> getConflictedVersionNumbers() {
         List<List<DependencyNode>> output = new ArrayList<>();
-        for ( List<DependencyNode> nodes : idsToNode.values() )
-        {
-            if ( containsConflicts( nodes ) )
-            {
-                output.add( nodes );
+        for (List<DependencyNode> nodes : idsToNode.values()) {
+            if (containsConflicts(nodes)) {
+                output.add(nodes);
             }
         }
         return output;
@@ -98,41 +88,34 @@ public class DependencyVersionMap
     // Private methods
     // ----------------------------------------------------------------------
 
-    private void addDependency( DependencyNode node )
-    {
-        String key = constructKey( node );
-        List<DependencyNode> nodes = idsToNode.get( key );
-        if ( nodes == null )
-        {
+    private void addDependency(DependencyNode node) {
+        String key = constructKey(node);
+        List<DependencyNode> nodes = idsToNode.get(key);
+        if (nodes == null) {
             nodes = new ArrayList<>();
-            idsToNode.put( key, nodes );
+            idsToNode.put(key, nodes);
         }
-        nodes.add( node );
+        nodes.add(node);
     }
 
-    private String constructKey( DependencyNode node )
-    {
-        return constructKey( node.getArtifact() );
+    private String constructKey(DependencyNode node) {
+        return constructKey(node.getArtifact());
     }
 
-    private String constructKey( Artifact artifact )
-    {
+    private String constructKey(Artifact artifact) {
         return artifact.getGroupId() + ":" + artifact.getArtifactId();
     }
 
-    private String getVersion( Artifact artifact )
-    {
+    private String getVersion(Artifact artifact) {
         return uniqueVersions ? artifact.getVersion() : artifact.getBaseVersion();
     }
 
-    private boolean containsConflicts( DependencyNode node )
-    {
-        return containsConflicts( node.getArtifact() );
+    private boolean containsConflicts(DependencyNode node) {
+        return containsConflicts(node.getArtifact());
     }
 
-    private boolean containsConflicts( Artifact artifact )
-    {
-        return containsConflicts( idsToNode.get( constructKey( artifact ) ) );
+    private boolean containsConflicts(Artifact artifact) {
+        return containsConflicts(idsToNode.get(constructKey(artifact)));
     }
 
     /**
@@ -141,24 +124,17 @@ public class DependencyVersionMap
      * @param nodes
      * @return contains:true; not contains:false;
      */
-    private boolean containsConflicts( List<DependencyNode> nodes )
-    {
+    private boolean containsConflicts(List<DependencyNode> nodes) {
         String version = null;
-        for ( DependencyNode node : nodes )
-        {
-            if ( version == null )
-            {
-                version = getVersion( node.getArtifact() );
-            }
-            else
-            {
-                if ( version.compareTo( getVersion( node.getArtifact() ) ) != 0 )
-                {
+        for (DependencyNode node : nodes) {
+            if (version == null) {
+                version = getVersion(node.getArtifact());
+            } else {
+                if (version.compareTo(getVersion(node.getArtifact())) != 0) {
                     return true;
                 }
             }
         }
         return false;
     }
-
 }
