@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo.dependencies.renderer;
 
+import javax.swing.text.html.HTML.Attribute;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,6 +58,7 @@ import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
+import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer.TotalCell.SummaryTableRowOrder;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
@@ -70,6 +73,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 2.1
  */
 public class DependenciesRenderer extends AbstractProjectInfoRenderer {
+
     /** URL for the 'icon_info_sml.gif' image */
     private static final String IMG_INFO_URL = "./images/icon_info_sml.gif";
 
@@ -93,7 +97,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
     private final MessageFormat javaVersionFormat =
             new MessageFormat("{0,choice,0#|1.1#{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
-
     /**
      * @since 2.1.1
      */
@@ -503,7 +506,8 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         TotalCell totalentries = new TotalCell();
         TotalCell totalclasses = new TotalCell();
         TotalCell totalpackages = new TotalCell();
-        double highestJavaVersion = 0.0;
+        double highestTestJavaVersion = 0.0;
+        double highestNonTestJavaVersion = 0.0;
         TotalCell totalDebugInformation = new TotalCell();
         TotalCell totalsealed = new TotalCell();
 
@@ -551,8 +555,13 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
                     try {
                         if (jarDetails.getJdkRevision() != null) {
-                            highestJavaVersion =
-                                    Math.max(highestJavaVersion, Double.parseDouble(jarDetails.getJdkRevision()));
+                            double jdkRevision = Double.parseDouble(jarDetails.getJdkRevision());
+                            boolean isTestScope = Artifact.SCOPE_TEST.equalsIgnoreCase(artifact.getScope());
+                            if (isTestScope) {
+                                highestTestJavaVersion = Math.max(highestTestJavaVersion, jdkRevision);
+                            } else {
+                                highestNonTestJavaVersion = Math.max(highestNonTestJavaVersion, jdkRevision);
+                            }
                         }
                     } catch (NumberFormatException e) {
                         // ignore
@@ -607,23 +616,70 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         justification[0] = Sink.JUSTIFY_RIGHT;
         justification[6] = Sink.JUSTIFY_RIGHT;
 
-        for (int i = -1; i < TotalCell.SCOPES_COUNT; i++) {
-            if (totaldeps.getTotal(i) > 0) {
-                tableRow(hasSealed, new String[] {
-                    totaldeps.getTotalString(i),
-                    totaldepsize.getTotalString(i),
-                    totalentries.getTotalString(i),
-                    totalclasses.getTotalString(i),
-                    totalpackages.getTotalString(i),
-                    (i < 0) ? javaVersionFormat.format(new Object[] {highestJavaVersion}) : "",
-                    totalDebugInformation.getTotalString(i),
-                    totalsealed.getTotalString(i)
-                });
+        // calculate rowspan attr
+        int rowspan = computeRowspan(totaldeps);
+
+        if (rowspan > 1) {
+            boolean insertRowspanAttr = false;
+            int column = 5; // Java Version's column
+            for (SummaryTableRowOrder currentRow : SummaryTableRowOrder.values()) {
+                if (currentRow.getTotal(totaldeps) > 0) {
+                    int i = currentRow.ordinal();
+                    boolean alreadyInsertedRowspanAttr = insertRowspanAttr
+                            && (SummaryTableRowOrder.COMPILE_SCOPE.ordinal() < i
+                                    && i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal());
+                    insertRowspanAttr = (SummaryTableRowOrder.COMPILE_SCOPE.ordinal() <= i
+                            && i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal());
+                    justification[column] = (insertRowspanAttr && alreadyInsertedRowspanAttr)
+                            ? justification[column + 1]
+                            : Sink.JUSTIFY_CENTER;
+                    tableRowWithRowspan(
+                            hasSealed, insertRowspanAttr, alreadyInsertedRowspanAttr, column, rowspan, new String[] {
+                                totaldeps.getTotalString(currentRow),
+                                totaldepsize.getTotalString(currentRow),
+                                totalentries.getTotalString(currentRow),
+                                totalclasses.getTotalString(currentRow),
+                                totalpackages.getTotalString(currentRow),
+                                currentRow.formatMaxJavaVersionForScope(
+                                        javaVersionFormat, highestTestJavaVersion, highestNonTestJavaVersion),
+                                totalDebugInformation.getTotalString(currentRow),
+                                totalsealed.getTotalString(currentRow)
+                            });
+                }
+            }
+        } else {
+            for (SummaryTableRowOrder currentRow : SummaryTableRowOrder.values()) {
+                if (currentRow.getTotal(totaldeps) > 0) {
+                    tableRow(hasSealed, new String[] {
+                        totaldeps.getTotalString(currentRow),
+                        totaldepsize.getTotalString(currentRow),
+                        totalentries.getTotalString(currentRow),
+                        totalclasses.getTotalString(currentRow),
+                        totalpackages.getTotalString(currentRow),
+                        currentRow.formatMaxJavaVersionForScope(
+                                javaVersionFormat, highestTestJavaVersion, highestNonTestJavaVersion),
+                        totalDebugInformation.getTotalString(currentRow),
+                        totalsealed.getTotalString(currentRow)
+                    });
+                }
             }
         }
 
         endTable();
         endSection();
+    }
+
+    private int computeRowspan(TotalCell totaldeps) {
+        int rowspan = 0;
+        for (int i = SummaryTableRowOrder.COMPILE_SCOPE.ordinal();
+                i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal();
+                i++) {
+            SummaryTableRowOrder currentRow = SummaryTableRowOrder.values()[i];
+            if (currentRow.getTotal(totaldeps) > 0) {
+                rowspan++;
+            }
+        }
+        return rowspan;
     }
 
     // Almost as same as in the abstract class but includes the title attribute
@@ -657,6 +713,30 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         text(text);
 
         sink.tableHeaderCell_();
+    }
+
+    private void tableRowWithRowspan(
+            boolean fullRow, boolean insert, boolean alreadyInserted, int contentIndex, int rowspan, String[] content) {
+        sink.tableRow();
+
+        int count = fullRow ? content.length : (content.length - 1);
+
+        for (int i = 0; i < count; i++) {
+            if (i == contentIndex && insert) {
+                if (!alreadyInserted) {
+                    SinkEventAttributes att = new SinkEventAttributeSet();
+                    att.addAttribute(Attribute.ROWSPAN, rowspan);
+                    att.addAttribute(Attribute.STYLE, "vertical-align: middle");
+                    sink.tableCell(att);
+                    text(content[i]);
+                    sink.tableCell_();
+                }
+            } else {
+                tableCell(content[i]);
+            }
+        }
+
+        sink.tableRow_();
     }
 
     private void tableRow(boolean fullRow, String[] content) {
@@ -1138,7 +1218,128 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
      * Combine total and total by scope in a cell.
      */
     static class TotalCell {
-        static final int SCOPES_COUNT = 5;
+        public enum SummaryTableRowOrder {
+            // Do not change the physical order of these values
+            TOTALS {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.total += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.total;
+                }
+
+                @Override
+                protected String formatMaxJavaVersionForScope(
+                        MessageFormat javaVersionFormat,
+                        double highestTestJavaVersion,
+                        double highestNonTestJavaVersion) {
+                    double highestJavaVersion = Math.max(highestTestJavaVersion, highestNonTestJavaVersion);
+                    return javaVersionFormat.format(new Object[] {highestJavaVersion});
+                }
+            },
+            COMPILE_SCOPE(Artifact.SCOPE_COMPILE) {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.totalCompileScope += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.totalCompileScope;
+                }
+            },
+            RUNTIME_SCOPE(Artifact.SCOPE_RUNTIME) {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.totalRuntimeScope += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.totalRuntimeScope;
+                }
+            },
+            PROVIDED_SCOPE(Artifact.SCOPE_PROVIDED) {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.totalProvidedScope += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.totalProvidedScope;
+                }
+            },
+            SYSTEM_SCOPE(Artifact.SCOPE_SYSTEM) {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.totalSystemScope += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.totalSystemScope;
+                }
+            },
+            TEST_SCOPE(Artifact.SCOPE_TEST) {
+                @Override
+                public void addTotal(TotalCell cell, long value) {
+                    cell.totalTestScope += value;
+                }
+
+                @Override
+                public long getTotal(TotalCell cell) {
+                    return cell.totalTestScope;
+                }
+
+                @Override
+                protected String formatMaxJavaVersionForScope(
+                        MessageFormat javaVersionFormat,
+                        double highestTestJavaVersion,
+                        double highestNonTestJavaVersion) {
+                    return javaVersionFormat.format(new Object[] {highestTestJavaVersion});
+                }
+            };
+
+            private static final Map<String, SummaryTableRowOrder> MAP_BY_SCOPE = new HashMap<>();
+
+            static {
+                // scope string => enum mapping
+                for (SummaryTableRowOrder e : SummaryTableRowOrder.values()) {
+                    MAP_BY_SCOPE.put(e.getScope(), e);
+                }
+            }
+
+            public static SummaryTableRowOrder fromScope(String scope) {
+                return MAP_BY_SCOPE.get(scope);
+            }
+
+            private String scope;
+
+            SummaryTableRowOrder() {
+                this(null);
+            }
+
+            SummaryTableRowOrder(String scope) {
+                this.scope = scope;
+            }
+
+            public String getScope() {
+                return this.scope;
+            }
+
+            protected String formatMaxJavaVersionForScope(
+                    MessageFormat javaVersionFormat, double highestTestJavaVersion, double highestNonTestJavaVersion) {
+                return javaVersionFormat.format(new Object[] {highestNonTestJavaVersion});
+            }
+
+            public abstract void addTotal(TotalCell cell, long value);
+
+            public abstract long getTotal(TotalCell cell);
+        }
 
         DecimalFormat decimalFormat;
 
@@ -1164,74 +1365,30 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             addTotal(1, scope);
         }
 
-        static String getScope(int index) {
-            switch (index) {
-                case 0:
-                    return Artifact.SCOPE_COMPILE;
-                case 1:
-                    return Artifact.SCOPE_TEST;
-                case 2:
-                    return Artifact.SCOPE_RUNTIME;
-                case 3:
-                    return Artifact.SCOPE_PROVIDED;
-                case 4:
-                    return Artifact.SCOPE_SYSTEM;
-                default:
-                    return null;
-            }
-        }
-
-        long getTotal(int index) {
-            switch (index) {
-                case 0:
-                    return totalCompileScope;
-                case 1:
-                    return totalTestScope;
-                case 2:
-                    return totalRuntimeScope;
-                case 3:
-                    return totalProvidedScope;
-                case 4:
-                    return totalSystemScope;
-                default:
-                    return total;
-            }
-        }
-
-        String getTotalString(int index) {
-            long totalString = getTotal(index);
+        String getTotalString(SummaryTableRowOrder currentRow) {
+            long totalString = currentRow.getTotal(this);
 
             if (totalString <= 0) {
                 return "";
             }
 
             StringBuilder sb = new StringBuilder();
-            if (index >= 0) {
-                sb.append(getScope(index)).append(": ");
+            if (currentRow.compareTo(SummaryTableRowOrder.COMPILE_SCOPE) >= 0) {
+                sb.append(currentRow.getScope()).append(": ");
             }
             if (decimalFormat != null) {
-                sb.append(decimalFormat.format(getTotal(index)));
+                sb.append(decimalFormat.format(currentRow.getTotal(this)));
             } else {
-                sb.append(getTotal(index));
+                sb.append(currentRow.getTotal(this));
             }
 
             return sb.toString();
         }
 
         void addTotal(long add, String scope) {
-            total += add;
-
-            if (Artifact.SCOPE_COMPILE.equals(scope)) {
-                totalCompileScope += add;
-            } else if (Artifact.SCOPE_TEST.equals(scope)) {
-                totalTestScope += add;
-            } else if (Artifact.SCOPE_RUNTIME.equals(scope)) {
-                totalRuntimeScope += add;
-            } else if (Artifact.SCOPE_PROVIDED.equals(scope)) {
-                totalProvidedScope += add;
-            } else if (Artifact.SCOPE_SYSTEM.equals(scope)) {
-                totalSystemScope += add;
-            }
+            SummaryTableRowOrder.TOTALS.addTotal(this, add);
+            SummaryTableRowOrder currentRow = SummaryTableRowOrder.fromScope(scope);
+            currentRow.addTotal(this, add);
         }
 
         /** {@inheritDoc} */
@@ -1246,12 +1403,15 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             sb.append(" (");
 
             boolean needSeparator = false;
-            for (int i = 0; i < SCOPES_COUNT; i++) {
-                if (getTotal(i) > 0) {
+            for (int i = SummaryTableRowOrder.COMPILE_SCOPE.ordinal();
+                    i < SummaryTableRowOrder.TEST_SCOPE.ordinal();
+                    i++) {
+                SummaryTableRowOrder currentRow = SummaryTableRowOrder.values()[i];
+                if (currentRow.getTotal(this) > 0) {
                     if (needSeparator) {
                         sb.append(", ");
                     }
-                    sb.append(getTotalString(i));
+                    sb.append(getTotalString(currentRow));
                     needSeparator = true;
                 }
             }
