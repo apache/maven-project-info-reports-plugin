@@ -24,11 +24,11 @@ under the License.
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>plugin management project info</name>
-
+  <url>http://maven.apache.org</url>
   <build>
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. 
+        <!--This plugin's configuration is used to store Eclipse m2e settings only.
           It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -71,7 +71,7 @@ under the License.
           <outputDirectory>target/test-harness/plugin-management</outputDirectory>
           <localRepository>${localRepository}</localRepository>
           <project implementation="org.apache.maven.report.projectinfo.stubs.PluginManagementMPIR375Stub"/>
-          
+
           <pluginManagementExcludes>
             <pluginManagementExclude>org.eclipse.m2e:lifecycle-mapping</pluginManagementExclude>
           </pluginManagementExcludes>
