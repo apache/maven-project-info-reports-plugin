@@ -140,8 +140,8 @@ public class DependenciesReport extends AbstractProjectInfoReport {
                 projectBuilder,
                 repositorySystem,
                 resolver,
-                project.getRemoteArtifactRepositories(),
-                project.getPluginArtifactRepositories(),
+                remoteRepositories,
+                pluginRepositories,
                 buildingRequest,
                 repositoryMetadataManager);
 
