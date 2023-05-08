@@ -85,6 +85,33 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
     }
 
     /**
+     * Test custom bundle
+     *
+     * @throws Exception if any
+     */
+    public void testCustomBundle() throws Exception {
+        generateReport("mailing-lists", "custom-bundle/plugin-config.xml");
+        assertTrue(
+                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+
+        URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
+        assertNotNull(reportURL);
+
+        // HTTPUnit
+        WebRequest request = new GetMethodWebRequest(reportURL.toString());
+        WebResponse response = WEB_CONVERSATION.getResponse(request);
+
+        // Basic HTML tests
+        assertTrue(response.isHTML());
+        assertTrue(response.getContentLength() > 0);
+
+        // Test the texts
+        TextBlock[] textBlocks = response.getTextBlocks();
+        assertEquals(getString("report.mailing-lists.title"), textBlocks[0].getText());
+        assertEquals("mail list intro text foo", textBlocks[1].getText());
+    }
+
+    /**
      * Test report in French (MPIR-59)
      *
      * @throws Exception if any

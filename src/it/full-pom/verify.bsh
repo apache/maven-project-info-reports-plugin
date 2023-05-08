@@ -91,6 +91,30 @@ try
         return false;
     }
 
+    mailinglists = new File( siteDir, "de/mailing-lists.html");
+    content = FileUtils.fileRead( mailinglists, "UTF-8" );
+    if ( !content.contains( "mail list intro text foo (&quot;de&quot;)" ) )
+    {
+        System.err.println( "de/mailing-lists.html doesn't contain mail list intro text foo (\"de\")" );
+        return false;
+    }
+
+    mailinglists = new File( siteDir, "fr/mailing-lists.html");
+    content = FileUtils.fileRead( mailinglists, "UTF-8" );
+    if ( !content.contains( "mail list intro text foo (&quot;fr&quot;)" ) )
+    {
+        System.err.println( "fr/mailing-lists.html doesn't contain mail list intro text foo (\"fr\")" );
+        return false;
+    }
+
+    mailinglists = new File( siteDir, "sv/mailing-lists.html");
+    content = FileUtils.fileRead( mailinglists, "UTF-8" );
+    if ( !content.contains( "mail list intro text foo" ) )
+    {
+        System.err.println( "sv/mailing-lists.html doesn't contain mail list intro text foo" );
+        return false;
+    }
+
     File dependencies = new File( siteDir, "dependencies.html");
     content = FileUtils.fileRead( dependencies, "UTF-8" );
     if ( !content.contains( "doxia-core-1.2.jar" ) )
@@ -107,16 +131,16 @@ try
         System.err.println( "MPIR-216: dependency-management doesn't contain doxia-sink-api url https://maven.apache.org/doxia/doxia/doxia-sink-api/" );
         return false;
     }
-    
+
     File dependencyConvergence = new File( siteDir, "dependency-convergence.html");
     content = FileUtils.fileRead( dependencyConvergence, "UTF-8" );
-    
+
     if ( !content.contains( "You do not have 100% convergence." ) )
     {
         System.err.println( "dependency-convergence not rendered correctly" );
         return false;
     }
-    
+
 }
 catch ( Throwable t )
 {

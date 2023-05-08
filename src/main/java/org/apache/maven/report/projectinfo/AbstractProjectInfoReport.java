@@ -329,7 +329,7 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
             URLClassLoader classLoader = null;
             try {
                 classLoader = new URLClassLoader(
-                        new URL[] {customBundleFile.getParentFile().toURI().toURL()});
+                        new URL[] {customBundleFile.getParentFile().toURI().toURL()}, null);
             } catch (MalformedURLException e) {
                 // could not happen.
             }
