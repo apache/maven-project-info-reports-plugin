@@ -138,7 +138,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
 
         File report = new File(outputDirectory, name);
         if (!report.exists()) {
-            throw new IOException("File not found. Attempted :" + report);
+            throw new IOException("File not found. Attempted: " + report);
         }
 
         return report;
@@ -160,7 +160,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
 
     protected AbstractProjectInfoReport createReportMojo(String goal, File pluginXmlFile) throws Exception {
         AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo(goal, pluginXmlFile);
-        assertNotNull("Mojo found.", mojo);
+        assertNotNull("Mojo not found.", mojo);
 
         LegacySupport legacySupport = lookup(LegacySupport.class);
         legacySupport.setSession(newMavenSession(new MavenProjectStub()));
