@@ -114,7 +114,7 @@ public class ProjectInfoReportUtils {
             throws IOException {
         String scheme = url.getProtocol();
 
-        if (StringUtils.isEmpty(encoding)) {
+        if (encoding == null || encoding.isEmpty()) {
             encoding = DEFAULT_ENCODING;
         }
 
@@ -144,7 +144,7 @@ public class ProjectInfoReportUtils {
             }
 
             String host = proxy.getHost();
-            if (!StringUtils.isEmpty(host)) {
+            if (!(host == null || host.isEmpty())) {
                 Properties p = System.getProperties();
                 p.setProperty(scheme + "proxySet", "true");
                 p.setProperty(scheme + "proxyHost", host);
@@ -154,7 +154,7 @@ public class ProjectInfoReportUtils {
                 }
 
                 final String userName = proxy.getUsername();
-                if (!StringUtils.isEmpty(userName)) {
+                if (!(userName == null || userName.isEmpty())) {
                     final String pwd = StringUtils.isEmpty(proxy.getPassword()) ? "" : proxy.getPassword();
                     Authenticator.setDefault(new Authenticator() {
                         /** {@inheritDoc} */
@@ -225,7 +225,7 @@ public class ProjectInfoReportUtils {
      * @see AbstractMavenReportRenderer#linkPatternedText(String)
      */
     public static String getArtifactIdCell(String artifactId, String link) {
-        if (StringUtils.isEmpty(link)) {
+        if (link == null || link.isEmpty()) {
             return artifactId;
         }
 
@@ -237,7 +237,7 @@ public class ProjectInfoReportUtils {
      * @return <code>true</code> if the url is valid, <code>false</code> otherwise.
      */
     public static boolean isArtifactUrlValid(String url) {
-        if (StringUtils.isEmpty(url)) {
+        if (url == null || url.isEmpty()) {
             return false;
         }
 

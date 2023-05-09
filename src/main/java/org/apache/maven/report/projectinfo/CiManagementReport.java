@@ -30,7 +30,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Notifier;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates the Project Continuous Integration Management report.
@@ -137,7 +136,7 @@ public class CiManagementReport extends AbstractProjectInfoReport {
             // Access
             startSection(getI18nString("access"));
 
-            if (!StringUtils.isEmpty(url)) {
+            if (!(url == null || url.isEmpty())) {
                 paragraph(getI18nString("url"));
 
                 verbatimLink(url, url);
@@ -186,7 +185,7 @@ public class CiManagementReport extends AbstractProjectInfoReport {
          * @return system description from properties
          */
         private String getIntroForCiManagementSystem(String system) {
-            if (StringUtils.isEmpty(system)) {
+            if (system == null || system.isEmpty()) {
                 return getI18nString("general.intro");
             }
 

@@ -698,9 +698,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             // can't use straight artifact comparison because we want optional last
             Collections.sort(artifacts, getArtifactComparator());
 
-            String anchorByScope = (isTransitive
+            String anchorByScope = isTransitive
                     ? getI18nString("transitive.title") + "_" + scope
-                    : getI18nString("title") + "_" + scope);
+                    : getI18nString("title") + "_" + scope;
             startSection(anchorByScope, scope);
 
             paragraph(getI18nString("intro." + scope));
@@ -865,14 +865,14 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 sink.bold();
                 sink.text(getI18nString("column.description") + ": ");
                 sink.bold_();
-                if (StringUtils.isNotEmpty(artifactDescription)) {
+                if (artifactDescription != null && !artifactDescription.isEmpty()) {
                     sink.text(artifactDescription);
                 } else {
                     sink.text(getI18nString("index", "nodescription"));
                 }
                 sink.paragraph_();
 
-                if (StringUtils.isNotEmpty(artifactUrl)) {
+                if (artifactUrl != null && !artifactUrl.isEmpty()) {
                     sink.paragraph();
                     sink.bold();
                     sink.text(getI18nString("column.url") + ": ");
@@ -900,7 +900,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         if (licenseMappings != null && licenseMappings.containsKey(licenseName)) {
                             licenseName = licenseMappings.get(licenseName);
                         }
-                        if (StringUtils.isEmpty(licenseName)) {
+                        if (licenseName == null || licenseName.isEmpty()) {
                             licenseName = getI18nString("unnamed");
                         }
 
@@ -986,7 +986,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     private void printGroupedLicenses() {
         for (Map.Entry<String, Object> entry : licenseMap.entrySet()) {
             String licenseName = entry.getKey();
-            if (StringUtils.isEmpty(licenseName)) {
+            if (licenseName == null || licenseName.isEmpty()) {
                 licenseName = getI18nString("unnamed");
             }
 
@@ -1134,7 +1134,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 return result;
             }
 
-            result = super.format((float) fs / (1000), result, fieldPosition);
+            result = super.format((float) fs / 1000, result, fieldPosition);
             result.append(" ").append(getString("report.dependencies.file.details.column.size.kb"));
             return result;
         }

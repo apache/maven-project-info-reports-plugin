@@ -32,7 +32,6 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
@@ -89,7 +88,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
      * @return the string for the given key
      */
     protected String getString(String key) {
-        if (StringUtils.isEmpty(key)) {
+        if (key == null || key.isEmpty()) {
             throw new IllegalArgumentException("The key cannot be empty");
         }
 
@@ -105,11 +104,11 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
      * @since 2.8
      */
     protected String prepareTitle(String name, String title) {
-        if (StringUtils.isEmpty(name)) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("The name cannot be empty");
         }
 
-        if (StringUtils.isEmpty(title)) {
+        if (title == null || title.isEmpty()) {
             throw new IllegalArgumentException("The title cannot be empty");
         }
 

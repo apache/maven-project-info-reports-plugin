@@ -110,8 +110,8 @@ public class ScmReport extends AbstractProjectInfoReport {
             result = scm != null;
 
             if (result
-                    && StringUtils.isEmpty(anonymousConnection)
-                    && StringUtils.isEmpty(developerConnection)
+                    && (anonymousConnection == null || anonymousConnection.isEmpty())
+                    && (developerConnection == null || developerConnection.isEmpty())
                     && StringUtils.isEmpty(scm.getUrl())) {
                 result = false;
             }
@@ -217,8 +217,8 @@ public class ScmReport extends AbstractProjectInfoReport {
         public void renderBody() {
             Scm scm = model.getScm();
             if (scm == null
-                    || StringUtils.isEmpty(anonymousConnection)
-                            && StringUtils.isEmpty(devConnection)
+                    || (anonymousConnection == null || anonymousConnection.isEmpty())
+                            && (devConnection == null || devConnection.isEmpty())
                             && StringUtils.isEmpty(scm.getUrl())) {
                 startSection(getTitle());
 
@@ -303,7 +303,7 @@ public class ScmReport extends AbstractProjectInfoReport {
         private void renderWebAccessSection(String scmUrl) {
             startSection(getI18nString("webaccess.title"));
 
-            if (StringUtils.isEmpty(scmUrl)) {
+            if (scmUrl == null || scmUrl.isEmpty()) {
                 paragraph(getI18nString("webaccess.nourl"));
             } else {
                 paragraph(getI18nString("webaccess.url"));
@@ -326,7 +326,7 @@ public class ScmReport extends AbstractProjectInfoReport {
             if (isScmSystem(anonymousRepository, "clearcase")
                     || isScmSystem(anonymousRepository, "perforce")
                     || isScmSystem(anonymousRepository, "starteam")
-                    || StringUtils.isEmpty(anonymousConnection)) {
+                    || (anonymousConnection == null || anonymousConnection.isEmpty())) {
                 return;
             }
 
@@ -366,7 +366,7 @@ public class ScmReport extends AbstractProjectInfoReport {
          * @param devRepository the dev repository
          */
         private void renderDeveloperAccessSection(ScmRepository devRepository) {
-            if (StringUtils.isEmpty(devConnection)) {
+            if (devConnection == null || devConnection.isEmpty()) {
                 return;
             }
 
@@ -503,7 +503,7 @@ public class ScmReport extends AbstractProjectInfoReport {
                 url = url.substring(0, index + 4);
             }
 
-            boolean head = StringUtils.isEmpty(scmTag) || "HEAD".equals(scmTag);
+            boolean head = (scmTag == null || scmTag.isEmpty()) || "HEAD".equals(scmTag);
             verbatimText("$ git clone " + (head ? "" : ("--branch " + scmTag + ' ')) + url);
         }
 
@@ -747,7 +747,7 @@ public class ScmReport extends AbstractProjectInfoReport {
          * @return a valid SCM repository or null
          */
         public ScmRepository getScmRepository(String scmUrl) {
-            if (StringUtils.isEmpty(scmUrl)) {
+            if (scmUrl == null || scmUrl.isEmpty()) {
                 return null;
             }
 
@@ -814,7 +814,7 @@ public class ScmReport extends AbstractProjectInfoReport {
          * @see <a href="http://svn.apache.org/repos/asf/maven/scm/trunk/maven-scm-providers/">maven-scm-providers</a>
          */
         private static boolean isScmSystem(ScmRepository scmRepository, String scmProvider) {
-            if (StringUtils.isEmpty(scmProvider)) {
+            if (scmProvider == null || scmProvider.isEmpty()) {
                 return false;
             }
 
