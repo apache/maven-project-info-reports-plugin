@@ -96,7 +96,7 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
         setUp();
 
         mojo = lookupMojo("scm", pluginXmlFile);
-        assertNotNull("Mojo found.", mojo);
+        assertNotNull("Mojo not found.", mojo);
         setVariableValueToObject(mojo, "anonymousConnection", "scm:svn:http");
         try {
             mojo.execute();
@@ -109,7 +109,7 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
         setUp();
 
         mojo = lookupMojo("scm", pluginXmlFile);
-        assertNotNull("Mojo found.", mojo);
+        assertNotNull("Mojo not found.", mojo);
         setVariableValueToObject(mojo, "anonymousConnection", "scm");
         try {
             mojo.execute();

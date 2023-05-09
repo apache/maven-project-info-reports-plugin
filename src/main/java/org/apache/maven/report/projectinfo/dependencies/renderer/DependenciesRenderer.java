@@ -249,7 +249,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
      * @param name not null
      */
     // TODO Remove me when MSHARED-390 has been resolved
-    protected void startSection(String anchor, String name) {
+    protected void startSection(String name, String anchor) {
         section = section + 1;
 
         super.sink.anchor(HtmlTools.encodeId(anchor));
@@ -435,8 +435,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
-        pw.println("");
-        pw.println("<script language=\"javascript\" type=\"text/javascript\">");
         pw.println("      function toggleDependencyDetails( divId, imgId )");
         pw.println("      {");
         pw.println("        var div = document.getElementById( divId );");
@@ -454,9 +452,8 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         pw.printf("          img.alt='%s';%n", getI18nString("graph.icon.close"));
         pw.println("        }");
         pw.println("      }");
-        pw.println("</script>");
 
-        sink.rawText(sw.toString());
+        javaScript(sw.toString());
 
         // for Dependencies Graph Tree
         startSection(getI18nString("graph.tree.title"));
@@ -701,7 +698,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             String anchorByScope = isTransitive
                     ? getI18nString("transitive.title") + "_" + scope
                     : getI18nString("title") + "_" + scope;
-            startSection(anchorByScope, scope);
+            startSection(scope, anchorByScope);
 
             paragraph(getI18nString("intro." + scope));
 
@@ -849,8 +846,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
                 List<License> licenses = artifactProject.getLicenses();
 
-                sink.table();
-                sink.tableRows(null, false);
+                startTable();
 
                 sink.tableRow();
                 sink.tableHeaderCell();
@@ -931,8 +927,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 sink.tableCell_();
                 sink.tableRow_();
 
-                sink.tableRows_();
-                sink.table_();
+                endTable();
             } catch (ProjectBuildingException e) {
                 sink.text(getI18nString("index", "nodescription"));
                 if (log.isDebugEnabled()) {
@@ -945,8 +940,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 }
             }
         } else {
-            sink.table();
-            sink.tableRows(null, false);
+            startTable();
 
             sink.tableRow();
             sink.tableHeaderCell();
@@ -976,8 +970,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             sink.tableCell_();
             sink.tableRow_();
 
-            sink.tableRows_();
-            sink.table_();
+            endTable();
         }
 
         sink.rawText("</div>");

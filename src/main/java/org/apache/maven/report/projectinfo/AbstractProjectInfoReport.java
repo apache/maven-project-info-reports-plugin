@@ -96,7 +96,7 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
      *
      * @since 3.1.0
      */
-    @Parameter(property = "project.pluginArtifactRepositories")
+    @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true, required = true)
     protected List<ArtifactRepository> pluginRepositories;
 
     /**
@@ -211,11 +211,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
         return session;
     }
 
-    /**
-     * Reactor projects
-     *
-     * @return List of projects
-     */
     protected List<MavenProject> getReactorProjects() {
         return reactorProjects;
     }
