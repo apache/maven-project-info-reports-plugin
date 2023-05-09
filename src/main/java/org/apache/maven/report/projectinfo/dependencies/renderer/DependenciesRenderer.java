@@ -75,9 +75,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     /** URL for the 'close.gif' image */
     private static final String IMG_CLOSE_URL = "./images/close.gif";
 
-    /** Used to format decimal values in the "Dependency File Details" table */
-    protected static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("###0");
-
     private static final Set<String> JAR_SUBTYPE;
 
     private final DependencyNode dependencyNode;
@@ -181,10 +178,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         this.projectBuilder = projectBuilder;
         this.buildingRequest = buildingRequest;
         this.licenseMappings = licenseMappings;
-
-        // Using the right set of symbols depending of the locale
-        DEFAULT_DECIMAL_FORMAT.setDecimalFormatSymbols(new DecimalFormatSymbols(locale));
-
         this.fileLengthDecimalFormat = new FileDecimalFormat(i18n, locale);
         this.fileLengthDecimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(locale));
     }
@@ -501,14 +494,14 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
         startTable(justification, false);
 
-        TotalCell totaldeps = new TotalCell(DEFAULT_DECIMAL_FORMAT);
+        TotalCell totaldeps = new TotalCell();
         TotalCell totaldepsize = new TotalCell(fileLengthDecimalFormat);
-        TotalCell totalentries = new TotalCell(DEFAULT_DECIMAL_FORMAT);
-        TotalCell totalclasses = new TotalCell(DEFAULT_DECIMAL_FORMAT);
-        TotalCell totalpackages = new TotalCell(DEFAULT_DECIMAL_FORMAT);
+        TotalCell totalentries = new TotalCell();
+        TotalCell totalclasses = new TotalCell();
+        TotalCell totalpackages = new TotalCell();
         double highestJavaVersion = 0.0;
-        TotalCell totalDebugInformation = new TotalCell(DEFAULT_DECIMAL_FORMAT);
-        TotalCell totalsealed = new TotalCell(DEFAULT_DECIMAL_FORMAT);
+        TotalCell totalDebugInformation = new TotalCell();
+        TotalCell totalsealed = new TotalCell();
 
         boolean hasSealed = hasSealed(alldeps);
 
@@ -579,9 +572,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     tableRow(hasSealed, new String[] {
                         name,
                         fileLength,
-                        DEFAULT_DECIMAL_FORMAT.format(jarDetails.getNumEntries()),
-                        DEFAULT_DECIMAL_FORMAT.format(jarDetails.getNumClasses()),
-                        DEFAULT_DECIMAL_FORMAT.format(jarDetails.getNumPackages()),
+                        String.valueOf(jarDetails.getNumEntries()),
+                        String.valueOf(jarDetails.getNumClasses()),
+                        String.valueOf(jarDetails.getNumPackages()),
                         jarDetails.getJdkRevision(),
                         debugInformationCellValue,
                         sealedCellValue
@@ -1143,7 +1136,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     static class TotalCell {
         static final int SCOPES_COUNT = 5;
 
-        final DecimalFormat decimalFormat;
+        DecimalFormat decimalFormat;
 
         long total = 0;
 
@@ -1156,6 +1149,8 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         long totalProvidedScope = 0;
 
         long totalSystemScope = 0;
+
+        TotalCell() {}
 
         TotalCell(DecimalFormat decimalFormat) {
             this.decimalFormat = decimalFormat;
@@ -1210,7 +1205,12 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             if (index >= 0) {
                 sb.append(getScope(index)).append(": ");
             }
-            sb.append(decimalFormat.format(getTotal(index)));
+            if (decimalFormat != null) {
+                sb.append(decimalFormat.format(getTotal(index)));
+            } else {
+                sb.append(getTotal(index));
+            }
+
             return sb.toString();
         }
 
@@ -1233,7 +1233,12 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         /** {@inheritDoc} */
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append(decimalFormat.format(total));
+            if (decimalFormat != null) {
+                sb.append(decimalFormat.format(total));
+            } else {
+                sb.append(total);
+            }
+
             sb.append(" (");
 
             boolean needSeparator = false;
