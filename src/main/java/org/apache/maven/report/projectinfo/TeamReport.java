@@ -215,10 +215,10 @@ public class TeamReport extends AbstractProjectInfoReport {
             if (headersMap.get(IMAGE) == Boolean.TRUE && showAvatarImages) {
                 Properties properties = member.getProperties();
                 String picUrl = properties.getProperty("picUrl");
-                if (StringUtils.isEmpty(picUrl)) {
+                if (picUrl == null || picUrl.isEmpty()) {
                     picUrl = getGravatarUrl(member.getEmail());
                 }
-                if (StringUtils.isEmpty(picUrl)) {
+                if (picUrl == null || picUrl.isEmpty()) {
                     picUrl = getSpacerGravatarUrl();
                 }
                 sink.tableCell();
@@ -498,7 +498,7 @@ public class TeamReport extends AbstractProjectInfoReport {
         private void tableCellForUrl(String url) {
             sink.tableCell();
 
-            if (StringUtils.isEmpty(url)) {
+            if (url == null || url.isEmpty()) {
                 text(url);
             } else {
                 link(url, url);

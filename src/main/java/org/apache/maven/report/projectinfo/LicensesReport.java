@@ -250,7 +250,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                     sink.list();
                     for (License license : licenses) {
                         String name = license.getName();
-                        if (StringUtils.isEmpty(name)) {
+                        if (name == null || name.isEmpty()) {
                             name = getI18nString("unnamed");
                         }
 
@@ -264,7 +264,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
 
             for (License license : licenses) {
                 String name = license.getName();
-                if (StringUtils.isEmpty(name)) {
+                if (name == null || name.isEmpty()) {
                     name = getI18nString("unnamed");
                 }
 
@@ -273,7 +273,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
 
                 startSection(name);
 
-                if (!StringUtils.isEmpty(comments)) {
+                if (!(comments == null || comments.isEmpty())) {
                     paragraph(comments);
                 }
 

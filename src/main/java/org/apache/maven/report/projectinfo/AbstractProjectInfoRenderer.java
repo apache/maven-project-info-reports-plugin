@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.reporting.AbstractMavenReportRenderer;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * @author Hervé Boutemy
@@ -78,7 +77,7 @@ public abstract class AbstractProjectInfoRenderer extends AbstractMavenReportRen
 
     @Override
     protected void text(String text) {
-        if (StringUtils.isEmpty(text)) // Take care of spaces
+        if (text == null || text.isEmpty()) // Take care of spaces
         {
             sink.text("-");
         } else {
@@ -112,7 +111,7 @@ public abstract class AbstractProjectInfoRenderer extends AbstractMavenReportRen
      */
     @Override
     protected void verbatimLink(String text, String href) {
-        if (StringUtils.isEmpty(href)) {
+        if (href == null || href.isEmpty()) {
             verbatimText(text);
         } else {
             sink.verbatim(null);

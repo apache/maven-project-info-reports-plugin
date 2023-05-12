@@ -165,7 +165,7 @@ public class DistributionManagementReport extends AbstractProjectInfoReport {
         }
 
         private void internalLink(String url) {
-            if (StringUtils.isEmpty(url)) {
+            if (url == null || url.isEmpty()) {
                 return;
             }
 
@@ -178,7 +178,7 @@ public class DistributionManagementReport extends AbstractProjectInfoReport {
         }
 
         private String getRepoName(String name) {
-            if (StringUtils.isNotEmpty(name)) {
+            if (name != null && !name.isEmpty()) {
                 return " - " + name;
             }
 

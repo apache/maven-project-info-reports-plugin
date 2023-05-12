@@ -25,7 +25,6 @@ import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates the Project Issue Management report.
@@ -145,11 +144,11 @@ public class IssueManagementReport extends AbstractProjectInfoReport {
          * @return true if the issue management system is Jira, bugzilla, false otherwise.
          */
         private boolean isIssueManagementSystem(String system, String actual) {
-            if (StringUtils.isEmpty(system)) {
+            if (system == null || system.isEmpty()) {
                 return false;
             }
 
-            if (StringUtils.isEmpty(actual)) {
+            if (actual == null || actual.isEmpty()) {
                 return false;
             }
 

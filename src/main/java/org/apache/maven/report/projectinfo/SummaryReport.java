@@ -170,7 +170,7 @@ public class SummaryReport extends AbstractProjectInfoReport {
 
                 sink.tableCell();
 
-                if (StringUtils.isEmpty(cell)) {
+                if (cell == null || cell.isEmpty()) {
                     sink.text("-");
                 } else if (ctr == content.length - 1 && cell.length() > 0) {
                     sink.link(cell);
