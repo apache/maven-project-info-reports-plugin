@@ -25,6 +25,7 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -89,6 +90,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
     /** Used to format file length values */
     private final DecimalFormat fileLengthDecimalFormat;
+
+    private final MessageFormat javaVersionFormat =
+            new MessageFormat("{0,choice,0#|1.1<{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
 
     /**
      * @since 2.1.1
@@ -611,7 +615,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     totalentries.getTotalString(i),
                     totalclasses.getTotalString(i),
                     totalpackages.getTotalString(i),
-                    (i < 0) ? String.valueOf(highestJavaVersion) : "",
+                    (i < 0) ? javaVersionFormat.format(new Object[] {highestJavaVersion}) : "",
                     totalDebugInformation.getTotalString(i),
                     totalsealed.getTotalString(i)
                 });
