@@ -92,7 +92,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     private final DecimalFormat fileLengthDecimalFormat;
 
     private final MessageFormat javaVersionFormat =
-            new MessageFormat("{0,choice,0#|1.1<{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
+            new MessageFormat("{0,choice,0#|1.1#{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
 
     /**
      * @since 2.1.1
