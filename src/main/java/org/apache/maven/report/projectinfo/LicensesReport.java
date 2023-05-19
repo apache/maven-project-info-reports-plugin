@@ -218,7 +218,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             List<License> licenses = project.getModel().getLicenses();
 
             if (licenses.isEmpty()) {

@@ -88,7 +88,7 @@ public class IssueManagementReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             IssueManagement issueManagement = model.getIssueManagement();
             if (issueManagement == null) {
                 startSection(getTitle());

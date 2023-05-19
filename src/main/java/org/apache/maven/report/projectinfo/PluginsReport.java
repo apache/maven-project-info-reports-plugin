@@ -159,7 +159,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             // === Section: Project Plugins.
             renderSectionPlugins(true);
 

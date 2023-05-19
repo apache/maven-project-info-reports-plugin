@@ -173,7 +173,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             PluginManagement projectPluginManagement = project.getPluginManagement();
 
             if (projectPluginManagement == null

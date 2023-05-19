@@ -132,7 +132,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             List<String> modules = project.getModel().getModules();
 
             if (modules == null || modules.isEmpty()) {

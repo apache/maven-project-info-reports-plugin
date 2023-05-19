@@ -99,7 +99,7 @@ public class MailingListsReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             List<MailingList> mailingLists = model.getMailingLists();
 
             if (mailingLists == null || mailingLists.isEmpty()) {

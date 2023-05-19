@@ -214,7 +214,7 @@ public class ScmReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             Scm scm = model.getScm();
             if (scm == null
                     || (anonymousConnection == null || anonymousConnection.isEmpty())

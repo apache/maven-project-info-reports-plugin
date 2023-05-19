@@ -108,7 +108,7 @@ public class CiManagementReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             CiManagement cim = model.getCiManagement();
             if (cim == null) {
                 startSection(getTitle());

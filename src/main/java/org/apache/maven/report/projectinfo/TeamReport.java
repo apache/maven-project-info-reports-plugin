@@ -146,7 +146,7 @@ public class TeamReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             startSection(getI18nString("intro.title"));
 
             // Introduction

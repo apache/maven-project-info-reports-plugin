@@ -127,7 +127,7 @@ public class IndexReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             startSection(title.trim() + " " + project.getName());
 
             paragraph(description);

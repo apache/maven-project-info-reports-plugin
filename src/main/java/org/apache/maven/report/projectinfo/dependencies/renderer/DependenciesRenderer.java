@@ -196,7 +196,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     // ----------------------------------------------------------------------
 
     @Override
-    public void renderBody() {
+    protected void renderBody() {
         // Dependencies report
 
         if (!dependencies.hasDependencies()) {

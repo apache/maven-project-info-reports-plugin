@@ -89,7 +89,7 @@ public class DistributionManagementReport extends AbstractProjectInfoReport {
         }
 
         @Override
-        public void renderBody() {
+        protected void renderBody() {
             DistributionManagement distributionManagement = project.getDistributionManagement();
             if (distributionManagement == null) {
                 startSection(getI18nString("overview.title"));
