@@ -28,7 +28,7 @@ under the License.
   </parent>
 
   <artifactId>maven-project-info-reports-plugin</artifactId>
-  <version>3.4.4</version>
+  <version>3.4.5-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Project Info Reports Plugin</name>
@@ -123,7 +123,7 @@ under the License.
     <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
     <surefire.version>3.1.0</surefire.version>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2023-05-26T19:13:09Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-05-26T19:15:11Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
