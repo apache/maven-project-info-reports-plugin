@@ -484,7 +484,7 @@ under the License.
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>keytool-maven-plugin</artifactId>
-          <version>1.5</version>
+          <version>1.7</version>
           <configuration>
             <keystore>${basedir}/target/jetty.jks</keystore>
             <dname>cn=jetty, ou=jetty, L=Unknown, ST=Unknown, o=Apache, c=Unknown</dname>
