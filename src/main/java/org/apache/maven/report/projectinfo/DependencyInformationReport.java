@@ -157,7 +157,7 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
                             .format(")"));
 
             renderDependencyInfo(
-                    "Gradle/Grails", new Formatter().format("compile '%s:%s:%s'", groupId, artifactId, version));
+                    "Gradle/Grails", new Formatter().format("implementation '%s:%s:%s'", groupId, artifactId, version));
 
             renderDependencyInfo(
                     "Scala SBT",
