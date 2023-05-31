@@ -548,34 +548,38 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 try {
                     JarData jarDetails = dependencies.getJarDependencyDetails(artifact);
 
-                    String debugInformationCellValue = debugInformationCellNo;
-                    if (jarDetails.isDebugPresent()) {
-                        debugInformationCellValue = debugInformationCellYes;
-                        totalDebugInformation.incrementTotal(artifact.getScope());
-                    }
-
                     totalentries.addTotal(jarDetails.getNumEntries(), artifact.getScope());
                     totalclasses.addTotal(jarDetails.getNumClasses(), artifact.getScope());
                     totalpackages.addTotal(jarDetails.getNumPackages(), artifact.getScope());
 
-                    try {
-                        if (jarDetails.getJdkRevision() != null) {
-                            double jdkRevision = Double.parseDouble(jarDetails.getJdkRevision());
+                    String jdkRevisionCellValue = jarDetails.getJdkRevision();
+                    String debugInformationCellValue = null;
+                    String sealedCellValue = null;
+
+                    if (jdkRevisionCellValue != null) {
+                        try {
+                            double jdkRevision = Double.parseDouble(jdkRevisionCellValue);
                             boolean isTestScope = Artifact.SCOPE_TEST.equalsIgnoreCase(artifact.getScope());
                             if (isTestScope) {
                                 highestTestJavaVersion = Math.max(highestTestJavaVersion, jdkRevision);
                             } else {
                                 highestNonTestJavaVersion = Math.max(highestNonTestJavaVersion, jdkRevision);
                             }
+                        } catch (NumberFormatException e) {
+                            // ignore
                         }
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
 
-                    String sealedCellValue = sealedCellNo;
-                    if (jarDetails.isSealed()) {
-                        sealedCellValue = sealedCellYes;
-                        totalsealed.incrementTotal(artifact.getScope());
+                        debugInformationCellValue = debugInformationCellNo;
+                        if (jarDetails.isDebugPresent()) {
+                            debugInformationCellValue = debugInformationCellYes;
+                            totalDebugInformation.incrementTotal(artifact.getScope());
+                        }
+
+                        sealedCellValue = sealedCellNo;
+                        if (jarDetails.isSealed()) {
+                            sealedCellValue = sealedCellYes;
+                            totalsealed.incrementTotal(artifact.getScope());
+                        }
                     }
 
                     String name = artifactFile.getName();
@@ -593,7 +597,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         String.valueOf(jarDetails.getNumEntries()),
                         String.valueOf(jarDetails.getNumClasses()),
                         String.valueOf(jarDetails.getNumPackages()),
-                        jarDetails.getJdkRevision(),
+                        jdkRevisionCellValue,
                         debugInformationCellValue,
                         sealedCellValue
                     });
