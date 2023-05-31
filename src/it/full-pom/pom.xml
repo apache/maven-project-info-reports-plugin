@@ -176,6 +176,12 @@
       <version>1.7.36</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport-native-kqueue</artifactId>
+      <version>4.1.91.Final</version>
+      <scope>bogus</scope>
+    </dependency>
   </dependencies>
 
   <build>

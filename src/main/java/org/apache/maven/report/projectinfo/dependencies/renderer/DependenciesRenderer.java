@@ -533,6 +533,11 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         + " and won't be listed in dependency files details.");
                 continue;
             }
+            if (SummaryTableRowOrder.fromScope(artifact.getScope()) == null) {
+                log.warn("Artifact " + artifact.getId() + " has invalid scope"
+                        + " and won't be listed in dependency files details.");
+                continue;
+            }
 
             File artifactFile = dependencies.getFile(artifact);
 
