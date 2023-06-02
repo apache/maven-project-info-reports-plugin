@@ -498,15 +498,6 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/DependenciesReportTest*</exclude>
-            <!-- FIXME: missing Maven 3 class or conflict -->
-          </excludes>
-        </configuration>
-      </plugin>
       <!-- To use Jetty SSL in tests -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
