@@ -735,7 +735,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 if (!alreadyInserted) {
                     SinkEventAttributes att = new SinkEventAttributeSet();
                     att.addAttribute(Attribute.ROWSPAN, rowspan);
-                    att.addAttribute(Attribute.STYLE, "vertical-align: middle");
+                    att.addAttribute(Attribute.STYLE, "vertical-align: middle;");
                     sink.tableCell(att);
                     text(content[i]);
                     sink.tableCell_();

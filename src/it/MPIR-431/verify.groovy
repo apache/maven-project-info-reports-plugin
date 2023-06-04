@@ -25,7 +25,7 @@ def summaryLine = '''\
 <td align="right">compile: 47</td>
 <td align="right">compile: 36</td>
 <td align="right">compile: 4</td>
-<td rowspan="3" style="vertical-align: middle" align="center">1.3</td>
+<td rowspan="3" style="vertical-align: middle;" align="center">1.3</td>
 <td align="right">compile: 1</td></tr>
 <tr class="a">
 <td align="right">runtime: 1</td>
