@@ -60,7 +60,7 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        final List<org.apache.maven.settings.Server> servers = new ArrayList<org.apache.maven.settings.Server>();
+        final List<org.apache.maven.settings.Server> servers = new ArrayList<>();
         org.apache.maven.settings.Server server = new org.apache.maven.settings.Server();
         server.setId("localhost");
         server.setUsername("admin");

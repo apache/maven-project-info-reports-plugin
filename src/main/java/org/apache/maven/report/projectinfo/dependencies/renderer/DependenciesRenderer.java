@@ -896,7 +896,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
         if (!node.getChildren().isEmpty()) {
             boolean toBeIncluded = false;
-            List<DependencyNode> subList = new ArrayList<DependencyNode>();
+            List<DependencyNode> subList = new ArrayList<>();
             for (DependencyNode dep : node.getChildren()) {
                 if (dependencies.getAllDependencies().contains(dep.getArtifact())) {
                     subList.add(dep);
