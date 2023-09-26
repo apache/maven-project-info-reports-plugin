@@ -817,12 +817,7 @@ public class ScmReport extends AbstractProjectInfoReport {
             if (scmProvider == null || scmProvider.isEmpty()) {
                 return false;
             }
-
-            if (scmRepository != null && scmProvider.equalsIgnoreCase(scmRepository.getProvider())) {
-                return true;
-            }
-
-            return false;
+            return scmRepository != null && scmProvider.equalsIgnoreCase(scmRepository.getProvider());
         }
     }
 }
