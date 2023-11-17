@@ -30,7 +30,6 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.report.projectinfo.stubs.SubProject1Stub;
 import org.codehaus.plexus.util.ReflectionUtils;
@@ -124,6 +123,7 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
 
         assertFalse(
                 "Variable 'sitePublishLocation' should be interpolated",
-                new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8).contains("sitePublishLocation"));
+                new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8)
+                        .contains("sitePublishLocation"));
     }
 }
