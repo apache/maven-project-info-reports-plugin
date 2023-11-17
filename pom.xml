@@ -117,7 +117,7 @@ under the License.
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxiaSitetoolsVersion>1.11.1</doxiaSitetoolsVersion>
     <mavenVersion>3.2.5</mavenVersion>
-    <scmVersion>1.13.0</scmVersion>
+    <scmVersion>2.0.1</scmVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <sitePluginVersion>3.12.1</sitePluginVersion>
     <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
@@ -236,26 +236,10 @@ under the License.
       <artifactId>maven-scm-manager-plexus</artifactId>
       <version>${scmVersion}</version>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.scm</groupId>
       <artifactId>maven-scm-provider-hg</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-perforce</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-starteam</artifactId>
       <version>${scmVersion}</version>
     </dependency>
     <dependency>
@@ -266,23 +250,6 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.scm</groupId>
       <artifactId>maven-scm-provider-svnexe</artifactId>
-      <version>${scmVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvs-commons</artifactId>
-      <version>${scmVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvsexe</artifactId>
-      <version>${scmVersion}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-cvsjava</artifactId>
       <version>${scmVersion}</version>
       <scope>runtime</scope>
     </dependency>
