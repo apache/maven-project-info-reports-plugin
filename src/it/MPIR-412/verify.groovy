@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import groovy.xml.XmlParser
+
 // should be able to parse the output as XML
 parser = new XmlParser();
 parser.setFeature( 'http://apache.org/xml/features/disallow-doctype-decl', false );
