@@ -188,21 +188,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     }
 
     @Override
-    protected String getOutputDirectory() {
-        return outputDirectory.getAbsolutePath();
-    }
-
-    @Override
-    public File getReportOutputDirectory() {
-        return outputDirectory;
-    }
-
-    @Override
-    public void setReportOutputDirectory(File reportOutputDirectory) {
-        this.outputDirectory = reportOutputDirectory;
-    }
-
-    @Override
     protected MavenProject getProject() {
         return project;
     }

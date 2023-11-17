@@ -124,7 +124,7 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     @Override
     public void executeReport(Locale locale) {
         try {
-            copyResources(new File(getOutputDirectory()));
+            copyResources(getReportOutputDirectory());
         } catch (IOException e) {
             getLog().error("Cannot copy resources", e);
         }
