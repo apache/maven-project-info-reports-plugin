@@ -21,6 +21,8 @@ package org.apache.maven.report.projectinfo;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -28,7 +30,7 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.report.projectinfo.stubs.SubProject1Stub;
 import org.codehaus.plexus.util.ReflectionUtils;
@@ -122,6 +124,6 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
 
         assertFalse(
                 "Variable 'sitePublishLocation' should be interpolated",
-                FileUtils.readFileToString(getGeneratedReport("modules.html")).contains("sitePublishLocation"));
+                new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8).contains("sitePublishLocation"));
     }
 }
