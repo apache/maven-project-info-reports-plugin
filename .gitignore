@@ -1,6 +1,7 @@
 target/
 .project
 .classpath
+.factorypath
 .settings/
 .svn/
 bin/
