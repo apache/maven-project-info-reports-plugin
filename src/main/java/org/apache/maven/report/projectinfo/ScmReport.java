@@ -29,6 +29,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.scm.manager.ScmManager;
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
 import org.apache.maven.scm.provider.hg.repository.HgScmProviderRepository;
@@ -100,7 +101,7 @@ public class ScmReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         boolean result = super.canGenerateReport();
         if (result && skipEmptyReport) {
             Scm scm = getProject().getModel().getScm();
