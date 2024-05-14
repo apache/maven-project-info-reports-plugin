@@ -375,7 +375,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xml</artifactId>
-      <version>4.0.0</version>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
