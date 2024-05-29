@@ -35,15 +35,19 @@ public class ProjectInfoPluginArtifactStub extends ArtifactStub {
 
     private String packaging;
 
+    private String type;
+
     private VersionRange versionRange;
 
     private ArtifactHandler handler;
 
-    public ProjectInfoPluginArtifactStub(String groupId, String artifactId, String version, String packaging) {
+    public ProjectInfoPluginArtifactStub(
+            String groupId, String artifactId, String version, String packaging, String type) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.packaging = packaging;
+        this.type = type;
         versionRange = VersionRange.createFromVersion(version);
     }
 
@@ -107,6 +111,11 @@ public class ProjectInfoPluginArtifactStub extends ArtifactStub {
 
     @Override
     public String getType() {
-        return "";
+        return type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
     }
 }

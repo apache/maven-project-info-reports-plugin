@@ -80,7 +80,7 @@ public abstract class ProjectInfoProjectStub extends MavenProjectStub {
         setPackaging(model.getPackaging());
 
         String type = Objects.toString(super.getPackaging(), "jar");
-        Artifact artifact = new ProjectInfoPluginArtifactStub(getGroupId(), getArtifactId(), getVersion(), type);
+        Artifact artifact = new ProjectInfoPluginArtifactStub(getGroupId(), getArtifactId(), getVersion(), type, type);
         artifact.setArtifactHandler(new DefaultArtifactHandlerStub());
         setArtifact(artifact);
 
