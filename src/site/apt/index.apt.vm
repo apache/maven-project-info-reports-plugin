@@ -44,8 +44,8 @@ ${project.name}
    * {{{./dependency-convergence-mojo.html}project-info-reports:dependency-convergence}} is used to generate the
    Project Dependency Convergence report for (reactor) builds.
 
-   * {{{./dependency-info-mojo.html}project-info-reports:dependency-info}} is used to generate code snippets to
-   be added to build tools.
+   * {{{./dependency-info-mojo.html}project-info-reports:dependency-info}} is used to generate code snippets
+   of the Maven coordinates to be added to build tools.
 
    * {{{./dependency-management-mojo.html}project-info-reports:dependency-management}} is used to generate the
    Project Dependency Management report.
@@ -78,6 +78,17 @@ ${project.name}
    * {{{./scm-mojo.html}project-info-reports:scm}} is used to generate the Project Source Code Management report.
 
    * {{{./summary-mojo.html}project-info-reports:summary}} is used to generate the Project Summary report.
+
+* Upcoming Incompatibility Notice
+
+  With the next major version (4.0) mojos and output filenames will change for consistency alignment.
+  See the following table for the upcoming changes:
+
+*-----------------------*-------------------------*----------------------------*------------------------------*
+|| Goal Name            || New Goal Name          || Output name               || New Output Name             |
+*-----------------------+-------------------------+----------------------------+------------------------------+
+| <<<dependency-info>>> | <<<maven-coordinates>>> | <<<dependency-info.html>>> | <<<maven-coordinates.html>>> |
+*-----------------------+-------------------------+----------------------------+------------------------------+
 
 * Usage
 

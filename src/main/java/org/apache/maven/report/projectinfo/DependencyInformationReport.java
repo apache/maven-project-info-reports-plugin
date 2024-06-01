@@ -28,7 +28,7 @@ import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
- * Generates code snippets to be added to build tools.
+ * Generates code snippets of the Maven coordinates to be added to build tools.
  *
  * @author <a href="mailto:simonetripodi@apache.org">Simone Tripodi</a>
  * @since 2.5
