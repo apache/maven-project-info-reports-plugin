@@ -37,6 +37,7 @@ import org.codehaus.plexus.i18n.I18N;
 public final class DependencyInformationReport extends AbstractProjectInfoReport {
 
     private static final String JAR_PACKAGING = "jar";
+    private static final String PLUGIN_PACKAGING = "maven-plugin";
 
     /**
      */
@@ -130,6 +131,32 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
         protected void renderBody() {
             startSection(getTitle());
 
+            if (PLUGIN_PACKAGING.equals(packaging)) {
+                renderMavenPluginCoordinates();
+            } else {
+                renderMavenDependencyCoordinates();
+                renderIvyDependencyCoordinates();
+                renderGrapeDependencyCoordinates();
+                renderGradleDependencyCoordinates();
+                renderScalaDependencyCoordinates();
+                renderLeiningenDependencyCoordinates();
+            }
+
+            endSection();
+        }
+
+        private void renderMavenPluginCoordinates() {
+            Formatter plugin = new Formatter()
+                    .format("<plugin>%n")
+                    .format("  <groupId>%s</groupId>%n", groupId)
+                    .format("  <artifactId>%s</artifactId>%n", artifactId)
+                    .format("  <version>%s</version>%n", version)
+                    .format("</plugin>");
+
+            renderDependencyInfo("Apache Maven", plugin);
+        }
+
+        private void renderMavenDependencyCoordinates() {
             Formatter mavenDependency = new Formatter()
                     .format("<dependency>%n")
                     .format("  <groupId>%s</groupId>%n", groupId)
@@ -141,31 +168,39 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
             }
 
             renderDependencyInfo("Apache Maven", mavenDependency.format("</dependency>"));
+        }
 
+        private void renderIvyDependencyCoordinates() {
             renderDependencyInfo(
                     "Apache Ivy",
                     new Formatter()
                             .format("<dependency org=\"%s\" name=\"%s\" rev=\"%s\">%n", groupId, artifactId, version)
                             .format("  <artifact name=\"%s\" type=\"%s\" />%n", artifactId, packaging)
                             .format("</dependency>"));
+        }
 
+        private void renderGrapeDependencyCoordinates() {
             renderDependencyInfo(
                     "Groovy Grape",
                     new Formatter()
                             .format("@Grapes(%n")
                             .format("@Grab(group='%s', module='%s', version='%s')%n", groupId, artifactId, version)
                             .format(")"));
+        }
 
+        private void renderGradleDependencyCoordinates() {
             renderDependencyInfo(
                     "Gradle/Grails", new Formatter().format("implementation '%s:%s:%s'", groupId, artifactId, version));
+        }
 
+        private void renderScalaDependencyCoordinates() {
             renderDependencyInfo(
                     "Scala SBT",
                     new Formatter()
                             .format("libraryDependencies += \"%s\" %% \"%s\" %% \"%s\"", groupId, artifactId, version));
+        }
 
-            // Leiningen
-
+        private void renderLeiningenDependencyCoordinates() {
             Formatter leiningenDependency = new Formatter().format("[%s", groupId);
 
             if (!groupId.equals(artifactId)) {
@@ -175,8 +210,6 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
             leiningenDependency.format(" \"%s\"]", version);
 
             renderDependencyInfo("Leiningen", leiningenDependency);
-
-            endSection();
         }
 
         private void renderDependencyInfo(String name, Formatter formatter) {
