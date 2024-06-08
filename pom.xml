@@ -185,10 +185,14 @@ under the License.
       <version>3.4.2</version>
       <scope>test</scope>
     </dependency>
+    <!--
+    TODO: Correct the JAR root content entries count workaround used
+    to generate dependencies section when MSHARED-1411 is fixed.
+    -->
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-jar</artifactId>
-      <version>3.0.0</version>
+      <version>3.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
@@ -515,6 +519,37 @@ under the License.
                 <goal>site</goal>
               </goals>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>mrm-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <propertyName>repository.proxy.url</propertyName>
+              <repositories>
+                <mockRepo>
+                  <source>src/it/mrm/repository</source>
+                  <!--
+                  force to replicate the mock repo with the *actual* jar files to
+                  perform the analysis (MPIR-455)
+                  -->
+                  <cloneTo>${project.build.directory}/local-repo</cloneTo>
+                </mockRepo>
+                <!-- serve content installed by maven-invoker-plugin -->
+                <localRepo>
+                  <source>${project.build.directory}/local-repo</source>
+                </localRepo>
+                <proxyRepo />
+              </repositories>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>start</goal>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

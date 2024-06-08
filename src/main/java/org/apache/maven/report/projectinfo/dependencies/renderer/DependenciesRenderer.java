@@ -29,6 +29,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,6 +63,9 @@ import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRen
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
+import org.apache.maven.shared.jar.classes.JarClasses;
+import org.apache.maven.shared.jar.classes.JarVersionedRuntime;
+import org.apache.maven.shared.jar.classes.JarVersionedRuntimes;
 import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -591,16 +595,76 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         fileLength = "-";
                     }
 
-                    tableRow(hasSealed, new String[] {
-                        name,
-                        fileLength,
-                        String.valueOf(jarDetails.getNumEntries()),
-                        String.valueOf(jarDetails.getNumClasses()),
-                        String.valueOf(jarDetails.getNumPackages()),
-                        jdkRevisionCellValue,
-                        debugInformationCellValue,
-                        sealedCellValue
-                    });
+                    if (jarDetails.isMultiRelease()) {
+                        String htmlBullet = "&#160;&#160;&#160;&#x2022; ";
+                        String rootTag = htmlBullet + getI18nString("file.details.multirelease.root");
+                        String versionedTag = htmlBullet + getI18nString("file.details.multirelease.versioned");
+
+                        // general jar information row
+                        tableRow(hasSealed, new String[] {
+                            name,
+                            fileLength,
+                            String.valueOf(jarDetails.getNumEntries()),
+                            "",
+                            "",
+                            "",
+                            "",
+                            sealedCellValue
+                        });
+
+                        JarVersionedRuntimes versionedRuntimes = jarDetails.getVersionedRuntimes();
+                        Collection<JarVersionedRuntime> versionedRuntimeList =
+                                versionedRuntimes.getVersionedRuntimeMap().values();
+
+                        // workaround to count the number of root content entries
+                        // TODO: rework this when MSHARED-1411 is fixed
+                        Integer versionedNumEntries = versionedRuntimeList.stream()
+                                .map(versionedRuntime ->
+                                        versionedRuntime.getEntries().size())
+                                .reduce(0, Integer::sum);
+                        Integer rootContentNumEntries = jarDetails.getNumEntries() - versionedNumEntries;
+
+                        // root content information row
+                        tableRow(hasSealed, new String[] {
+                            rootTag,
+                            "",
+                            String.valueOf(rootContentNumEntries),
+                            String.valueOf(jarDetails.getNumClasses()),
+                            String.valueOf(jarDetails.getNumPackages()),
+                            jdkRevisionCellValue,
+                            debugInformationCellValue,
+                            ""
+                        });
+
+                        for (JarVersionedRuntime versionedRuntime : versionedRuntimeList) {
+                            JarClasses rtJarClasses = versionedRuntime.getJarClasses();
+
+                            debugInformationCellValue =
+                                    rtJarClasses.isDebugPresent() ? debugInformationCellYes : debugInformationCellNo;
+
+                            tableRow(hasSealed, new String[] {
+                                versionedTag,
+                                "",
+                                String.valueOf(versionedRuntime.getEntries().size()),
+                                String.valueOf(rtJarClasses.getClassNames().size()),
+                                String.valueOf(rtJarClasses.getPackages().size()),
+                                rtJarClasses.getJdkRevision(),
+                                debugInformationCellValue,
+                                ""
+                            });
+                        }
+                    } else {
+                        tableRow(hasSealed, new String[] {
+                            name,
+                            fileLength,
+                            String.valueOf(jarDetails.getNumEntries()),
+                            String.valueOf(jarDetails.getNumClasses()),
+                            String.valueOf(jarDetails.getNumPackages()),
+                            jdkRevisionCellValue,
+                            debugInformationCellValue,
+                            sealedCellValue
+                        });
+                    }
                 } catch (IOException e) {
                     createExceptionInfoTableRow(artifact, artifactFile, e, hasSealed);
                 }
