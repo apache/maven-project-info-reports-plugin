@@ -117,7 +117,7 @@ under the License.
     <mavenVersion>3.6.3</mavenVersion>
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxiaSitetoolsVersion>1.11.1</doxiaSitetoolsVersion>
-    <scmVersion>2.0.1</scmVersion>
+    <scmVersion>2.1.0</scmVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <sitePluginVersion>3.12.1</sitePluginVersion>
     <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
@@ -209,13 +209,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
-      <version>3.3.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.sonatype.sisu</groupId>
-          <artifactId>sisu-inject-plexus</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>3.4.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -323,7 +317,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-interpolation</artifactId>
-      <version>1.26</version>
+      <version>1.27</version>
     </dependency>
 
     <!-- Test -->
@@ -404,7 +398,7 @@ under the License.
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
-      <version>1.7</version>
+      <version>1.9.0</version>
     </dependency>
   </dependencies>
 
