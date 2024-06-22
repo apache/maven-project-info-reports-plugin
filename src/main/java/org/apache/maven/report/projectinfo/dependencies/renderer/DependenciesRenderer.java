@@ -550,13 +550,13 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
             if (JAR_SUBTYPE.contains(artifact.getType().toLowerCase())) {
                 try {
-                    JarData jarDetails = dependencies.getJarDependencyDetails(artifact);
+                    JarData jarData = dependencies.getJarDependencyDetails(artifact);
 
-                    totalentries.addTotal(jarDetails.getNumEntries(), artifact.getScope());
-                    totalclasses.addTotal(jarDetails.getNumClasses(), artifact.getScope());
-                    totalpackages.addTotal(jarDetails.getNumPackages(), artifact.getScope());
+                    totalentries.addTotal(jarData.getNumEntries(), artifact.getScope());
+                    totalclasses.addTotal(jarData.getNumClasses(), artifact.getScope());
+                    totalpackages.addTotal(jarData.getNumPackages(), artifact.getScope());
 
-                    String jdkRevisionCellValue = jarDetails.getJdkRevision();
+                    String jdkRevisionCellValue = jarData.getJdkRevision();
                     String debugInformationCellValue = null;
                     String sealedCellValue = null;
 
@@ -574,13 +574,13 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         }
 
                         debugInformationCellValue = debugInformationCellNo;
-                        if (jarDetails.isDebugPresent()) {
+                        if (jarData.isDebugPresent()) {
                             debugInformationCellValue = debugInformationCellYes;
                             totalDebugInformation.incrementTotal(artifact.getScope());
                         }
 
                         sealedCellValue = sealedCellNo;
-                        if (jarDetails.isSealed()) {
+                        if (jarData.isSealed()) {
                             sealedCellValue = sealedCellYes;
                             totalsealed.incrementTotal(artifact.getScope());
                         }
@@ -595,24 +595,17 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         fileLength = "-";
                     }
 
-                    if (jarDetails.isMultiRelease()) {
+                    if (jarData.isMultiRelease()) {
                         String htmlBullet = "&#160;&#160;&#160;&#x2022; ";
                         String rootTag = htmlBullet + getI18nString("file.details.multirelease.root");
                         String versionedTag = htmlBullet + getI18nString("file.details.multirelease.versioned");
 
                         // general jar information row
                         tableRow(hasSealed, new String[] {
-                            name,
-                            fileLength,
-                            String.valueOf(jarDetails.getNumEntries()),
-                            "",
-                            "",
-                            "",
-                            "",
-                            sealedCellValue
+                            name, fileLength, String.valueOf(jarData.getNumEntries()), "", "", "", "", sealedCellValue
                         });
 
-                        JarVersionedRuntimes versionedRuntimes = jarDetails.getVersionedRuntimes();
+                        JarVersionedRuntimes versionedRuntimes = jarData.getVersionedRuntimes();
                         Collection<JarVersionedRuntime> versionedRuntimeList =
                                 versionedRuntimes.getVersionedRuntimeMap().values();
 
@@ -622,15 +615,15 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                                 .map(versionedRuntime ->
                                         versionedRuntime.getEntries().size())
                                 .reduce(0, Integer::sum);
-                        Integer rootContentNumEntries = jarDetails.getNumEntries() - versionedNumEntries;
+                        Integer rootContentNumEntries = jarData.getNumEntries() - versionedNumEntries;
 
                         // root content information row
                         tableRow(hasSealed, new String[] {
                             rootTag,
                             "",
                             String.valueOf(rootContentNumEntries),
-                            String.valueOf(jarDetails.getNumClasses()),
-                            String.valueOf(jarDetails.getNumPackages()),
+                            String.valueOf(jarData.getNumClasses()),
+                            String.valueOf(jarData.getNumPackages()),
                             jdkRevisionCellValue,
                             debugInformationCellValue,
                             ""
@@ -657,9 +650,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         tableRow(hasSealed, new String[] {
                             name,
                             fileLength,
-                            String.valueOf(jarDetails.getNumEntries()),
-                            String.valueOf(jarDetails.getNumClasses()),
-                            String.valueOf(jarDetails.getNumPackages()),
+                            String.valueOf(jarData.getNumEntries()),
+                            String.valueOf(jarData.getNumClasses()),
+                            String.valueOf(jarData.getNumPackages()),
                             jdkRevisionCellValue,
                             debugInformationCellValue,
                             sealedCellValue
