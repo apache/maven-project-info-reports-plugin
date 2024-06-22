@@ -81,7 +81,7 @@ ${project.name}
 
 * Upcoming Incompatibility Notice
 
-  With the next major version (4.0) mojos and output filenames will change for consistency alignment.
+  With a future version mojos and output filenames will change for consistency alignment.
   See the following table for the upcoming changes:
 
 *-----------------------*-------------------------*----------------------------*------------------------------*
