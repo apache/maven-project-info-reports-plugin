@@ -630,18 +630,18 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         });
 
                         for (JarVersionedRuntime versionedRuntime : versionedRuntimeList) {
-                            JarClasses rtJarClasses = versionedRuntime.getJarClasses();
+                            JarClasses versionedJarClasses = versionedRuntime.getJarClasses();
 
                             debugInformationCellValue =
-                                    rtJarClasses.isDebugPresent() ? debugInformationCellYes : debugInformationCellNo;
+                                    versionedJarClasses.isDebugPresent() ? debugInformationCellYes : debugInformationCellNo;
 
                             tableRow(hasSealed, new String[] {
                                 versionedTag,
                                 "",
                                 String.valueOf(versionedRuntime.getEntries().size()),
-                                String.valueOf(rtJarClasses.getClassNames().size()),
-                                String.valueOf(rtJarClasses.getPackages().size()),
-                                rtJarClasses.getJdkRevision(),
+                                String.valueOf(versionedJarClasses.getClassNames().size()),
+                                String.valueOf(versionedJarClasses.getPackages().size()),
+                                versionedJarClasses.getJdkRevision(),
                                 debugInformationCellValue,
                                 ""
                             });
