@@ -609,19 +609,11 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         Collection<JarVersionedRuntime> versionedRuntimeList =
                                 versionedRuntimes.getVersionedRuntimeMap().values();
 
-                        // workaround to count the number of root content entries
-                        // TODO: rework this when MSHARED-1411 is fixed
-                        Integer versionedNumEntries = versionedRuntimeList.stream()
-                                .map(versionedRuntime ->
-                                        versionedRuntime.getEntries().size())
-                                .reduce(0, Integer::sum);
-                        Integer rootContentNumEntries = jarData.getNumEntries() - versionedNumEntries;
-
                         // root content information row
                         tableRow(hasSealed, new String[] {
                             rootTag,
                             "",
-                            String.valueOf(rootContentNumEntries),
+                            String.valueOf(jarData.getNumRootEntries()),
                             String.valueOf(jarData.getNumClasses()),
                             String.valueOf(jarData.getNumPackages()),
                             jdkRevisionCellValue,
