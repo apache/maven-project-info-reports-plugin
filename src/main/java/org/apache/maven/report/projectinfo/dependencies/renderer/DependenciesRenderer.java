@@ -632,14 +632,16 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         for (JarVersionedRuntime versionedRuntime : versionedRuntimeList) {
                             JarClasses versionedJarClasses = versionedRuntime.getJarClasses();
 
-                            debugInformationCellValue =
-                                    versionedJarClasses.isDebugPresent() ? debugInformationCellYes : debugInformationCellNo;
+                            debugInformationCellValue = versionedJarClasses.isDebugPresent()
+                                    ? debugInformationCellYes
+                                    : debugInformationCellNo;
 
                             tableRow(hasSealed, new String[] {
                                 versionedTag,
                                 "",
                                 String.valueOf(versionedRuntime.getEntries().size()),
-                                String.valueOf(versionedJarClasses.getClassNames().size()),
+                                String.valueOf(
+                                        versionedJarClasses.getClassNames().size()),
                                 String.valueOf(versionedJarClasses.getPackages().size()),
                                 versionedJarClasses.getJdkRevision(),
                                 debugInformationCellValue,
