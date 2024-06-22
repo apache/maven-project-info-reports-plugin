@@ -185,14 +185,10 @@ under the License.
       <version>3.4.2</version>
       <scope>test</scope>
     </dependency>
-    <!--
-    TODO: Correct the JAR root content entries count workaround used
-    to generate dependencies section when MSHARED-1411 is fixed.
-    -->
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-jar</artifactId>
-      <version>3.1.0</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>

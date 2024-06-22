@@ -639,7 +639,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                             tableRow(hasSealed, new String[] {
                                 versionedTag,
                                 "",
-                                String.valueOf(versionedRuntime.getEntries().size()),
+                                String.valueOf(versionedRuntime.getNumEntries()),
                                 String.valueOf(
                                         versionedJarClasses.getClassNames().size()),
                                 String.valueOf(versionedJarClasses.getPackages().size()),
