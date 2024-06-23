@@ -19,24 +19,24 @@
 File dependencies = new File( basedir, 'target/site/dependencies.html' )
 def mavenModel = '''\
 <tr class="a">
-<td align="left">maven-model-3.3.9.jar</td>
-<td align="right">164 kB</td>
-<td align="right">71</td>
-<td align="right">54</td>
-<td align="right">3</td>
-<td align="center">1.7</td>
-<td align="center">Yes</td></tr>
+<td style="text-align: left;">maven-model-3.3.9.jar</td>
+<td style="text-align: right;">164 kB</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: center;">1.7</td>
+<td style="text-align: center;">Yes</td></tr>
 '''
 
 def jacksonDataTypeJsr310 = '''\
 <tr class="a">
-<td align="left">jackson-datatype-jsr310-2.6.4.jar</td>
-<td align="right">78.1 kB</td>
-<td align="right">69</td>
-<td align="right">51</td>
-<td align="right">5</td>
-<td align="center">1.8</td>
-<td align="center">Yes</td></tr>
+<td style="text-align: left;">jackson-datatype-jsr310-2.6.4.jar</td>
+<td style="text-align: right;">78.1 kB</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: center;">1.8</td>
+<td style="text-align: center;">Yes</td></tr>
 '''
 
 assert dependencies.text.contains( mavenModel.replaceAll( "\n", System.getProperty( "line.separator" ) ) )
