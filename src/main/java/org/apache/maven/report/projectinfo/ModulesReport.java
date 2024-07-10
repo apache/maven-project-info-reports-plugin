@@ -67,6 +67,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
                         getProject(),
                         getReactorProjects(),
                         projectBuilder,
+                        getSession().getProjectBuildingRequest(),
                         localRepository,
                         getI18N(locale),
                         locale,
@@ -102,6 +103,8 @@ public class ModulesReport extends AbstractProjectInfoReport {
 
         protected ProjectBuilder projectBuilder;
 
+        protected ProjectBuildingRequest buildingRequest;
+
         protected ArtifactRepository localRepository;
 
         protected SiteTool siteTool;
@@ -111,6 +114,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
                 MavenProject project,
                 List<MavenProject> reactorProjects,
                 ProjectBuilder projectBuilder,
+                ProjectBuildingRequest buildingRequest,
                 ArtifactRepository localRepository,
                 I18N i18n,
                 Locale locale,
@@ -121,6 +125,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
             this.project = project;
             this.reactorProjects = reactorProjects;
             this.projectBuilder = projectBuilder;
+            this.buildingRequest = buildingRequest;
             this.localRepository = localRepository;
             this.siteTool = siteTool;
             this.log = log;
@@ -157,7 +162,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
 
             final String baseUrl = getDistMgmntSiteUrl(project);
 
-            ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest();
+            ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(this.buildingRequest);
             buildingRequest.setLocalRepository(localRepository);
             buildingRequest.setProcessPlugins(false);
 

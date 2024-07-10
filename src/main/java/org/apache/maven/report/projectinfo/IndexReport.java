@@ -28,6 +28,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -66,6 +67,7 @@ public class IndexReport extends AbstractProjectInfoReport {
                 project,
                 getReactorProjects(),
                 projectBuilder,
+                getSession().getProjectBuildingRequest(),
                 localRepository,
                 getName(locale),
                 getDescription(locale),
@@ -106,6 +108,7 @@ public class IndexReport extends AbstractProjectInfoReport {
                 MavenProject project,
                 List<MavenProject> reactorProjects,
                 ProjectBuilder projectBuilder,
+                ProjectBuildingRequest buildingRequest,
                 ArtifactRepository localRepository,
                 String title,
                 String description,
@@ -114,7 +117,17 @@ public class IndexReport extends AbstractProjectInfoReport {
                 Locale locale,
                 Log log,
                 SiteTool siteTool) {
-            super(sink, project, reactorProjects, projectBuilder, localRepository, i18n, locale, log, siteTool);
+            super(
+                    sink,
+                    project,
+                    reactorProjects,
+                    projectBuilder,
+                    buildingRequest,
+                    localRepository,
+                    i18n,
+                    locale,
+                    log,
+                    siteTool);
 
             this.title = title;
 
