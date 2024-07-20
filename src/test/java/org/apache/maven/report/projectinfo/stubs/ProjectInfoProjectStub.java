@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -42,6 +43,7 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.shared.utils.io.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * @author Edwin Punzalan
@@ -148,6 +150,11 @@ public abstract class ProjectInfoProjectStub extends MavenProjectStub {
                 new ArtifactRepositoryPolicy());
 
         return Collections.singletonList(repository);
+    }
+
+    @Override
+    public List<RemoteRepository> getRemoteProjectRepositories() {
+        return RepositoryUtils.toRepos(getRemoteArtifactRepositories());
     }
 
     @Override

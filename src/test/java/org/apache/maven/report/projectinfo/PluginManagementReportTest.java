@@ -74,7 +74,7 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("plugin-management", "plugin-management-plugin-config.xml");
+        generateReport(getGoal(), "plugin-management-plugin-config.xml");
         assertTrue(
                 "Test html generated",
                 getGeneratedReport("plugin-management.html").exists());
@@ -104,7 +104,7 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.plugin-management.title"), textBlocks[0].getText());
+        assertEquals(getString("report.plugin-management.title"), textBlocks[1].getText());
     }
 
     /**
@@ -113,7 +113,7 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReportEclipseM2EPluginLifecycleMapping() throws Exception {
-        generateReport("plugin-management", "plugin-management-plugin-config-MPIR-375.xml");
+        generateReport(getGoal(), "plugin-management-plugin-config-MPIR-375.xml");
         assertTrue(
                 "Test html generated",
                 getGeneratedReport("plugin-management.html").exists());
@@ -149,7 +149,7 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.plugin-management.title"), textBlocks[0].getText());
+        assertEquals(getString("report.plugin-management.title"), textBlocks[1].getText());
     }
 
     private static ProjectBuildingResult createProjectBuildingResult(Artifact artifact, String url) {
@@ -163,5 +163,10 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
         when(result.getProject()).thenReturn(stub);
 
         return result;
+    }
+
+    @Override
+    protected String getGoal() {
+        return "plugin-management";
     }
 }

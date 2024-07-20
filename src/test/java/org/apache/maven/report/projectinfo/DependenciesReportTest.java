@@ -44,7 +44,7 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("dependencies", "dependencies-plugin-config.xml");
+        generateReport(getGoal(), "dependencies-plugin-config.xml");
         assertTrue(
                 "Test html generated", getGeneratedReport("dependencies.html").exists());
 
@@ -75,13 +75,18 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.dependencies.title"), textBlocks[0].getText());
-        assertEquals("test", textBlocks[1].getText());
-        assertEquals(getString("report.dependencies.intro.test"), textBlocks[2].getText());
-        assertEquals(getString("report.dependencies.transitive.title"), textBlocks[3].getText());
-        assertEquals(getString("report.dependencies.transitive.nolist"), textBlocks[4].getText());
-        assertEquals(getString("report.dependencies.graph.title"), textBlocks[5].getText());
-        assertEquals(getString("report.dependencies.graph.tree.title"), textBlocks[6].getText());
-        assertEquals(getString("report.dependencies.graph.tables.licenses"), textBlocks[7].getText());
+        assertEquals(getString("report.dependencies.title"), textBlocks[1].getText());
+        assertEquals("test", textBlocks[2].getText());
+        assertEquals(getString("report.dependencies.intro.test"), textBlocks[3].getText());
+        assertEquals(getString("report.dependencies.transitive.title"), textBlocks[4].getText());
+        assertEquals(getString("report.dependencies.transitive.nolist"), textBlocks[5].getText());
+        assertEquals(getString("report.dependencies.graph.title"), textBlocks[6].getText());
+        assertEquals(getString("report.dependencies.graph.tree.title"), textBlocks[7].getText());
+        assertEquals(getString("report.dependencies.graph.tables.licenses"), textBlocks[8].getText());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "dependencies";
     }
 }

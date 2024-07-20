@@ -44,7 +44,7 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testReport() throws Exception {
-        generateReport("ci-management", "ci-management-plugin-config.xml");
+        generateReport(getGoal(), "ci-management-plugin-config.xml");
         assertTrue(
                 "Test html generated", getGeneratedReport("ci-management.html").exists());
 
@@ -65,8 +65,8 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(getString("report.ci-management.name"), textBlocks[0].getText());
-        assertEquals(getString("report.ci-management.nocim"), textBlocks[1].getText());
+        assertEquals(getString("report.ci-management.name"), textBlocks[1].getText());
+        assertEquals(getString("report.ci-management.nocim"), textBlocks[2].getText());
     }
 
     /**
@@ -76,7 +76,7 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     public void testCiNameReport() throws Exception {
-        generateReport("ci-management", "ci-management-plugin-with-ci-section-config.xml");
+        generateReport(getGoal(), "ci-management-plugin-with-ci-section-config.xml");
         assertTrue(
                 "Test html generated", getGeneratedReport("ci-management.html").exists());
 
@@ -93,11 +93,17 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertTrue(textBlocks[1].getText().startsWith("This project uses "));
-        assertEquals(3, textBlocks[1].getNode().getChildNodes().getLength());
+        TextBlock textBlock = textBlocks[2];
+        assertTrue(textBlock.getText().startsWith("This project uses "));
+        assertEquals(3, textBlock.getNode().getChildNodes().getLength());
         HTMLAnchorElement anchor =
-                (HTMLAnchorElement) textBlocks[1].getNode().getChildNodes().item(1);
+                (HTMLAnchorElement) textBlock.getNode().getChildNodes().item(1);
         assertEquals("https://www.jetbrains.com/teamcity/", anchor.getAttribute("href"));
         assertEquals("TeamCity", anchor.getFirstChild().getNodeValue());
+    }
+
+    @Override
+    protected String getGoal() {
+        return "ci-management";
     }
 }
