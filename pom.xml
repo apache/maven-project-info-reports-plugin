@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>42</version>
+    <version>43</version>
     <relativePath />
   </parent>
 
@@ -120,7 +120,7 @@ under the License.
     <scmVersion>2.1.0</scmVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <sitePluginVersion>3.12.1</sitePluginVersion>
-    <fluidoSkinVersion>1.11.1</fluidoSkinVersion>
+    <fluidoSkinVersion>1.12.0</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2024-07-11T18:06:39Z</project.build.outputTimestamp>
   </properties>
