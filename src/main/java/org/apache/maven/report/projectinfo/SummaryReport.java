@@ -141,6 +141,7 @@ public class SummaryReport extends AbstractProjectInfoReport {
             String sourceConfigured = getPluginParameter(pluginId, "source");
             String targetConfigured = getPluginParameter(pluginId, "target");
 
+            /*
             String forkFlag = getPluginParameter(pluginId, "fork");
             String compilerVersionConfigured = null;
             if ("true".equalsIgnoreCase(forkFlag)) {
@@ -148,6 +149,8 @@ public class SummaryReport extends AbstractProjectInfoReport {
             }
 
             String minimumJavaVersion = compilerVersionConfigured;
+            */
+            String minimumJavaVersion;
             if (targetConfigured != null) {
                 minimumJavaVersion = targetConfigured;
             } else if (sourceConfigured != null) {

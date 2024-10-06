@@ -20,12 +20,13 @@ package org.apache.maven.report.projectinfo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import org.apache.maven.artifact.Artifact;
@@ -48,7 +49,6 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
 
 /**
  * Generates the Project Dependencies report.
@@ -205,45 +205,33 @@ public class DependenciesReport extends AbstractProjectInfoReport {
      * @throws IOException if any
      */
     private void copyResources(File outputDirectory) throws IOException {
-        InputStream resourceList = null;
-        InputStream in = null;
-        BufferedReader reader = null;
-        OutputStream out = null;
-        try {
-            resourceList = getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/resources.txt");
-
+        try (InputStream resourceList =
+                getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/resources.txt")) {
             if (resourceList != null) {
-                reader = new LineNumberReader(new InputStreamReader(resourceList, ReaderFactory.US_ASCII));
+                try (BufferedReader reader =
+                        new LineNumberReader(new InputStreamReader(resourceList, StandardCharsets.US_ASCII))) {
 
-                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                    in = getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/" + line);
+                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                        try (InputStream in =
+                                getClass().getClassLoader().getResourceAsStream(RESOURCES_DIR + "/" + line)) {
 
-                    if (in == null) {
-                        throw new IOException("The resource " + line + " doesn't exist.");
+                            if (in == null) {
+                                throw new IOException("The resource " + line + " doesn't exist.");
+                            }
+
+                            File outputFile = new File(outputDirectory, line);
+
+                            if (!outputFile.getParentFile().exists()) {
+                                outputFile.getParentFile().mkdirs();
+                            }
+
+                            try (OutputStream out = Files.newOutputStream(outputFile.toPath())) {
+                                IOUtil.copy(in, out);
+                            }
+                        }
                     }
-
-                    File outputFile = new File(outputDirectory, line);
-
-                    if (!outputFile.getParentFile().exists()) {
-                        outputFile.getParentFile().mkdirs();
-                    }
-
-                    out = new FileOutputStream(outputFile);
-                    IOUtil.copy(in, out);
-                    out.close();
-                    out = null;
-                    in.close();
-                    in = null;
                 }
-
-                reader.close();
-                reader = null;
             }
-        } finally {
-            IOUtil.close(out);
-            IOUtil.close(reader);
-            IOUtil.close(in);
-            IOUtil.close(resourceList);
         }
     }
 }

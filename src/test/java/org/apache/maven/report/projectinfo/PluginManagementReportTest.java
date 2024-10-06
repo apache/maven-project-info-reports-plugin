@@ -32,7 +32,6 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Mockito.isA;
@@ -56,12 +55,8 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
         ProjectBuilder builder = mock(ProjectBuilder.class);
 
         when(builder.build(isA(Artifact.class), isA(ProjectBuildingRequest.class)))
-                .thenAnswer(new Answer<ProjectBuildingResult>() {
-                    @Override
-                    public ProjectBuildingResult answer(InvocationOnMock invocation) throws Throwable {
-                        return createProjectBuildingResult((Artifact) invocation.getArgument(0), "http://m.a.o/");
-                    }
-                });
+                .thenAnswer((Answer<ProjectBuildingResult>)
+                        invocation -> createProjectBuildingResult(invocation.getArgument(0), "http://m.a.o/"));
 
         setVariableValueToObject(mojo, "projectBuilder", builder);
 

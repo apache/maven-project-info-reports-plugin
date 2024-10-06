@@ -19,7 +19,6 @@
 package org.apache.maven.report.projectinfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -186,7 +185,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 return;
             }
 
-            Collections.sort(list, getPluginComparator());
+            list.sort(getPluginComparator());
 
             startTable();
             tableHeader(tableHeader);

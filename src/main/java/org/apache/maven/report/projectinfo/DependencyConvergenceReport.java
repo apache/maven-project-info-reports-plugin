@@ -20,7 +20,6 @@ package org.apache.maven.report.projectinfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -332,7 +331,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
                     + depList.get(0).getDependency());
             return;
         }
-        Collections.sort(projectNodes, new DependencyNodeComparator());
+        projectNodes.sort(new DependencyNodeComparator());
 
         for (DependencyNode projectNode : projectNodes) {
             if (isReactorBuild()) {

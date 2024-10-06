@@ -258,7 +258,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                 if (member.getRoles() != null) {
                     // Comma separated roles
                     List<String> var = member.getRoles();
-                    tableCell(StringUtils.join(var.toArray(new String[var.size()]), ", "));
+                    tableCell(StringUtils.join(var.toArray(new String[0]), ", "));
                 } else {
                     tableCell(null);
                 }
@@ -338,7 +338,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                     timeZone,
                     properties);
 
-            return requiredArray.toArray(new String[requiredArray.size()]);
+            return requiredArray.toArray(new String[0]);
         }
 
         /**

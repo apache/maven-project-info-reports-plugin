@@ -185,7 +185,7 @@ public class MailingListsReport extends AbstractProjectInfoReport {
                     textRow.add(createLinkPatternedText(
                             ProjectInfoReportUtils.getArchiveServer(otherArchive), otherArchive));
 
-                    tableRow(textRow.toArray(new String[textRow.size()]));
+                    tableRow(textRow.toArray(new String[0]));
 
                     // Other lines...
                     while (it.hasNext()) {
@@ -212,14 +212,14 @@ public class MailingListsReport extends AbstractProjectInfoReport {
                         textRow.add(createLinkPatternedText(
                                 ProjectInfoReportUtils.getArchiveServer(otherArchive), otherArchive));
 
-                        tableRow(textRow.toArray(new String[textRow.size()]));
+                        tableRow(textRow.toArray(new String[0]));
                     }
                 } else {
                     if (otherArchives) {
                         textRow.add(null);
                     }
 
-                    tableRow(textRow.toArray(new String[textRow.size()]));
+                    tableRow(textRow.toArray(new String[0]));
                 }
             }
 

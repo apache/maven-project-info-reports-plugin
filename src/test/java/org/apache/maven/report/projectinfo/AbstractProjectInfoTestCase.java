@@ -77,11 +77,6 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
         artifactStubFactory.getWorkingDir().mkdirs();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * Gets a trimmed String for the given key from the resource bundle defined by Plexus.
      *
@@ -113,7 +108,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
             throw new IllegalArgumentException("The title cannot be empty");
         }
 
-        return String.format("%s \u2013 %s", shortTitle, projectTitle);
+        return String.format("%s – %s", shortTitle, projectTitle);
     }
 
     /**

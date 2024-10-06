@@ -90,11 +90,7 @@ public class DependencyVersionMap implements DependencyNodeVisitor {
 
     private void addDependency(DependencyNode node) {
         String key = constructKey(node);
-        List<DependencyNode> nodes = idsToNode.get(key);
-        if (nodes == null) {
-            nodes = new ArrayList<>();
-            idsToNode.put(key, nodes);
-        }
+        List<DependencyNode> nodes = idsToNode.computeIfAbsent(key, k -> new ArrayList<>());
         nodes.add(node);
     }
 

@@ -20,7 +20,6 @@ package org.apache.maven.report.projectinfo.dependencies.renderer;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -176,7 +175,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
     private void renderDependenciesForScope(String scope, List<Dependency> artifacts) {
         if (artifacts != null) {
             // can't use straight artifact comparison because we want optional last
-            Collections.sort(artifacts, getDependencyComparator());
+            artifacts.sort(getDependencyComparator());
 
             startSection(scope);
 
@@ -203,7 +202,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private String[] getDependencyRow(Dependency dependency, boolean hasClassifier) {
         Artifact artifact = repositorySystem.createArtifact(
                 dependency.getGroupId(),
@@ -225,11 +223,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
                         artifact, buildingRequest.getLocalRepository(), buildingRequest.getRemoteRepositories());
 
                 // only use versions from range
-                for (Iterator<ArtifactVersion> iter = versions.iterator(); iter.hasNext(); ) {
-                    if (!range.containsVersion(iter.next())) {
-                        iter.remove();
-                    }
-                }
+                versions.removeIf(artifactVersion -> !range.containsVersion(artifactVersion));
 
                 // select latest, assuming pom information will be the most accurate
                 if (!versions.isEmpty()) {
@@ -291,42 +285,40 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
     }
 
     private Comparator<Dependency> getDependencyComparator() {
-        return new Comparator<Dependency>() {
-            public int compare(Dependency a1, Dependency a2) {
-                int result = a1.getGroupId().compareTo(a2.getGroupId());
-                if (result != 0) {
-                    return result;
-                }
-
-                result = a1.getArtifactId().compareTo(a2.getArtifactId());
-                if (result != 0) {
-                    return result;
-                }
-
-                result = a1.getType().compareTo(a2.getType());
-                if (result != 0) {
-                    return result;
-                }
-
-                if (a1.getClassifier() == null) {
-                    if (a2.getClassifier() != null) {
-                        return 1;
-                    }
-                } else {
-                    if (a2.getClassifier() != null) {
-                        result = a1.getClassifier().compareTo(a2.getClassifier());
-                    } else {
-                        return -1;
-                    }
-                }
-
-                if (result != 0) {
-                    return result;
-                }
-
-                // We don't consider the version range in the comparison, just the resolved version
-                return a1.getVersion().compareTo(a2.getVersion());
+        return (a1, a2) -> {
+            int result = a1.getGroupId().compareTo(a2.getGroupId());
+            if (result != 0) {
+                return result;
             }
+
+            result = a1.getArtifactId().compareTo(a2.getArtifactId());
+            if (result != 0) {
+                return result;
+            }
+
+            result = a1.getType().compareTo(a2.getType());
+            if (result != 0) {
+                return result;
+            }
+
+            if (a1.getClassifier() == null) {
+                if (a2.getClassifier() != null) {
+                    return 1;
+                }
+            } else {
+                if (a2.getClassifier() != null) {
+                    result = a1.getClassifier().compareTo(a2.getClassifier());
+                } else {
+                    return -1;
+                }
+            }
+
+            if (result != 0) {
+                return result;
+            }
+
+            // We don't consider the version range in the comparison, just the resolved version
+            return a1.getVersion().compareTo(a2.getVersion());
         };
     }
 }

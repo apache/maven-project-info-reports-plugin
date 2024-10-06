@@ -101,10 +101,6 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
         };
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testGetInputStreamURL() throws Exception {
         assertTrue(ProjectInfoReportUtils.isArtifactUrlValid("http://my.intern.domain:8080/test"));
 

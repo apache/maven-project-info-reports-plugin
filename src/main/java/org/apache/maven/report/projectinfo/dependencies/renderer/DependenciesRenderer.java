@@ -357,7 +357,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         startSection(getI18nString("file.details.title"));
 
         List<Artifact> alldeps = dependencies.getAllDependencies();
-        Collections.sort(alldeps, getArtifactComparator());
+        alldeps.sort(getArtifactComparator());
 
         resolveAtrifacts(alldeps);
 
@@ -714,7 +714,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             String[] tableHeader = getDependencyTableHeader(withClassifier, withOptional);
 
             // can't use straight artifact comparison because we want optional last
-            Collections.sort(artifacts, getArtifactComparator());
+            artifacts.sort(getArtifactComparator());
 
             String anchorByScope = isTransitive
                     ? getI18nString("transitive.title") + "_" + scope
@@ -735,16 +735,14 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     }
 
     private Comparator<Artifact> getArtifactComparator() {
-        return new Comparator<Artifact>() {
-            public int compare(Artifact a1, Artifact a2) {
-                // put optional last
-                if (a1.isOptional() && !a2.isOptional()) {
-                    return +1;
-                } else if (!a1.isOptional() && a2.isOptional()) {
-                    return -1;
-                } else {
-                    return a1.compareTo(a2);
-                }
+        return (a1, a2) -> {
+            // put optional last
+            if (a1.isOptional() && !a2.isOptional()) {
+                return +1;
+            } else if (!a1.isOptional() && a2.isOptional()) {
+                return -1;
+            } else {
+                return a1.compareTo(a2);
             }
         };
     }
@@ -1261,7 +1259,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                 return MAP_BY_SCOPE.get(scope);
             }
 
-            private String scope;
+            private final String scope;
 
             SummaryTableRowOrder() {
                 this(null);

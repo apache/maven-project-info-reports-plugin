@@ -36,7 +36,7 @@ public class SinkSerializingDependencyNodeVisitor implements DependencyNodeVisit
     /**
      * Provides tokens to use when serializing the dependency tree.
      */
-    private class TreeTokens {
+    private static class TreeTokens {
         private final Sink sink;
 
         TreeTokens(Sink sink) {

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
@@ -218,7 +217,7 @@ public class Dependencies {
         File file = getFile(artifact);
 
         if (file.isDirectory()) {
-            jarData = new JarData(artifact.getFile(), null, new ArrayList<JarEntry>());
+            jarData = new JarData(artifact.getFile(), null, new ArrayList<>());
 
             jarData.setJarClasses(new JarClasses());
         } else {
