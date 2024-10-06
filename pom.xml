@@ -116,7 +116,7 @@ under the License.
   <properties>
     <javaVersion>8</javaVersion>
     <mavenVersion>3.6.3</mavenVersion>
-    <resolverVersion>1.4.1</resolverVersion>
+    <resolverVersion>2.0.1</resolverVersion>
     <doxiaVersion>2.0.0-M12</doxiaVersion>
     <doxiaSitetoolsVersion>2.0.0-M19</doxiaSitetoolsVersion>
     <scmVersion>2.1.0</scmVersion>
