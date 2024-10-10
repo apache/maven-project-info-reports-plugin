@@ -118,7 +118,7 @@ under the License.
     <mavenVersion>3.6.3</mavenVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <doxiaVersion>2.0.0-M12</doxiaVersion>
-    <doxiaSitetoolsVersion>2.0.0-M19</doxiaSitetoolsVersion>
+    <doxiaSitetoolsVersion>2.0.0</doxiaSitetoolsVersion>
     <scmVersion>2.1.0</scmVersion>
     <sitePluginVersion>3.20.0</sitePluginVersion>
     <fluidoSkinVersion>2.0.0-M10</fluidoSkinVersion>
