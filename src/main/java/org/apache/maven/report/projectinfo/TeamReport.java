@@ -64,7 +64,7 @@ public class TeamReport extends AbstractProjectInfoReport {
     private boolean showAvatarImages;
 
     @Inject
-    protected TeamReport(
+    public TeamReport(
             ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
         super(resolver, repositorySystem, i18n, projectBuilder);
     }
