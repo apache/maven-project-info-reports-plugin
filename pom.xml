@@ -267,6 +267,18 @@ under the License.
       <version>${doxiaSitetoolsVersion}</version>
     </dependency>
 
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.plexus</artifactId>
+      <version>0.9.0.M3</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Plexus -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
