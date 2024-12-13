@@ -18,19 +18,24 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.Locale;
 
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.codehaus.plexus.i18n.I18N;
 
 /**
  * Generates the Project Dependency Management report.
@@ -40,25 +45,6 @@ import org.apache.maven.reporting.MavenReportException;
  */
 @Mojo(name = "dependency-management", requiresDependencyResolution = ResolutionScope.TEST)
 public class DependencyManagementReport extends AbstractProjectInfoReport {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Artifact metadata source component.
-     *
-     * @since 2.4
-     */
-    @Component
-    protected ArtifactMetadataSource artifactMetadataSource;
-
-    /**
-     * Repository metadata component.
-     *
-     * @since 2.3
-     */
-    @Component
-    private RepositoryMetadataManager repositoryMetadataManager;
 
     // ----------------------------------------------------------------------
     // Mojo parameters
@@ -68,6 +54,37 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
      * Lazy instantiation for management dependencies.
      */
     private ManagementDependencies managementDependencies;
+
+    // ----------------------------------------------------------------------
+    // Mojo components
+    // ----------------------------------------------------------------------
+
+    /**
+     * Artifact metadata source component.
+     *
+     * @since 2.4
+     */
+    protected final ArtifactMetadataSource artifactMetadataSource;
+
+    /**
+     * Repository metadata component.
+     *
+     * @since 2.3
+     */
+    private final RepositoryMetadataManager repositoryMetadataManager;
+
+    @Inject
+    protected DependencyManagementReport(
+            ArtifactResolver resolver,
+            RepositorySystem repositorySystem,
+            I18N i18n,
+            ProjectBuilder projectBuilder,
+            ArtifactMetadataSource artifactMetadataSource,
+            RepositoryMetadataManager repositoryMetadataManager) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+        this.artifactMetadataSource = artifactMetadataSource;
+        this.repositoryMetadataManager = repositoryMetadataManager;
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

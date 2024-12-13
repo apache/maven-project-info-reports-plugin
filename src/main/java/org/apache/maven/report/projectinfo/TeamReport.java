@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -33,7 +35,10 @@ import org.apache.maven.model.Developer;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -49,7 +54,7 @@ public class TeamReport extends AbstractProjectInfoReport {
      * Shows avatar images for team members that have a) properties/picUrl set b) An avatar at gravatar.com for their
      * email address
      * <p/>
-     * Future versions of this plugin may choose to implement different strategies for resolving avatar images, possibly
+     * Future versions of this plugin may implement different strategies for resolving avatar images, possibly
      * using different providers.
      *<p>
      *<strong>Note</strong>: This property will be renamed to {@code tteam.showAvatarImages} in 3.0.
@@ -57,6 +62,12 @@ public class TeamReport extends AbstractProjectInfoReport {
      */
     @Parameter(property = "teamlist.showAvatarImages", defaultValue = "true")
     private boolean showAvatarImages;
+
+    @Inject
+    protected TeamReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

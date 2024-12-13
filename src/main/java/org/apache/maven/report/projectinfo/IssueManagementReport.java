@@ -18,13 +18,18 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.Locale;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -35,6 +40,12 @@ import org.codehaus.plexus.i18n.I18N;
  */
 @Mojo(name = "issue-management")
 public class IssueManagementReport extends AbstractProjectInfoReport {
+
+    @Inject
+    public IssueManagementReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+    }
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------

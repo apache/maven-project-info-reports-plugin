@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,8 +36,11 @@ import org.apache.maven.model.License;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -74,6 +79,12 @@ public class LicensesReport extends AbstractProjectInfoReport {
      */
     @Parameter
     private String licenseFileEncoding;
+
+    @Inject
+    public LicensesReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

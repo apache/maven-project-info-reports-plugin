@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +31,10 @@ import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Notifier;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -40,6 +45,12 @@ import org.codehaus.plexus.i18n.I18N;
  */
 @Mojo(name = "ci-management")
 public class CiManagementReport extends AbstractProjectInfoReport {
+
+    @Inject
+    public CiManagementReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+    }
     // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
