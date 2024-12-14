@@ -36,7 +36,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
@@ -61,31 +60,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  * @since 2.0
  */
 public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
-    // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Artifact Resolver component.
-     */
-    @Component
-    protected ArtifactResolver resolver;
-
-    /**
-     * Artifact Factory component.
-     */
-    @Component
-    RepositorySystem repositorySystem;
-
-    /**
-     * Internationalization component, could support also custom bundle using {@link #customBundle}.
-     */
-    @Component
-    private I18N i18n;
-
-    @Component
-    protected ProjectBuilder projectBuilder;
-
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
@@ -153,6 +127,35 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     protected ArtifactRepository localRepository;
 
     // ----------------------------------------------------------------------
+    // Mojo components
+    // ----------------------------------------------------------------------
+
+    /**
+     * Artifact Resolver component.
+     */
+    protected final ArtifactResolver resolver;
+
+    /**
+     * Artifact Factory component.
+     */
+    final RepositorySystem repositorySystem;
+
+    /**
+     * Internationalization component, could support also custom bundle using {@link #customBundle}.
+     */
+    private I18N i18n;
+
+    protected final ProjectBuilder projectBuilder;
+
+    protected AbstractProjectInfoReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        this.resolver = resolver;
+        this.repositorySystem = repositorySystem;
+        this.i18n = i18n;
+        this.projectBuilder = projectBuilder;
+    }
+
+    // ----------------------------------------------------------------------
     // Public methods
     // ----------------------------------------------------------------------
 
@@ -209,7 +212,7 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
 
     /**
      * @param pluginId The id of the plugin
-     * @return The information about the plugin.
+     * @return The information about the plugin
      */
     protected Plugin getPlugin(String pluginId) {
         if ((getProject().getBuild() == null) || (getProject().getBuild().getPluginsAsMap() == null)) {
@@ -232,9 +235,9 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     }
 
     /**
-     * @param pluginId The pluginId
-     * @param param The child which should be checked.
-     * @return The value of the dom tree.
+     * @param pluginId the pluginId
+     * @param param the child which should be checked
+     * @return the value of the dom tree
      */
     protected String getPluginParameter(String pluginId, String param) {
         Plugin plugin = getPlugin(pluginId);

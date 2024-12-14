@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,15 +28,17 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Scm;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.scm.manager.ScmManager;
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
 import org.apache.maven.scm.provider.hg.repository.HgScmProviderRepository;
 import org.apache.maven.scm.provider.svn.repository.SvnScmProviderRepository;
 import org.apache.maven.scm.repository.ScmRepository;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -51,13 +55,7 @@ public class ScmReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Maven SCM Manager.
-     */
-    @Component
-    protected ScmManager scmManager;
-
-    /**
-     * The directory name to checkout right after the SCM URL.
+     * The directory name to check out right after the SCM URL.
      */
     @Parameter(defaultValue = "${project.artifactId}")
     private String checkoutDirectoryName;
@@ -95,6 +93,22 @@ public class ScmReport extends AbstractProjectInfoReport {
      */
     @Parameter(defaultValue = "${project.scm.tag}")
     private String scmTag;
+
+    /**
+     * Maven SCM Manager.
+     */
+    protected final ScmManager scmManager;
+
+    @Inject
+    public ScmReport(
+            ArtifactResolver resolver,
+            RepositorySystem repositorySystem,
+            I18N i18n,
+            ProjectBuilder projectBuilder,
+            ScmManager scmManager) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+        this.scmManager = scmManager;
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

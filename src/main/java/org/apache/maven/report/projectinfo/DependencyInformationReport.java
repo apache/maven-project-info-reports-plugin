@@ -18,13 +18,18 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.Formatter;
 import java.util.Locale;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -39,25 +44,23 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
     private static final String JAR_PACKAGING = "jar";
     private static final String PLUGIN_PACKAGING = "maven-plugin";
 
-    /**
-     */
     @Parameter(defaultValue = "${project.groupId}", required = true)
     protected String groupId;
 
-    /**
-     */
     @Parameter(defaultValue = "${project.artifactId}", required = true)
     protected String artifactId;
 
-    /**
-     */
     @Parameter(defaultValue = "${project.version}", required = true)
     protected String version;
 
-    /**
-     */
     @Parameter(defaultValue = "${project.packaging}", required = true)
     protected String packaging;
+
+    @Inject
+    public DependencyInformationReport(
+            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,14 +39,15 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.DependencyVersionMap;
 import org.apache.maven.report.projectinfo.dependencies.SinkSerializingDependencyNodeVisitor;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.filter.StrictPatternIncludesArtifactFilter;
 import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilderException;
@@ -57,6 +60,8 @@ import org.apache.maven.shared.dependency.graph.traversal.BuildingDependencyNode
 import org.apache.maven.shared.dependency.graph.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.codehaus.plexus.i18n.I18N;
 
 /**
  * Generates the Project Dependency Convergence report for (reactor) builds.
@@ -80,6 +85,10 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
     private static final int FULL_CONVERGENCE = 100;
 
+    private ArtifactFilter filter = null;
+
+    private Map<MavenProject, DependencyNode> projectMap = new HashMap<>();
+
     // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
@@ -87,12 +96,18 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
     /**
      * Raw dependency collector builder, will use it to build dependency tree.
      */
-    @Component
-    private DependencyCollectorBuilder dependencyCollectorBuilder;
+    private final DependencyCollectorBuilder dependencyCollectorBuilder;
 
-    private ArtifactFilter filter = null;
-
-    private Map<MavenProject, DependencyNode> projectMap = new HashMap<>();
+    @Inject
+    protected DependencyConvergenceReport(
+            ArtifactResolver resolver,
+            RepositorySystem repositorySystem,
+            I18N i18n,
+            ProjectBuilder projectBuilder,
+            DependencyCollectorBuilder dependencyCollectorBuilder) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+        this.dependencyCollectorBuilder = dependencyCollectorBuilder;
+    }
 
     // ----------------------------------------------------------------------
     // Public methods

@@ -18,6 +18,9 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,21 +35,24 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 
@@ -65,34 +71,6 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     private static final String RESOURCES_DIR = "org/apache/maven/report/projectinfo/resources";
 
     // ----------------------------------------------------------------------
-    // Mojo components
-    // ----------------------------------------------------------------------
-
-    /**
-     * Dependency graph builder component.
-     *
-     * @since 2.5
-     */
-    @Component(hint = "default")
-    private DependencyGraphBuilder dependencyGraphBuilder;
-
-    /**
-     * Jar classes analyzer component.
-     *
-     * @since 2.1
-     */
-    @Component
-    private JarClassesAnalysis classesAnalyzer;
-
-    /**
-     * Repository metadata component.
-     *
-     * @since 2.1
-     */
-    @Component
-    private RepositoryMetadataManager repositoryMetadataManager;
-
-    // ----------------------------------------------------------------------
     // Mojo parameters
     // ----------------------------------------------------------------------
 
@@ -104,6 +82,46 @@ public class DependenciesReport extends AbstractProjectInfoReport {
      */
     @Parameter(property = "dependency.details.enabled", defaultValue = "true")
     private boolean dependencyDetailsEnabled;
+
+    // ----------------------------------------------------------------------
+    // Mojo components
+    // ----------------------------------------------------------------------
+
+    /**
+     * Dependency graph builder component.
+     *
+     * @since 2.5
+     */
+    private final DependencyGraphBuilder dependencyGraphBuilder;
+
+    /**
+     * Jar classes analyzer component.
+     *
+     * @since 2.1
+     */
+    private final JarClassesAnalysis classesAnalyzer;
+
+    /**
+     * Repository metadata component.
+     *
+     * @since 2.1
+     */
+    private final RepositoryMetadataManager repositoryMetadataManager;
+
+    @Inject
+    protected DependenciesReport(
+            ArtifactResolver resolver,
+            RepositorySystem repositorySystem,
+            I18N i18n,
+            ProjectBuilder projectBuilder,
+            @Named("default") DependencyGraphBuilder dependencyGraphBuilder,
+            JarClassesAnalysis classesAnalyzer,
+            RepositoryMetadataManager repositoryMetadataManager) {
+        super(resolver, repositorySystem, i18n, projectBuilder);
+        this.dependencyGraphBuilder = dependencyGraphBuilder;
+        this.classesAnalyzer = classesAnalyzer;
+        this.repositoryMetadataManager = repositoryMetadataManager;
+    }
 
     // ----------------------------------------------------------------------
     // Public methods
