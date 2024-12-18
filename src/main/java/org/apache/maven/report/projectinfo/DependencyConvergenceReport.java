@@ -131,56 +131,54 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
     @Override
     protected void executeReport(Locale locale) throws MavenReportException {
-        Sink sink = getSink();
+        try (Sink sink = getSink()) {
+            sink.head();
+            sink.title();
 
-        sink.head();
-        sink.title();
+            if (isReactorBuild()) {
+                sink.text(getI18nString(locale, "reactor.title"));
+            } else {
+                sink.text(getI18nString(locale, "title"));
+            }
 
-        if (isReactorBuild()) {
-            sink.text(getI18nString(locale, "reactor.title"));
-        } else {
-            sink.text(getI18nString(locale, "title"));
+            sink.title_();
+            sink.head_();
+
+            sink.body();
+
+            sink.section1();
+
+            sink.sectionTitle1();
+
+            if (isReactorBuild()) {
+                sink.text(getI18nString(locale, "reactor.title"));
+            } else {
+                sink.text(getI18nString(locale, "title"));
+            }
+
+            sink.sectionTitle1_();
+
+            DependencyAnalyzeResult dependencyResult = analyzeDependencyTree();
+            int convergence = calculateConvergence(dependencyResult);
+
+            if (convergence < FULL_CONVERGENCE) {
+                // legend
+                generateLegend(locale, sink);
+                sink.lineBreak();
+            }
+
+            // stats
+            generateStats(locale, sink, dependencyResult);
+
+            sink.section1_();
+
+            if (convergence < FULL_CONVERGENCE) {
+                // convergence
+                generateConvergence(locale, sink, dependencyResult);
+            }
+
+            sink.body_();
         }
-
-        sink.title_();
-        sink.head_();
-
-        sink.body();
-
-        sink.section1();
-
-        sink.sectionTitle1();
-
-        if (isReactorBuild()) {
-            sink.text(getI18nString(locale, "reactor.title"));
-        } else {
-            sink.text(getI18nString(locale, "title"));
-        }
-
-        sink.sectionTitle1_();
-
-        DependencyAnalyzeResult dependencyResult = analyzeDependencyTree();
-        int convergence = calculateConvergence(dependencyResult);
-
-        if (convergence < FULL_CONVERGENCE) {
-            // legend
-            generateLegend(locale, sink);
-            sink.lineBreak();
-        }
-
-        // stats
-        generateStats(locale, sink, dependencyResult);
-
-        sink.section1_();
-
-        if (convergence < FULL_CONVERGENCE) {
-            // convergence
-            generateConvergence(locale, sink, dependencyResult);
-        }
-
-        sink.body_();
-        sink.flush();
-        sink.close();
     }
 
     // ----------------------------------------------------------------------

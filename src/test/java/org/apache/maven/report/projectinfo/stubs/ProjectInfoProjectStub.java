@@ -19,6 +19,8 @@
 package org.apache.maven.report.projectinfo.stubs;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,9 +42,8 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
-import org.apache.maven.shared.utils.io.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
-import org.codehaus.plexus.util.xml.XmlStreamReader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.repository.RemoteRepository;
 
 /**
@@ -61,17 +62,11 @@ public abstract class ProjectInfoProjectStub extends MavenProjectStub {
      */
     public ProjectInfoProjectStub() {
         MavenXpp3Reader pomReader = new MavenXpp3Reader();
-        XmlStreamReader reader = null;
-        try {
-            reader = ReaderFactory.newXmlReader(new File(getBasedir(), getPOM()));
+        try (Reader reader = ReaderFactory.newXmlReader(new File(getBasedir(), getPOM()))) {
             model = pomReader.read(reader);
-            reader.close();
-            reader = null;
             setModel(model);
-        } catch (Exception e) {
+        } catch (IOException | XmlPullParserException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtil.close(reader);
         }
 
         setGroupId(model.getGroupId());

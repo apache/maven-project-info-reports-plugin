@@ -70,9 +70,6 @@ public class ProjectInfoReportUtils {
     /** The timeout when getting the url input stream */
     private static final int TIMEOUT = 1000 * 5;
 
-    /** The default encoding used to transform bytes to characters */
-    private static final String DEFAULT_ENCODING = "UTF-8";
-
     /**
      * Get the input stream using UTF-8 as character encoding from a URL.
      *
@@ -83,7 +80,7 @@ public class ProjectInfoReportUtils {
      * @see #getContent(URL, Settings, String)
      */
     public static String getContent(URL url, Settings settings) throws IOException {
-        return getContent(url, settings, DEFAULT_ENCODING);
+        return getContent(url, settings, "UTF-8");
     }
 
     /**
@@ -115,23 +112,13 @@ public class ProjectInfoReportUtils {
         String scheme = url.getProtocol();
 
         if (encoding == null || encoding.isEmpty()) {
-            encoding = DEFAULT_ENCODING;
+            encoding = "UTF-8";
         }
 
         if ("file".equals(scheme)) {
-            InputStream in = null;
-            try {
-                URLConnection conn = url.openConnection();
-                in = conn.getInputStream();
-
+            try (InputStream in = url.openConnection().getInputStream()) {
                 final String content = IOUtil.toString(in, encoding);
-
-                in.close();
-                in = null;
-
                 return content;
-            } finally {
-                IOUtil.close(in);
             }
         }
 
@@ -167,19 +154,8 @@ public class ProjectInfoReportUtils {
             }
         }
 
-        InputStream in = null;
-        try {
-            URLConnection conn = getURLConnection(url, project, settings);
-            in = conn.getInputStream();
-
-            final String string = IOUtil.toString(in, encoding);
-
-            in.close();
-            in = null;
-
-            return string;
-        } finally {
-            IOUtil.close(in);
+        try (InputStream in = getURLConnection(url, project, settings).getInputStream()) {
+            return IOUtil.toString(in, encoding);
         }
     }
 
