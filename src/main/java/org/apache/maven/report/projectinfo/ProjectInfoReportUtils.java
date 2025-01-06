@@ -41,14 +41,8 @@ import java.util.Properties;
 
 import org.apache.commons.validator.routines.RegexValidator;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.AbstractMavenReportRenderer;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
@@ -160,38 +154,16 @@ public class ProjectInfoReportUtils {
     }
 
     /**
-     * @param repositorySystem not null
-     * @param artifact not null
-     * @param projectBuilder not null
-     * @param buildingRequest not null
+     * @param project Maven project
      * @return the artifact url or null if an error occurred.
      */
-    public static String getArtifactUrl(
-            RepositorySystem repositorySystem,
-            Artifact artifact,
-            ProjectBuilder projectBuilder,
-            ProjectBuildingRequest buildingRequest) {
-        if (Artifact.SCOPE_SYSTEM.equals(artifact.getScope())) {
-            return null;
+    public static String getProjectUrl(MavenProject project) {
+
+        if (project != null && isArtifactUrlValid(project.getUrl())) {
+            return project.getUrl();
         }
 
-        Artifact copyArtifact = ArtifactUtils.copyArtifact(artifact);
-        if (!"pom".equals(copyArtifact.getType())) {
-            copyArtifact = repositorySystem.createProjectArtifact(
-                    copyArtifact.getGroupId(), copyArtifact.getArtifactId(), copyArtifact.getVersion());
-        }
-        try {
-            MavenProject pluginProject =
-                    projectBuilder.build(copyArtifact, buildingRequest).getProject();
-
-            if (isArtifactUrlValid(pluginProject.getUrl())) {
-                return pluginProject.getUrl();
-            }
-
-            return null;
-        } catch (ProjectBuildingException e) {
-            return null;
-        }
+        return null;
     }
 
     /**

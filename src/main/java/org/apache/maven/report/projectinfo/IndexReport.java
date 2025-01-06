@@ -32,7 +32,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -46,9 +45,8 @@ import org.codehaus.plexus.i18n.I18N;
 public class IndexReport extends AbstractProjectInfoReport {
 
     @Inject
-    public IndexReport(
-            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+    public IndexReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(repositorySystem, i18n, projectBuilder);
     }
     // ----------------------------------------------------------------------
     // Public methods

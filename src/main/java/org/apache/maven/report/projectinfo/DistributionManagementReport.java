@@ -29,7 +29,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -43,9 +42,8 @@ import org.codehaus.plexus.util.StringUtils;
 public class DistributionManagementReport extends AbstractProjectInfoReport {
 
     @Inject
-    public DistributionManagementReport(
-            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+    public DistributionManagementReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(repositorySystem, i18n, projectBuilder);
     }
     // ----------------------------------------------------------------------
     // Public methods

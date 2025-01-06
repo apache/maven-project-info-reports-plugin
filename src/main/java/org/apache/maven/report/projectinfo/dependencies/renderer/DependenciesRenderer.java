@@ -49,9 +49,7 @@ import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
 import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
@@ -59,15 +57,14 @@ import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer.TotalCell.SummaryTableRowOrder;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarData;
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarVersionedRuntime;
 import org.apache.maven.shared.jar.classes.JarVersionedRuntimes;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
 
 /**
  * Renderer the dependencies report.
@@ -124,12 +121,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         }
     };
 
-    private final RepositorySystem repositorySystem;
-
-    private final ProjectBuilder projectBuilder;
-
-    private final ProjectBuildingRequest buildingRequest;
-
     private final Map<String, String> licenseMappings;
 
     static {
@@ -155,9 +146,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
      * @param dependencyTreeNode {@link DependencyNode}
      * @param config {@link DependenciesReportConfiguration}
      * @param repoUtils {@link RepositoryUtils}
-     * @param repositorySystem {@link RepositorySystem}
-     * @param projectBuilder {@link ProjectBuilder}
-     * @param buildingRequest {@link ProjectBuildingRequest}
      * @param licenseMappings {@link LicenseMapping}
      */
     public DependenciesRenderer(
@@ -169,9 +157,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             DependencyNode dependencyTreeNode,
             DependenciesReportConfiguration config,
             RepositoryUtils repoUtils,
-            RepositorySystem repositorySystem,
-            ProjectBuilder projectBuilder,
-            ProjectBuildingRequest buildingRequest,
             Map<String, String> licenseMappings) {
         super(sink, i18n, locale);
 
@@ -180,9 +165,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         this.dependencyNode = dependencyTreeNode;
         this.repoUtils = repoUtils;
         this.configuration = config;
-        this.repositorySystem = repositorySystem;
-        this.projectBuilder = projectBuilder;
-        this.buildingRequest = buildingRequest;
         this.licenseMappings = licenseMappings;
         this.fileLengthDecimalFormat = new FileDecimalFormat(i18n, locale);
         this.fileLengthDecimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(locale));
@@ -759,10 +741,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         String isOptional =
                 artifact.isOptional() ? getI18nString("column.isOptional") : getI18nString("column.isNotOptional");
 
-        String url = ProjectInfoReportUtils.getArtifactUrl(repositorySystem, artifact, projectBuilder, buildingRequest);
-        String artifactIdCell = ProjectInfoReportUtils.getArtifactIdCell(artifact.getArtifactId(), url);
-
-        MavenProject artifactProject;
+        MavenProject artifactProject = null;
         StringBuilder sb = new StringBuilder();
         try {
             artifactProject = repoUtils.getMavenProjectFromRepository(artifact);
@@ -783,6 +762,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                         + "', for more information run with -X");
             }
         }
+
+        String url = ProjectInfoReportUtils.getProjectUrl(artifactProject);
+        String artifactIdCell = ProjectInfoReportUtils.getArtifactIdCell(artifact.getArtifactId(), url);
 
         String[] content;
         if (withClassifier) {
@@ -1031,6 +1013,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
      ** @param artifacts not null
      */
     private void resolveAtrifacts(List<Artifact> artifacts) {
+
         for (Artifact artifact : artifacts) {
             // TODO site:run Why do we need to resolve this...
             if (artifact.getFile() == null) {
@@ -1041,7 +1024,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
                 try {
                     repoUtils.resolve(artifact);
-                } catch (ArtifactResolverException e) {
+                } catch (ArtifactResolutionException e) {
                     log.error("Artifact " + artifact.getId() + " can't be resolved.", e);
                     continue;
                 }
