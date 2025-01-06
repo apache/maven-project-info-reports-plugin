@@ -38,7 +38,6 @@ import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
 import org.apache.maven.scm.provider.hg.repository.HgScmProviderRepository;
 import org.apache.maven.scm.provider.svn.repository.SvnScmProviderRepository;
 import org.apache.maven.scm.repository.ScmRepository;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -101,12 +100,8 @@ public class ScmReport extends AbstractProjectInfoReport {
 
     @Inject
     public ScmReport(
-            ArtifactResolver resolver,
-            RepositorySystem repositorySystem,
-            I18N i18n,
-            ProjectBuilder projectBuilder,
-            ScmManager scmManager) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+            RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder, ScmManager scmManager) {
+        super(repositorySystem, i18n, projectBuilder);
         this.scmManager = scmManager;
     }
 

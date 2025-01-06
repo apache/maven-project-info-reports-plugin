@@ -43,7 +43,6 @@ import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.interpolation.EnvarBasedValueSource;
 import org.codehaus.plexus.interpolation.InterpolationException;
@@ -131,11 +130,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Artifact Resolver component.
-     */
-    protected final ArtifactResolver resolver;
-
-    /**
      * Artifact Factory component.
      */
     final RepositorySystem repositorySystem;
@@ -147,9 +141,7 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
 
     protected final ProjectBuilder projectBuilder;
 
-    protected AbstractProjectInfoReport(
-            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        this.resolver = resolver;
+    protected AbstractProjectInfoReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
         this.repositorySystem = repositorySystem;
         this.i18n = i18n;
         this.projectBuilder = projectBuilder;
@@ -191,11 +183,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
      */
     protected boolean isEmpty(Collection<?> coll) {
         return coll == null || coll.isEmpty();
-    }
-
-    @Override
-    protected MavenProject getProject() {
-        return project;
     }
 
     protected MavenSession getSession() {

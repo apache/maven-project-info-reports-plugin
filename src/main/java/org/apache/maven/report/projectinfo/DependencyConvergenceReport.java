@@ -60,7 +60,6 @@ import org.apache.maven.shared.dependency.graph.traversal.BuildingDependencyNode
 import org.apache.maven.shared.dependency.graph.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -100,12 +99,11 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
     @Inject
     protected DependencyConvergenceReport(
-            ArtifactResolver resolver,
             RepositorySystem repositorySystem,
             I18N i18n,
             ProjectBuilder projectBuilder,
             DependencyCollectorBuilder dependencyCollectorBuilder) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+        super(repositorySystem, i18n, projectBuilder);
         this.dependencyCollectorBuilder = dependencyCollectorBuilder;
     }
 

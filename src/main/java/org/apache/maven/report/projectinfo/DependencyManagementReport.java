@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import java.util.Locale;
 
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -34,7 +33,6 @@ import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -66,24 +64,18 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
      */
     protected final ArtifactMetadataSource artifactMetadataSource;
 
-    /**
-     * Repository metadata component.
-     *
-     * @since 2.3
-     */
-    private final RepositoryMetadataManager repositoryMetadataManager;
+    private final RepositoryUtils repoUtils;
 
     @Inject
     protected DependencyManagementReport(
-            ArtifactResolver resolver,
             RepositorySystem repositorySystem,
             I18N i18n,
             ProjectBuilder projectBuilder,
             ArtifactMetadataSource artifactMetadataSource,
-            RepositoryMetadataManager repositoryMetadataManager) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+            RepositoryUtils repoUtils) {
+        super(repositorySystem, i18n, projectBuilder);
         this.artifactMetadataSource = artifactMetadataSource;
-        this.repositoryMetadataManager = repositoryMetadataManager;
+        this.repoUtils = repoUtils;
     }
 
     // ----------------------------------------------------------------------
@@ -109,16 +101,6 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
         buildingRequest.setPluginArtifactRepositories(pluginRepositories);
         buildingRequest.setProcessPlugins(false);
 
-        RepositoryUtils repoUtils = new RepositoryUtils(
-                getLog(),
-                projectBuilder,
-                repositorySystem,
-                resolver,
-                remoteRepositories,
-                pluginRepositories,
-                buildingRequest,
-                repositoryMetadataManager);
-
         DependencyManagementRenderer r = new DependencyManagementRenderer(
                 getSink(),
                 locale,
@@ -127,7 +109,6 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
                 getManagementDependencies(),
                 artifactMetadataSource,
                 repositorySystem,
-                projectBuilder,
                 buildingRequest,
                 repoUtils,
                 getLicenseMappings());

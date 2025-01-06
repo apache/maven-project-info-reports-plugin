@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -41,7 +42,6 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -55,9 +55,8 @@ import org.codehaus.plexus.util.StringUtils;
 public class PluginsReport extends AbstractProjectInfoReport {
 
     @Inject
-    public PluginsReport(
-            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+    public PluginsReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(repositorySystem, i18n, projectBuilder);
     }
     // ----------------------------------------------------------------------
     // Public methods
@@ -359,8 +358,8 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 return null;
             }
             for (Plugin plugin : plugins) {
-                if (StringUtils.equals(plugin.getArtifactId(), reportPlugin.getArtifactId())
-                        && StringUtils.equals(plugin.getGroupId(), reportPlugin.getGroupId())) {
+                if (Objects.equals(plugin.getArtifactId(), reportPlugin.getArtifactId())
+                        && Objects.equals(plugin.getGroupId(), reportPlugin.getGroupId())) {
                     return plugin;
                 }
             }

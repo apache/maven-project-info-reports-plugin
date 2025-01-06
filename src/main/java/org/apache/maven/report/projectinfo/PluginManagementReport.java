@@ -42,7 +42,6 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -66,9 +65,8 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
     private List<String> pluginManagementExcludes = null;
 
     @Inject
-    public PluginManagementReport(
-            ArtifactResolver resolver, RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+    public PluginManagementReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+        super(repositorySystem, i18n, projectBuilder);
     }
 
     // ----------------------------------------------------------------------

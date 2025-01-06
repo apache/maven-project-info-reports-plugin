@@ -33,7 +33,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -52,7 +51,6 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.IOUtil;
 
@@ -101,26 +99,20 @@ public class DependenciesReport extends AbstractProjectInfoReport {
      */
     private final JarClassesAnalysis classesAnalyzer;
 
-    /**
-     * Repository metadata component.
-     *
-     * @since 2.1
-     */
-    private final RepositoryMetadataManager repositoryMetadataManager;
+    private final RepositoryUtils repoUtils;
 
     @Inject
     protected DependenciesReport(
-            ArtifactResolver resolver,
             RepositorySystem repositorySystem,
             I18N i18n,
             ProjectBuilder projectBuilder,
             @Named("default") DependencyGraphBuilder dependencyGraphBuilder,
             JarClassesAnalysis classesAnalyzer,
-            RepositoryMetadataManager repositoryMetadataManager) {
-        super(resolver, repositorySystem, i18n, projectBuilder);
+            RepositoryUtils repoUtils) {
+        super(repositorySystem, i18n, projectBuilder);
         this.dependencyGraphBuilder = dependencyGraphBuilder;
         this.classesAnalyzer = classesAnalyzer;
-        this.repositoryMetadataManager = repositoryMetadataManager;
+        this.repoUtils = repoUtils;
     }
 
     // ----------------------------------------------------------------------
@@ -148,22 +140,6 @@ public class DependenciesReport extends AbstractProjectInfoReport {
             getLog().error("Cannot copy resources", e);
         }
 
-        ProjectBuildingRequest buildingRequest =
-                new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
-        buildingRequest.setLocalRepository(localRepository);
-        buildingRequest.setRemoteRepositories(remoteRepositories);
-        buildingRequest.setPluginArtifactRepositories(pluginRepositories);
-
-        RepositoryUtils repoUtils = new RepositoryUtils(
-                getLog(),
-                projectBuilder,
-                repositorySystem,
-                resolver,
-                remoteRepositories,
-                pluginRepositories,
-                buildingRequest,
-                repositoryMetadataManager);
-
         DependencyNode dependencyNode = resolveProject();
 
         Dependencies dependencies = new Dependencies(project, dependencyNode, classesAnalyzer);
@@ -179,9 +155,6 @@ public class DependenciesReport extends AbstractProjectInfoReport {
                 dependencyNode,
                 config,
                 repoUtils,
-                repositorySystem,
-                projectBuilder,
-                buildingRequest,
                 getLicenseMappings());
         r.render();
     }

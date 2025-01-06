@@ -36,7 +36,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
@@ -61,8 +60,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
     private final RepositorySystem repositorySystem;
 
-    private final ProjectBuilder projectBuilder;
-
     private final ProjectBuildingRequest buildingRequest;
 
     private final RepositoryUtils repoUtils;
@@ -79,7 +76,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
      * @param dependencies {@link ManagementDependencies}
      * @param artifactMetadataSource {@link ArtifactMetadataSource}
      * @param repositorySystem {@link RepositorySystem}
-     * @param projectBuilder {@link ProjectBuilder}
      * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repoUtils {@link RepositoryUtils}
      * @param licenseMappings {@link LicenseMapping}
@@ -92,7 +88,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             ManagementDependencies dependencies,
             ArtifactMetadataSource artifactMetadataSource,
             RepositorySystem repositorySystem,
-            ProjectBuilder projectBuilder,
             ProjectBuildingRequest buildingRequest,
             RepositoryUtils repoUtils,
             Map<String, String> licenseMappings) {
@@ -102,7 +97,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         this.dependencies = dependencies;
         this.artifactMetadataSource = artifactMetadataSource;
         this.repositorySystem = repositorySystem;
-        this.projectBuilder = projectBuilder;
         this.buildingRequest = buildingRequest;
         this.repoUtils = repoUtils;
         this.licenseMappings = licenseMappings;
@@ -205,6 +199,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
     @SuppressWarnings("unchecked")
     private String[] getDependencyRow(Dependency dependency, boolean hasClassifier) {
+
         Artifact artifact = repositorySystem.createArtifact(
                 dependency.getGroupId(),
                 dependency.getArtifactId(),
@@ -240,9 +235,8 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
                 }
             }
 
-            url = ProjectInfoReportUtils.getArtifactUrl(repositorySystem, artifact, projectBuilder, buildingRequest);
-
             MavenProject artifactProject = repoUtils.getMavenProjectFromRepository(artifact);
+            url = ProjectInfoReportUtils.getProjectUrl(artifactProject);
 
             List<License> licenses = artifactProject.getLicenses();
             for (License license : licenses) {

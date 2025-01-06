@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.meterware.httpunit.HttpUnitOptions;
 import org.apache.maven.doxia.tools.SiteTool;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.plugin.MojoExecution;
@@ -37,9 +38,11 @@ import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.stubs.DependencyArtifactStubFactory;
 import org.codehaus.plexus.i18n.I18N;
 import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 
@@ -159,11 +162,21 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
     }
 
     protected AbstractProjectInfoReport createReportMojo(String goal, File pluginXmlFile) throws Exception {
+        MavenSession mavenSession = newMavenSession(new MavenProjectStub());
+
+        getContainer()
+                .addComponent(
+                        new RepositoryUtils(
+                                lookup(ProjectBuilder.class), lookup(RepositorySystem.class), () -> mavenSession),
+                        RepositoryUtils.class,
+                        null);
+
         AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo(goal, pluginXmlFile);
         assertNotNull("Mojo not found.", mojo);
 
         LegacySupport legacySupport = lookup(LegacySupport.class);
-        legacySupport.setSession(newMavenSession(new MavenProjectStub()));
+        legacySupport.setSession(mavenSession);
+
         DefaultRepositorySystemSession repoSession =
                 (DefaultRepositorySystemSession) legacySupport.getRepositorySession();
         repoSession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
@@ -172,16 +185,15 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
         List<MavenProject> reactorProjects =
                 mojo.getReactorProjects() != null ? mojo.getReactorProjects() : Collections.emptyList();
 
+        MavenProject project = (MavenProject) getVariableValueFromObject(mojo, "project");
         setVariableValueToObject(mojo, "mojoExecution", getMockMojoExecution());
         setVariableValueToObject(mojo, "session", legacySupport.getSession());
         setVariableValueToObject(mojo, "repoSession", legacySupport.getRepositorySession());
         setVariableValueToObject(mojo, "reactorProjects", reactorProjects);
-        setVariableValueToObject(
-                mojo, "remoteProjectRepositories", mojo.getProject().getRemoteProjectRepositories());
-        setVariableValueToObject(mojo, "remoteRepositories", mojo.getProject().getRemoteArtifactRepositories());
-        setVariableValueToObject(mojo, "pluginRepositories", mojo.getProject().getPluginArtifactRepositories());
-        setVariableValueToObject(
-                mojo, "siteDirectory", new File(mojo.getProject().getBasedir(), "src/site"));
+        setVariableValueToObject(mojo, "remoteProjectRepositories", project.getRemoteProjectRepositories());
+        setVariableValueToObject(mojo, "remoteRepositories", project.getRemoteArtifactRepositories());
+        setVariableValueToObject(mojo, "pluginRepositories", project.getPluginArtifactRepositories());
+        setVariableValueToObject(mojo, "siteDirectory", new File(project.getBasedir(), "src/site"));
         return mojo;
     }
 
@@ -196,7 +208,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
         testMavenProject = builder.build(pluginXmlFile, buildingRequest).getProject();
 
         File outputDir = mojo.getReportOutputDirectory();
-        String filename = mojo.getOutputName() + ".html";
+        String filename = mojo.getOutputPath() + ".html";
 
         return new File(outputDir, filename);
     }
