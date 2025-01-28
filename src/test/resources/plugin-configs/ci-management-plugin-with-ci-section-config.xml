@@ -39,7 +39,6 @@ under the License.
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
           <outputDirectory>target/test-harness/ci-management-with-ci-section</outputDirectory>
-          <localRepository>${localRepository}</localRepository>
           <project implementation="org.apache.maven.report.projectinfo.stubs.CiManagementWithCiSectionStub"/>
         </configuration>
       </plugin>

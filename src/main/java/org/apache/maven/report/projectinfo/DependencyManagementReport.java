@@ -96,7 +96,7 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
     public void executeReport(Locale locale) {
         ProjectBuildingRequest buildingRequest =
                 new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
-        buildingRequest.setLocalRepository(localRepository);
+        buildingRequest.setLocalRepository(getSession().getLocalRepository());
         buildingRequest.setRemoteRepositories(remoteRepositories);
         buildingRequest.setPluginArtifactRepositories(pluginRepositories);
         buildingRequest.setProcessPlugins(false);

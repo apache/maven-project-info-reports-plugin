@@ -56,7 +56,6 @@ under the License.
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
           <outputDirectory>target/test-harness/plugin-management</outputDirectory>
-          <localRepository>${localRepository}</localRepository>
           <project implementation="org.apache.maven.report.projectinfo.stubs.PluginManagementStub"/>
         </configuration>
       </plugin>

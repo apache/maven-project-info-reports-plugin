@@ -119,12 +119,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     @Parameter
     private List<LicenseMapping> licenseMappings;
 
-    /**
-     * The local repository.
-     */
-    @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
-    protected ArtifactRepository localRepository;
-
     // ----------------------------------------------------------------------
     // Mojo components
     // ----------------------------------------------------------------------

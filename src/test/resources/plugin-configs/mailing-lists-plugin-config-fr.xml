@@ -52,7 +52,6 @@ under the License.
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
           <outputDirectory>target/test-harness/mailing-lists</outputDirectory>
-          <localRepository>${localRepository}</localRepository>
           <locale>fr</locale>
           <project implementation="org.apache.maven.report.projectinfo.stubs.MailingListsStub"/>
         </configuration>

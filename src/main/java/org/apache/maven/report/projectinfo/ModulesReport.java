@@ -78,7 +78,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
                         getReactorProjects(),
                         projectBuilder,
                         getSession().getProjectBuildingRequest(),
-                        localRepository,
+                        getSession().getLocalRepository(),
                         getI18N(locale),
                         locale,
                         getLog(),
