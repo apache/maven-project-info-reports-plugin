@@ -43,7 +43,6 @@ under the License.
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
           <outputDirectory>target/test-harness/issue-management</outputDirectory>
-          <localRepository>${localRepository}</localRepository>
           <project implementation="org.apache.maven.report.projectinfo.stubs.IssueManagementStub"/>
         </configuration>
       </plugin>

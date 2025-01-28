@@ -76,7 +76,7 @@ public class IndexReport extends AbstractProjectInfoReport {
                 getReactorProjects(),
                 projectBuilder,
                 getSession().getProjectBuildingRequest(),
-                localRepository,
+                getSession().getLocalRepository(),
                 getName(locale),
                 getDescription(locale),
                 getSink(),
