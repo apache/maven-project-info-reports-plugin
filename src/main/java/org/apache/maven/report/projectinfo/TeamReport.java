@@ -317,10 +317,6 @@ public class TeamReport extends AbstractProjectInfoReport {
             }
         }
 
-        /**
-         * @param requiredHeaders
-         * @return
-         */
         private String[] getRequiredContrHeaderArray(Map<String, Boolean> requiredHeaders) {
             List<String> requiredArray = new ArrayList<>();
             String image = getI18nString("contributors.image");
@@ -350,10 +346,6 @@ public class TeamReport extends AbstractProjectInfoReport {
             return requiredArray.toArray(new String[requiredArray.size()]);
         }
 
-        /**
-         * @param requiredHeaders
-         * @return
-         */
         private String[] getRequiredDevHeaderArray(Map<String, Boolean> requiredHeaders) {
             List<String> requiredArray = new ArrayList<>();
 
@@ -390,18 +382,6 @@ public class TeamReport extends AbstractProjectInfoReport {
             return requiredArray.toArray(new String[0]);
         }
 
-        /**
-         * @param requiredHeaders
-         * @param requiredArray
-         * @param name
-         * @param email
-         * @param url
-         * @param organization
-         * @param organizationUrl
-         * @param roles
-         * @param timeZone
-         * @param properties
-         */
         private static void setRequiredArray(
                 Map<String, Boolean> requiredHeaders,
                 List<String> requiredArray,
@@ -502,8 +482,6 @@ public class TeamReport extends AbstractProjectInfoReport {
 
         /**
          * Create a table cell with a link to the given url. The url is not validated.
-         *
-         * @param url
          */
         private void tableCellForUrl(String url) {
             sink.tableCell();
