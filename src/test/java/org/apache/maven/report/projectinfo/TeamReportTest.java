@@ -50,6 +50,9 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
         File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml");
         AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
         setVariableValueToObject(mojo, "showAvatarImages", Boolean.TRUE);
+        setVariableValueToObject(mojo, "externalAvatarImages", Boolean.TRUE);
+        setVariableValueToObject(mojo, "avatarProviderName", "gravatar");
+        setVariableValueToObject(mojo, "avatarBaseUrl", "https://www.gravatar.com/avatar/");
         generateReport(mojo, pluginXmlFile);
         assertTrue("Test html generated", getGeneratedReport("team.html").exists());
 
