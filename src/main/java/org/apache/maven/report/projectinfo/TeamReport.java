@@ -20,9 +20,9 @@ package org.apache.maven.report.projectinfo;
 
 import javax.inject.Inject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,10 +32,11 @@ import java.util.Properties;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Contributor;
 import org.apache.maven.model.Developer;
-import org.apache.maven.model.Model;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.report.projectinfo.avatars.AvatarsProvider;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
@@ -52,19 +53,51 @@ public class TeamReport extends AbstractProjectInfoReport {
     /**
      * Shows avatar images for team members that have a) properties/picUrl set b) An avatar at gravatar.com for their
      * email address
-     * <p/>
-     * Future versions of this plugin may implement different strategies for resolving avatar images, possibly
-     * using different providers.
-     *<p>
-     *<strong>Note</strong>: This property will be renamed to {@code tteam.showAvatarImages} in 3.0.
+     *
      * @since 2.6
      */
     @Parameter(property = "teamlist.showAvatarImages", defaultValue = "true")
     private boolean showAvatarImages;
 
+    /**
+     * Indicate if URL should be used for avatar images.
+     * <p>
+     * If set to <code>false</code> images will be downloaded and attached to report during build.
+     * Local path will be used for images.
+     *
+     * @since 3.9.0
+     */
+    @Parameter(property = "teamlist.externalAvatarImages", defaultValue = "true")
+    private boolean externalAvatarImages;
+
+    /**
+     * Base URL for avatar provider.
+     *
+     * @since 3.9.0
+     */
+    @Parameter(property = "teamlist.avatarBaseUrl", defaultValue = "https://www.gravatar.com/avatar/")
+    private String avatarBaseUrl;
+
+    /**
+     * Provider name for avatar images.
+     * <p>
+     * Report has one implementation for gravatar.com. Users can provide other by implementing {@link AvatarsProvider}.
+     *
+     * @since 3.9.0
+     */
+    @Parameter(property = "teamlist.avatarProviderName", defaultValue = "gravatar")
+    private String avatarProviderName;
+
+    private final Map<String, AvatarsProvider> avatarsProviders;
+
     @Inject
-    public TeamReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+    public TeamReport(
+            RepositorySystem repositorySystem,
+            I18N i18n,
+            ProjectBuilder projectBuilder,
+            Map<String, AvatarsProvider> avatarsProviders) {
         super(repositorySystem, i18n, projectBuilder);
+        this.avatarsProviders = avatarsProviders;
     }
 
     // ----------------------------------------------------------------------
@@ -83,10 +116,55 @@ public class TeamReport extends AbstractProjectInfoReport {
     }
 
     @Override
-    public void executeReport(Locale locale) {
-        ProjectTeamRenderer r =
-                new ProjectTeamRenderer(getSink(), project.getModel(), getI18N(locale), locale, showAvatarImages);
-        r.render();
+    public void executeReport(Locale locale) throws MavenReportException {
+
+        Map<Contributor, String> avatarImages = prepareAvatars();
+
+        ProjectTeamRenderer renderer =
+                new ProjectTeamRenderer(getSink(), project, getI18N(locale), locale, showAvatarImages, avatarImages);
+        renderer.render();
+    }
+
+    private Map<Contributor, String> prepareAvatars() throws MavenReportException {
+
+        if (!showAvatarImages) {
+            return Collections.emptyMap();
+        }
+
+        AvatarsProvider avatarsProvider = avatarsProviders.get(avatarProviderName);
+        if (avatarsProvider == null) {
+            throw new MavenReportException("No AvatarsProvider found for name " + avatarProviderName);
+        }
+        avatarsProvider.setBaseUrl(avatarBaseUrl);
+        avatarsProvider.setOutputDirectory(getReportOutputDirectory());
+
+        Map<Contributor, String> result = new HashMap<>();
+        try {
+            prepareContributorAvatars(result, avatarsProvider, project.getDevelopers());
+            prepareContributorAvatars(result, avatarsProvider, project.getContributors());
+        } catch (IOException e) {
+            throw new MavenReportException("Unable to load avatar images", e);
+        }
+        return result;
+    }
+
+    private void prepareContributorAvatars(
+            Map<Contributor, String> avatarImages,
+            AvatarsProvider avatarsProvider,
+            List<? extends Contributor> contributors)
+            throws IOException {
+
+        for (Contributor contributor : contributors) {
+
+            String picSource = contributor.getProperties().getProperty("picUrl");
+            if (picSource == null || picSource.isEmpty()) {
+                picSource = externalAvatarImages
+                        ? avatarsProvider.getAvatarUrl(contributor.getEmail())
+                        : avatarsProvider.getLocalAvatarPath(contributor.getEmail());
+            }
+
+            avatarImages.put(contributor, picSource);
+        }
     }
 
     /**
@@ -130,24 +208,24 @@ public class TeamReport extends AbstractProjectInfoReport {
 
         private static final String ID = "id";
 
-        private final Model model;
+        private final MavenProject mavenProject;
 
         private final boolean showAvatarImages;
 
-        private final String protocol;
+        private final Map<Contributor, String> avatarImages;
 
-        ProjectTeamRenderer(Sink sink, Model model, I18N i18n, Locale locale, boolean showAvatarImages) {
+        ProjectTeamRenderer(
+                Sink sink,
+                MavenProject mavenProject,
+                I18N i18n,
+                Locale locale,
+                boolean showAvatarImages,
+                Map<Contributor, String> avatarImages) {
             super(sink, i18n, locale);
 
-            this.model = model;
+            this.mavenProject = mavenProject;
             this.showAvatarImages = showAvatarImages;
-
-            // prepare protocol for gravatar
-            if (model.getUrl() != null && model.getUrl().startsWith("https://")) {
-                this.protocol = "https";
-            } else {
-                this.protocol = "http";
-            }
+            this.avatarImages = avatarImages;
         }
 
         @Override
@@ -164,11 +242,11 @@ public class TeamReport extends AbstractProjectInfoReport {
             paragraph(getI18nString("intro.description2"));
 
             // Developer section
-            List<Developer> developers = model.getDevelopers();
+            List<Developer> developers = mavenProject.getDevelopers();
 
             startSection(getI18nString("developers.title"));
 
-            if (isEmpty(developers)) {
+            if (developers.isEmpty()) {
                 paragraph(getI18nString("nodeveloper"));
             } else {
                 paragraph(getI18nString("developers.intro"));
@@ -191,11 +269,11 @@ public class TeamReport extends AbstractProjectInfoReport {
             endSection();
 
             // contributors section
-            List<Contributor> contributors = model.getContributors();
+            List<Contributor> contributors = mavenProject.getContributors();
 
             startSection(getI18nString("contributors.title"));
 
-            if (isEmpty(contributors)) {
+            if (contributors.isEmpty()) {
                 paragraph(getI18nString("nocontributor"));
             } else {
                 paragraph(getI18nString("contributors.intro"));
@@ -223,17 +301,9 @@ public class TeamReport extends AbstractProjectInfoReport {
             sink.tableRow();
 
             if (headersMap.get(IMAGE) == Boolean.TRUE && showAvatarImages) {
-                Properties properties = member.getProperties();
-                String picUrl = properties.getProperty("picUrl");
-                if (picUrl == null || picUrl.isEmpty()) {
-                    picUrl = getGravatarUrl(member.getEmail());
-                }
-                if (picUrl == null || picUrl.isEmpty()) {
-                    picUrl = getSpacerGravatarUrl();
-                }
                 sink.tableCell();
                 sink.figure();
-                sink.figureGraphics(picUrl);
+                sink.figureGraphics(avatarImages.get(member));
                 sink.figure_();
                 sink.tableCell_();
             }
@@ -286,35 +356,6 @@ public class TeamReport extends AbstractProjectInfoReport {
             }
 
             sink.tableRow_();
-        }
-
-        private static final String AVATAR_SIZE = "s=60";
-
-        private String getSpacerGravatarUrl() {
-            return protocol + "://www.gravatar.com/avatar/00000000000000000000000000000000?d=blank&f=y&" + AVATAR_SIZE;
-        }
-
-        private String getGravatarUrl(String email) {
-            if (email == null) {
-                return null;
-            }
-            email = StringUtils.trim(email);
-            email = email.toLowerCase();
-            MessageDigest md;
-            try {
-                md = MessageDigest.getInstance("MD5");
-                md.update(email.getBytes());
-                byte[] byteData = md.digest();
-                StringBuilder sb = new StringBuilder();
-                final int lowerEightBitsOnly = 0xff;
-                for (byte aByteData : byteData) {
-                    sb.append(Integer.toString((aByteData & lowerEightBitsOnly) + 0x100, 16)
-                            .substring(1));
-                }
-                return protocol + "://www.gravatar.com/avatar/" + sb.toString() + "?d=mm&" + AVATAR_SIZE;
-            } catch (NoSuchAlgorithmException e) {
-                return null;
-            }
         }
 
         private String[] getRequiredContrHeaderArray(Map<String, Boolean> requiredHeaders) {
@@ -461,7 +502,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                 if (StringUtils.isNotEmpty(unit.getOrganizationUrl())) {
                     requiredHeaders.put(ORGANIZATION_URL, Boolean.TRUE);
                 }
-                if (!isEmpty(unit.getRoles())) {
+                if (!unit.getRoles().isEmpty()) {
                     requiredHeaders.put(ROLES, Boolean.TRUE);
                 }
                 if (StringUtils.isNotEmpty(unit.getTimezone())) {
@@ -493,10 +534,6 @@ public class TeamReport extends AbstractProjectInfoReport {
             }
 
             sink.tableCell_();
-        }
-
-        private static boolean isEmpty(List<?> list) {
-            return (list == null) || list.isEmpty();
         }
     }
 }
