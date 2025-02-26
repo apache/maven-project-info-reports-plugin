@@ -311,7 +311,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                     sb.append(Integer.toString((aByteData & lowerEightBitsOnly) + 0x100, 16)
                             .substring(1));
                 }
-                return protocol + "://www.gravatar.com/avatar/" + sb.toString() + "?d=mm&" + AVATAR_SIZE;
+                return protocol + "://www.gravatar.com/avatar/" + sb + "?d=mm&" + AVATAR_SIZE;
             } catch (NoSuchAlgorithmException e) {
                 return null;
             }
