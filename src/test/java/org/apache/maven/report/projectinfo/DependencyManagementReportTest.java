@@ -67,9 +67,9 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
 
         // Test the tables
         WebTable[] webTables = response.getTables();
-        assertEquals( 1, webTables.length );
+        assertEquals(1, webTables.length);
 
-        assertEquals( 5, webTables[0].getColumnCount() );
+        assertEquals(5, webTables[0].getColumnCount());
         assertEquals(
                 webTables[0].getRowCount(),
                 1

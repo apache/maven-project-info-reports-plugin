@@ -79,7 +79,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
         assertEquals("MAILTO:test-subscribe2@maven.apache.org", subscribeLinks[1].getAttribute("href"));
         String unsubscribe = getString("report.mailing-lists.column.unsubscribe");
         WebLink[] unsubscribeLinks = response.getMatchingLinks(WebLink.MATCH_CONTAINED_TEXT, unsubscribe);
-        assertEquals( 1, unsubscribeLinks.length );
+        assertEquals(1, unsubscribeLinks.length);
         assertEquals("https://example.com/unsubscribe", unsubscribeLinks[0].getAttribute("href"));
     }
 
