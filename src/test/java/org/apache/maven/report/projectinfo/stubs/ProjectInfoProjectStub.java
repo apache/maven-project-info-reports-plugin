@@ -131,11 +131,6 @@ public abstract class ProjectInfoProjectStub extends MavenProjectStub {
     }
 
     @Override
-    public Set<Artifact> getArtifacts() {
-        return Collections.emptySet();
-    }
-
-    @Override
     public List<ArtifactRepository> getRemoteArtifactRepositories() {
         ArtifactRepository repository = new MavenArtifactRepository(
                 "central",

@@ -57,7 +57,7 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
     private ArtifactStubFactory artifactStubFactory;
 
     /**
-     * The current project to be test.
+     * The current project to be tested.
      */
     private MavenProject testMavenProject;
 
@@ -78,11 +78,6 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
 
         artifactStubFactory = new DependencyArtifactStubFactory(getTestFile("target"), true, false);
         artifactStubFactory.getWorkingDir().mkdirs();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**

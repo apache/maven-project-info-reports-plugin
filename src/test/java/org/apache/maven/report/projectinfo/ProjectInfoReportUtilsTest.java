@@ -57,6 +57,7 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
 
     private Server jettyServer;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -99,10 +100,6 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
                 return distributionManagement;
             }
         };
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testGetInputStreamURL() throws Exception {

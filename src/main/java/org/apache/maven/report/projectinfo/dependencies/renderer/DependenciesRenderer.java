@@ -281,7 +281,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
         startSection(getI18nString("transitive.title"));
 
-        if (dependenciesByScope.values().isEmpty()) {
+        if (dependenciesByScope.isEmpty()) {
             paragraph(getI18nString("transitive.nolist"));
         } else {
             paragraph(getI18nString("transitive.intro"));
