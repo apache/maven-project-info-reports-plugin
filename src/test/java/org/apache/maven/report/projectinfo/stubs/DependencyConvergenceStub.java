@@ -18,11 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.maven.model.Dependency;
-
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
