@@ -128,7 +128,7 @@ public class IssueManagementReport extends AbstractProjectInfoReport {
                 sink.paragraph();
                 linkPatternedText(getI18nString("scarab.intro"));
                 sink.paragraph_();
-            } else if (system == null || "".equals(system.trim())) {
+            } else if (system == null || system.trim().isEmpty()) {
                 paragraph(getI18nString("general.intro"));
             } else {
                 paragraph(getI18nString("custom.intro").replaceFirst("%issueManagementSystem%", system));
