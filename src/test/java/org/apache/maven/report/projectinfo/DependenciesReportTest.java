@@ -66,9 +66,9 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
         // Test the tables
         WebTable[] webTables = response.getTables();
         // One table with listing and one table per artifact popup
-        assertEquals(webTables.length, 3);
+        assertEquals(3, webTables.length);
 
-        assertEquals(webTables[0].getColumnCount(), 5);
+        assertEquals(5, webTables[0].getColumnCount());
         assertEquals(
                 webTables[0].getRowCount(),
                 1 + getTestMavenProject().getDependencies().size());
