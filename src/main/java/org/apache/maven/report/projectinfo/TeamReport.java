@@ -300,9 +300,8 @@ public class TeamReport extends AbstractProjectInfoReport {
             }
             email = StringUtils.trim(email);
             email = email.toLowerCase();
-            MessageDigest md;
             try {
-                md = MessageDigest.getInstance("MD5");
+                MessageDigest md = MessageDigest.getInstance("MD5");
                 md.update(email.getBytes());
                 byte[] byteData = md.digest();
                 StringBuilder sb = new StringBuilder();
