@@ -41,9 +41,4 @@ public class DependencyConvergenceStub extends ProjectInfoProjectStub {
     protected String getPOM() {
         return "dependency-convergence-plugin-config.xml";
     }
-
-    @Override
-    public List<Dependency> getDependencies() {
-        return Collections.emptyList();
-    }
 }
