@@ -16,30 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.report.projectinfo.stubs;
 
-import java.util.List;
+def team = new File( basedir, 'target/site/team.html' ).text
 
-import org.apache.maven.model.Contributor;
-import org.apache.maven.model.Developer;
+assert team.count('<figure><img src="avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg" /></figure>') == 1
+assert team.count('<figure><img src="avatars/00000000000000000000000000000000.jpg" /></figure>') == 2
 
-/**
- * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
- */
-public class TeamStub extends ProjectInfoProjectStub {
-    @Override
-    protected String getPOM() {
-        return "team-plugin-config.xml";
-    }
-
-    @Override
-    public List<Contributor> getContributors() {
-        return getModel().getContributors();
-    }
-
-    @Override
-    public List<Developer> getDevelopers() {
-        return getModel().getDevelopers();
-    }
-}
+assert new File(basedir, 'target/site/avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg').exists()
+assert new File(basedir, 'target/site/avatars/00000000000000000000000000000000.jpg').exists()
