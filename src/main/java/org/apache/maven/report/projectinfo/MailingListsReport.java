@@ -159,19 +159,19 @@ public class MailingListsReport extends AbstractProjectInfoReport {
                 }
 
                 if (StringUtils.isNotEmpty(mailingList.getSubscribe())) {
-                    textRow.add(createURILinkPatternedText(subscribe, mailingList.getSubscribe(), null));
+                    textRow.add(createURILinkPatternedText(subscribe, mailingList.getSubscribe()));
                 } else {
                     textRow.add("-");
                 }
 
                 if (StringUtils.isNotEmpty(mailingList.getUnsubscribe())) {
-                    textRow.add(createURILinkPatternedText(unsubscribe, mailingList.getUnsubscribe(), null));
+                    textRow.add(createURILinkPatternedText(unsubscribe, mailingList.getUnsubscribe()));
                 } else {
                     textRow.add("-");
                 }
 
                 if (StringUtils.isNotEmpty(mailingList.getPost())) {
-                    textRow.add(createURILinkPatternedText(post, mailingList.getPost(), null));
+                    textRow.add(createURILinkPatternedText(post, mailingList.getPost()));
                 } else {
                     textRow.add("-");
                 }
@@ -239,17 +239,16 @@ public class MailingListsReport extends AbstractProjectInfoReport {
 
         /**
          * Create a URI link pattern text for a mailing list. If no scheme is provided {@code mailto:}
-         * will be prepended by default. If href is null, then <code>defaultHref</code> is used instead.
+         * will be prepended by default.
          *
-         * @param text a text.
-         * @param href the potential URI to use.
-         * @param defaultHref the String to use in case href is null.
-         * @return a link pattern.
+         * @param text a text
+         * @param href the potential URI to use
+         * @return a link pattern
          * @see #createLinkPatternedText(String,String)
          */
-        private String createURILinkPatternedText(String text, String href, String defaultHref) {
+        private String createURILinkPatternedText(String text, String href) {
             if (href == null || href.isEmpty()) {
-                return createLinkPatternedText(text, defaultHref);
+                return createLinkPatternedText(text, null);
             }
 
             try {
