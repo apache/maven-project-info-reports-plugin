@@ -28,7 +28,7 @@ under the License.
   </parent>
 
   <artifactId>maven-project-info-reports-plugin</artifactId>
-  <version>3.8.1-SNAPSHOT</version>
+  <version>3.9.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Project Info Reports Plugin</name>
@@ -99,8 +99,8 @@ under the License.
     <url>https://github.com/apache/maven-project-info-reports-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
-    <url>https://issues.apache.org/jira/browse/MPIR</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-project-info-reports-plugin/isuess</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
@@ -120,10 +120,10 @@ under the License.
     <doxiaVersion>2.0.0</doxiaVersion>
     <doxiaSitetoolsVersion>2.0.0</doxiaSitetoolsVersion>
     <scmVersion>2.1.0</scmVersion>
-    <sitePluginVersion>3.20.0</sitePluginVersion>
-    <fluidoSkinVersion>2.0.0-M11</fluidoSkinVersion>
+    <sitePluginVersion>3.21.0</sitePluginVersion>
+    <fluidoSkinVersion>2.0.1</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2024-10-18T09:42:43Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-02-23T16:16:11Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
@@ -453,32 +453,6 @@ under the License.
   </reporting>
 
   <profiles>
-    <profile>
-      <id>reporting</id>
-      <reporting>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-changes-plugin</artifactId>
-            <configuration>
-              <!-- For JIRA report -->
-              <columnNames>Type,Key,Summary,Assignee</columnNames>
-              <maxEntries>200</maxEntries>
-              <onlyCurrentVersion>true</onlyCurrentVersion>
-              <resolutionIds>Fixed</resolutionIds>
-              <sortColumnNames>Type,Key</sortColumnNames>
-            </configuration>
-            <reportSets>
-              <reportSet>
-                <reports>
-                  <report>jira-report</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-          </plugin>
-        </plugins>
-      </reporting>
-    </profile>
     <profile>
       <id>run-its</id>
       <properties>
