@@ -299,7 +299,7 @@ public class TeamReport extends AbstractProjectInfoReport {
                 return null;
             }
             email = StringUtils.trim(email);
-            email = email.toLowerCase();
+            email = email.toLowerCase(Locale.ROOT);
             MessageDigest md;
             try {
                 md = MessageDigest.getInstance("MD5");
