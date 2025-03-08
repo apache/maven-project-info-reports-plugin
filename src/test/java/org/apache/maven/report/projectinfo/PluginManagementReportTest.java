@@ -59,7 +59,7 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
                 .thenAnswer(new Answer<ProjectBuildingResult>() {
                     @Override
                     public ProjectBuildingResult answer(InvocationOnMock invocation) throws Throwable {
-                        return createProjectBuildingResult((Artifact) invocation.getArgument(0), "http://m.a.o/");
+                        return createProjectBuildingResult(invocation.getArgument(0), "http://m.a.o/");
                     }
                 });
 

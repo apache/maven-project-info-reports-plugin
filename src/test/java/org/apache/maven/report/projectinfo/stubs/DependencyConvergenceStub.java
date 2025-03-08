@@ -18,11 +18,6 @@
  */
 package org.apache.maven.report.projectinfo.stubs;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.maven.model.Dependency;
-
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
@@ -40,10 +35,5 @@ public class DependencyConvergenceStub extends ProjectInfoProjectStub {
     @Override
     protected String getPOM() {
         return "dependency-convergence-plugin-config.xml";
-    }
-
-    @Override
-    public List<Dependency> getDependencies() {
-        return Collections.emptyList();
     }
 }

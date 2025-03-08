@@ -147,26 +147,18 @@ public class SummaryReport extends AbstractProjectInfoReport {
             final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
             String sourceConfigured = getPluginParameter(pluginId, "source");
             String targetConfigured = getPluginParameter(pluginId, "target");
-
             String forkFlag = getPluginParameter(pluginId, "fork");
-            String compilerVersionConfigured = null;
-            if ("true".equalsIgnoreCase(forkFlag)) {
-                compilerVersionConfigured = getPluginParameter(pluginId, "compilerVersion");
-            }
 
-            String minimumJavaVersion = compilerVersionConfigured;
-            if (targetConfigured != null) {
-                minimumJavaVersion = targetConfigured;
+            if ("true".equalsIgnoreCase(forkFlag)) {
+                return getPluginParameter(pluginId, "compilerVersion");
+            } else if (targetConfigured != null) {
+                return targetConfigured;
             } else if (sourceConfigured != null) {
-                minimumJavaVersion = sourceConfigured;
+                return sourceConfigured;
             } else {
                 // ${maven.compiler.target} default value
-                minimumJavaVersion = project.getProperties().getProperty("maven.compiler.target");
-
-                // default to 1.5 if not set?
+                return project.getProperties().getProperty("maven.compiler.target");
             }
-
-            return minimumJavaVersion;
         }
 
         private void tableRowWithLink(String[] content) {
@@ -179,7 +171,7 @@ public class SummaryReport extends AbstractProjectInfoReport {
 
                 if (cell == null || cell.isEmpty()) {
                     sink.text("-");
-                } else if (ctr == content.length - 1 && cell.length() > 0) {
+                } else if (ctr == content.length - 1) {
                     sink.link(cell);
                     sink.text(cell);
                     sink.link_();
