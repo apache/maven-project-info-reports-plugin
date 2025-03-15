@@ -145,16 +145,23 @@ public class SummaryReport extends AbstractProjectInfoReport {
         private String getMinimumJavaVersion() {
 
             final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
+            String releaseConfigured = getPluginParameter(pluginId, "release");
             String sourceConfigured = getPluginParameter(pluginId, "source");
             String targetConfigured = getPluginParameter(pluginId, "target");
-            String forkFlag = getPluginParameter(pluginId, "fork");
 
+            String releaseProperty = project.getProperties().getProperty("maven.compiler.release");
+
+            String forkFlag = getPluginParameter(pluginId, "fork");
             if ("true".equalsIgnoreCase(forkFlag)) {
                 return getPluginParameter(pluginId, "compilerVersion");
+            } else if (releaseConfigured != null) {
+                return releaseConfigured;
             } else if (targetConfigured != null) {
                 return targetConfigured;
             } else if (sourceConfigured != null) {
                 return sourceConfigured;
+            } else if (releaseProperty != null) {
+                return releaseProperty;
             } else {
                 // ${maven.compiler.target} default value
                 return project.getProperties().getProperty("maven.compiler.target");
