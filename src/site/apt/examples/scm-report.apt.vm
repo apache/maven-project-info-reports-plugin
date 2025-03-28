@@ -65,7 +65,7 @@ Customize the SCM Report
 </project>
 +-----------------+
 
-* {How to exclude SCM anonymous access info?}
+How to exclude SCM anonymous access info?
 
  Just do not specify the <<<\<connection/\>>>> tag in the <<<\<scm/\>>>> tag. For instance, you could have:
 
@@ -81,5 +81,5 @@ Customize the SCM Report
 </project>
 +-----------------+
 
-  <<Note>>: Due to {{{http://plexus.codehaus.org}Plexus}} design, it is not possible to specify an empty value using
+  <<Note>>: Due to {{{https://codehaus-plexus.github.io/}Plexus}} design, it is not possible to specify an empty value using
   the <<<\<anonymousConnection/\>>>> configuration element.
