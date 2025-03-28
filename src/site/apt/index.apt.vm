@@ -127,6 +127,6 @@ ${project.name}
 
   * {{{http://maven.apache.org/plugins/localization.html}Localization of Plugins}}
 
-  * {{{http://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html}Skinning}}
+  * {{{http://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html}Create a layout (skin))}}
 
   []

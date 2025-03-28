@@ -52,7 +52,7 @@ under the License.
       <question>Is it possible to customize the reports rendering?</question>
       <answer>
         <p>
-          Not yet, but <a href="./issue-tracking.html">patches</a> are always welcome!
+          Not yet, but <a href="https://github.com/apache/maven-project-info-reports-plugin/issues/">patches</a> are always welcome!
           You could only <a href="./examples/custom-report.html">customize</a> the texts in the reports.
         </p>
       </answer>
