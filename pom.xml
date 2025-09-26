@@ -119,7 +119,7 @@ under the License.
     <resolverVersion>1.4.1</resolverVersion>
     <doxiaVersion>2.0.0</doxiaVersion>
     <doxiaSitetoolsVersion>2.0.0</doxiaSitetoolsVersion>
-    <scmVersion>2.1.0</scmVersion>
+    <scmVersion>2.2.1</scmVersion>
     <sitePluginVersion>3.21.0</sitePluginVersion>
     <fluidoSkinVersion>2.0.1</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
