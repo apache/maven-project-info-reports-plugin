@@ -26,6 +26,11 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Nick Stolwijk
@@ -43,11 +48,11 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "dependency-management-plugin-config.xml");
-        assertTrue(
-                "Test html generated",
-                getGeneratedReport("dependency-management.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("dependency-management.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("dependency-management.html").toURI().toURL();
         assertNotNull(reportURL);

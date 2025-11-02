@@ -45,6 +45,7 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Abstract class to test reports generation with <a href="http://www.httpunit.org/">HTTPUnit</a> framework.
@@ -66,8 +67,8 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
      */
     private I18N i18n;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         // required for mojo lookups to work
         super.setUp();
 
@@ -166,8 +167,8 @@ public abstract class AbstractProjectInfoTestCase extends AbstractMojoTestCase {
                         RepositoryUtils.class,
                         null);
 
-        AbstractProjectInfoReport mojo = (AbstractProjectInfoReport) lookupMojo(goal, pluginXmlFile);
-        assertNotNull("Mojo not found.", mojo);
+        AbstractProjectInfoReport mojo = lookupMojo(goal, pluginXmlFile);
+        org.junit.jupiter.api.Assertions.assertNotNull(mojo, "Mojo not found.");
 
         LegacySupport legacySupport = lookup(LegacySupport.class);
         legacySupport.setSession(mavenSession);

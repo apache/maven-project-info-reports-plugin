@@ -20,17 +20,16 @@ package org.apache.maven.report.projectinfo.avatars;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GravatarProviderTest {
 
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    @TempDir
+    private File tmpFolder;
 
     @Test
     public void urlShouldBeCorrect() {
@@ -64,29 +63,29 @@ public class GravatarProviderTest {
     public void localAvatarPathShouldBeCorrect() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
-        gravatarProvider.setOutputDirectory(tmpFolder.getRoot());
+        gravatarProvider.setOutputDirectory(tmpFolder);
         String localAvatarUrl = gravatarProvider.getLocalAvatarPath("sjaranowski@apache.org");
         assertEquals("avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg", localAvatarUrl);
-        assertTrue(new File(tmpFolder.getRoot(), "avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg").exists());
+        assertTrue(new File(tmpFolder, "avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg").exists());
     }
 
     @Test
     public void localAvatarPathShouldHaveDefaultForNotExisting() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
-        gravatarProvider.setOutputDirectory(tmpFolder.getRoot());
+        gravatarProvider.setOutputDirectory(tmpFolder);
         String localAvatarUrl = gravatarProvider.getLocalAvatarPath("test@example.com");
         assertEquals("avatars/00000000000000000000000000000000.jpg", localAvatarUrl);
-        assertTrue(new File(tmpFolder.getRoot(), "avatars/00000000000000000000000000000000.jpg").exists());
+        assertTrue(new File(tmpFolder, "avatars/00000000000000000000000000000000.jpg").exists());
     }
 
     @Test
     public void localAvatarPathShouldBeCorrectForDefault() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
-        gravatarProvider.setOutputDirectory(tmpFolder.getRoot());
+        gravatarProvider.setOutputDirectory(tmpFolder);
         String localAvatarUrl = gravatarProvider.getLocalAvatarPath(null);
         assertEquals("avatars/00000000000000000000000000000000.jpg", localAvatarUrl);
-        assertTrue(new File(tmpFolder.getRoot(), "avatars/00000000000000000000000000000000.jpg").exists());
+        assertTrue(new File(tmpFolder, "avatars/00000000000000000000000000000000.jpg").exists());
     }
 }
