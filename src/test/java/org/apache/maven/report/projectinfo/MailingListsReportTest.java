@@ -26,6 +26,11 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Edwin Punzalan
@@ -43,10 +48,11 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "mailing-lists-plugin-config.xml");
         assertTrue(
-                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -88,10 +94,11 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testCustomBundle() throws Exception {
         generateReport("mailing-lists", "custom-bundle/plugin-config.xml");
         assertTrue(
-                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -115,10 +122,11 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testFrenchReport() throws Exception {
         generateReport(getGoal(), "mailing-lists-plugin-config-fr.xml");
         assertTrue(
-                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
     }
 
     /**
@@ -126,10 +134,11 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * Those should only lead to a WARN but not an exception
      * @throws Exception if any
      */
+    @Test
     public void testInvalidLink() throws Exception {
         generateReport(getGoal(), "mailing-lists-plugin-config-invalidlink.xml");
         assertTrue(
-                "Test html generated", getGeneratedReport("mailing-lists.html").exists());
+                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
     }
 
     @Override

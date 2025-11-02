@@ -25,6 +25,11 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Edwin Punzalan
@@ -42,11 +47,12 @@ public class DependencyConvergenceReportTest extends AbstractProjectInfoTestCase
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "dependency-convergence-plugin-config.xml");
         assertTrue(
-                "Test html generated",
-                getGeneratedReport("dependency-convergence.html").exists());
+                getGeneratedReport("dependency-convergence.html").exists(),
+                "Test html generated");
 
         URL reportURL =
                 getGeneratedReport("dependency-convergence.html").toURI().toURL();

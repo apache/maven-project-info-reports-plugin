@@ -30,6 +30,8 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.report.projectinfo.stubs.SettingsStub;
 import org.apache.maven.settings.Settings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -43,6 +45,10 @@ import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 import static org.apache.maven.report.projectinfo.ProjectInfoReportUtils.getArchiveServer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:vincent.siveton@crim.ca">Vincent Siveton</a>
@@ -57,8 +63,8 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
 
     private Server jettyServer;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
 
         final List<org.apache.maven.settings.Server> servers = new ArrayList<>();
@@ -102,6 +108,7 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
         };
     }
 
+    @Test
     public void testGetInputStreamURL() throws Exception {
         assertTrue(ProjectInfoReportUtils.isArtifactUrlValid("http://my.intern.domain:8080/test"));
 
@@ -170,6 +177,7 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
         // TODO need to test with a proxy
     }
 
+    @Test
     public void testGetArchiveServer() {
         assertEquals("???UNKNOWN???", getArchiveServer(null));
 

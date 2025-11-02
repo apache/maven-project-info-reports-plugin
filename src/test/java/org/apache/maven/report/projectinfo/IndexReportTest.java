@@ -25,6 +25,11 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Edwin Punzalan
@@ -42,9 +47,10 @@ public class IndexReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "index-plugin-config.xml");
-        assertTrue("Test html generated", getGeneratedReport("index.html").exists());
+        assertTrue(getGeneratedReport("index.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("index.html").toURI().toURL();
         assertNotNull(reportURL);

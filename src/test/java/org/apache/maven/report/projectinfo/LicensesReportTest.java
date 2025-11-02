@@ -26,6 +26,11 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Edwin Punzalan
@@ -43,9 +48,10 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "licenses-plugin-config.xml");
-        assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
+        assertTrue(getGeneratedReport("licenses.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -75,9 +81,10 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
         assertEquals("https://maven.apache.org/", links[1].getURLString());
     }
 
+    @Test
     public void testReportLinksOnly() throws Exception {
         generateReport(getGoal(), "licenses-plugin-config-linkonly.xml");
-        assertTrue("Test html generated", getGeneratedReport("licenses.html").exists());
+        assertTrue(getGeneratedReport("licenses.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
         assertNotNull(reportURL);

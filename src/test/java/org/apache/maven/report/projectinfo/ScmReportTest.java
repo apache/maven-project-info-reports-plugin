@@ -27,6 +27,12 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.maven.plugin.Mojo;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Edwin Punzalan
@@ -44,9 +50,10 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "scm-plugin-config.xml");
-        assertTrue("Test html generated", getGeneratedReport("scm.html").exists());
+        assertTrue(getGeneratedReport("scm.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("scm.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -80,6 +87,7 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReportWithWrongUrl() throws Exception {
         File pluginXmlFile =
                 new File(getBasedir(), "src/test/resources/plugin-configs/" + "scm-wrong-url-plugin-config.xml");
@@ -90,33 +98,33 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
             mojo.execute();
             fail("IllegalArgumentException NOT catched");
         } catch (IllegalArgumentException e) {
-            assertTrue("IllegalArgumentException catched", true);
+            assertTrue(true, "IllegalArgumentException catched");
         }
 
         tearDown();
         setUp();
 
         mojo = lookupMojo("scm", pluginXmlFile);
-        assertNotNull("Mojo not found.", mojo);
+        assertNotNull(mojo, "Mojo not found.");
         setVariableValueToObject(mojo, "anonymousConnection", "scm:svn:http");
         try {
             mojo.execute();
             fail("IllegalArgumentException NOT catched");
         } catch (Exception e) {
-            assertTrue("IllegalArgumentException catched", true);
+            assertTrue(true, "IllegalArgumentException catched");
         }
 
         tearDown();
         setUp();
 
         mojo = lookupMojo("scm", pluginXmlFile);
-        assertNotNull("Mojo not found.", mojo);
+        assertNotNull(mojo, "Mojo not found.");
         setVariableValueToObject(mojo, "anonymousConnection", "scm");
         try {
             mojo.execute();
             fail("IllegalArgumentException NOT catched");
         } catch (Exception e) {
-            assertTrue("IllegalArgumentException catched", true);
+            assertTrue(true, "IllegalArgumentException catched");
         }
     }
 
