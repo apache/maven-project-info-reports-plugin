@@ -33,6 +33,11 @@ import com.meterware.httpunit.WebResponse;
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.report.projectinfo.stubs.SubProject1Stub;
 import org.codehaus.plexus.util.ReflectionUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author ltheussl
@@ -58,9 +63,11 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "modules-plugin-config.xml");
-        assertTrue("Test html generated", getGeneratedReport("modules.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("modules.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("modules.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -100,6 +107,7 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReportModuleLinksVariableSettingsInterpolated() throws Exception {
         String pluginXml = "modules-variable-settings-interpolated-plugin-config.xml";
         File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + pluginXml);
@@ -122,10 +130,10 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
 
         generateReport(mojo, pluginXmlFile);
 
-        assertFalse(
-                "Variable 'sitePublishLocation' should be interpolated",
+        org.junit.jupiter.api.Assertions.assertFalse(
                 new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8)
-                        .contains("sitePublishLocation"));
+                        .contains("sitePublishLocation"),
+                "Variable 'sitePublishLocation' should be interpolated");
     }
 
     @Override

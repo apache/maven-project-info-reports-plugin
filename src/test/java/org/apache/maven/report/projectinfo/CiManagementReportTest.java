@@ -25,7 +25,12 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.html.HTMLAnchorElement;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Edwin Punzalan
@@ -43,10 +48,11 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "ci-management-plugin-config.xml");
-        assertTrue(
-                "Test html generated", getGeneratedReport("ci-management.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("ci-management.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("ci-management.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -75,10 +81,11 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testCiNameReport() throws Exception {
         generateReport(getGoal(), "ci-management-plugin-with-ci-section-config.xml");
-        assertTrue(
-                "Test html generated", getGeneratedReport("ci-management.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("ci-management.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("ci-management.html").toURI().toURL();
         assertNotNull(reportURL);

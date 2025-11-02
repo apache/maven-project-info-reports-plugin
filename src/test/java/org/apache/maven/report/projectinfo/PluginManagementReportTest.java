@@ -32,9 +32,13 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,11 +77,11 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReport() throws Exception {
         generateReport(getGoal(), "plugin-management-plugin-config.xml");
-        assertTrue(
-                "Test html generated",
-                getGeneratedReport("plugin-management.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("plugin-management.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("plugin-management.html").toURI().toURL();
         assertNotNull(reportURL);
@@ -112,11 +116,11 @@ public class PluginManagementReportTest extends AbstractProjectInfoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testReportEclipseM2EPluginLifecycleMapping() throws Exception {
         generateReport(getGoal(), "plugin-management-plugin-config-MPIR-375.xml");
-        assertTrue(
-                "Test html generated",
-                getGeneratedReport("plugin-management.html").exists());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                getGeneratedReport("plugin-management.html").exists(), "Test html generated");
 
         URL reportURL = getGeneratedReport("plugin-management.html").toURI().toURL();
         assertNotNull(reportURL);
