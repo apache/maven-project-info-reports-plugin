@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,6 @@ import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates the Project Licenses report.
@@ -161,7 +161,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
         // URLs do not contain a valid authority (no hostname).
         // As a workaround accept license URLs that start with the
         // file scheme.
-        if (urlValidator.isValid(url) || StringUtils.defaultString(url).startsWith("file://")) {
+        if (urlValidator.isValid(url) || Objects.toString(url, "").startsWith("file://")) {
             try {
                 licenseUrl = new URL(url);
             } catch (MalformedURLException e) {
