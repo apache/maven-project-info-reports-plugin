@@ -195,7 +195,8 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
                 "mail-archives.apache.org",
                 getArchiveServer("https://mail-archives.apache.org/mod_mbox/maven-announce"));
 
-        assertEquals("www.mail-archive.com", getArchiveServer("https://www.mail-archive.com/announce@maven.apache.org"));
+        assertEquals(
+                "www.mail-archive.com", getArchiveServer("https://www.mail-archive.com/announce@maven.apache.org"));
 
         assertEquals("www.nabble.com", getArchiveServer("https://www.nabble.com/Maven-Announcements-f15617.html"));
 
