@@ -512,11 +512,11 @@ public class ScmReport extends AbstractProjectInfoReport {
          * Create the documentation to provide an anonymous access with a <code>Subversion</code>
          * SCM. For example, generate the following command line:
          * <p>
-         * svn checkout http://svn.apache.org/repos/asf/maven/components/trunk maven
+         * svn checkout https://svn.apache.org/repos/asf/maven/components/trunk maven
          * </p>
          *
          * @param svnRepo
-         * @see <a href="http://svnbook.red-bean.com/">http://svnbook.red-bean.com/</a>
+         * @see <a href="https://svnbook.red-bean.com/">https://svnbook.red-bean.com/</a>
          */
         private void anonymousAccessSubversion(SvnScmProviderRepository svnRepo) {
             paragraph(getI18nString("anonymousaccess.svn.intro"));
@@ -535,7 +535,7 @@ public class ScmReport extends AbstractProjectInfoReport {
          * </p>
          *
          * @param svnRepo
-         * @see <a href="http://svnbook.red-bean.com/">http://svnbook.red-bean.com/</a>
+         * @see <a href="https://svnbook.red-bean.com/">https://svnbook.red-bean.com/</a>
          */
         private void developerAccessSubversion(SvnScmProviderRepository svnRepo) {
             if (svnRepo.getUrl() != null) {
@@ -635,7 +635,7 @@ public class ScmReport extends AbstractProjectInfoReport {
          * @param scmRepository a SCM repository
          * @param scmProvider a SCM provider name
          * @return true if the provider of the given SCM repository is equal to the given scm provider.
-         * @see <a href="http://svn.apache.org/repos/asf/maven/scm/trunk/maven-scm-providers/">maven-scm-providers</a>
+         * @see <a href="https://svn.apache.org/repos/asf/maven/scm/trunk/maven-scm-providers/">maven-scm-providers</a>
          */
         private static boolean isScmSystem(ScmRepository scmRepository, String scmProvider) {
             if (scmProvider == null || scmProvider.isEmpty()) {

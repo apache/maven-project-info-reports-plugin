@@ -194,7 +194,7 @@ public class ProjectInfoReportUtils {
 
     /**
      * Convenience method to return the name of a web-based mailing list archive server.
-     * For instance, if the archive URI is <code>http://www.mail-archive.com/dev@maven.apache.org</code>, this
+     * For instance, if the archive URI is <code>https://www.mail-archive.com/dev@maven.apache.org</code>, this
      * method returns <code>www.mail-archive.com</code>
      *
      * @param uri the URI parse

@@ -32,21 +32,21 @@
   <description>
     The POM tested here contains a maximum information to check MPIR behaviour.
   </description>
-  <url>http://www.apache.org/</url>
+  <url>https://www.apache.org/</url>
   <inceptionYear>2005</inceptionYear>
   <organization>
     <name>The Apache Software Foundation</name>
-    <url>http://www.apache.org/</url>
+    <url>https://www.apache.org/</url>
   </organization>
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
     <license>
       <name>Eclipse Public License, Version 1.0</name>
-      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <url>https://www.eclipse.org/legal/epl-v10.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -60,7 +60,7 @@
       <id>dev-no-mail</id>
       <name>A developer without mail</name>
       <organization>ASF</organization>
-      <organizationUrl>http://apache.org/</organizationUrl>
+      <organizationUrl>https://apache.org/</organizationUrl>
       <roles>
         <role>PMC Member</role>
         <role>Developer</role>
@@ -92,23 +92,23 @@
       <post>announce@maven.apache.org</post>
       <subscribe>announce-subscribe@maven.apache.org</subscribe>
       <unsubscribe>announce-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-announce/</archive>
+      <archive>https://mail-archives.apache.org/mod_mbox/maven-announce/</archive>
       <otherArchives>
-        <otherArchive>http://www.mail-archive.com/announce@maven.apache.org</otherArchive>
-        <otherArchive>http://www.nabble.com/Maven-Announcements-f15617.html</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.maven.announce</otherArchive>
+        <otherArchive>https://www.mail-archive.com/announce@maven.apache.org</otherArchive>
+        <otherArchive>https://www.nabble.com/Maven-Announcements-f15617.html</otherArchive>
+        <otherArchive>https://markmail.org/list/org.apache.maven.announce</otherArchive>
       </otherArchives>
     </mailingList>
   </mailingLists>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/it/full-pom</connection>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/it/full-pom</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/it/full-pom</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/plugins/trunk/maven-project-info-reports-plugin/src/it/full-pom</url>
+    <url>https://svn.apache.org/viewvc/maven/plugins/trunk/maven-project-info-reports-plugin/src/it/full-pom</url>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
-    <url>https://issues.apache.org/jira/browse/MPIR</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-project-info-reports-plugin/isuess</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
