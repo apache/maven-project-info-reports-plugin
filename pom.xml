@@ -124,6 +124,7 @@ under the License.
     <fluidoSkinVersion>2.0.1</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2025-02-23T16:16:11Z</project.build.outputTimestamp>
+
     <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
   </properties>
 
