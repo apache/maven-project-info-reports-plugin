@@ -24,7 +24,7 @@
 ~~ under the License.
 
 ~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+~~ https://maven.apache.org/doxia/references/apt-format.html
 
 Customize the Text Reports
 
@@ -52,10 +52,10 @@ Customize the Text Reports
 +-----------------+
 
   To change texts in the reports, you should import the default Project Info report bundles from
-  {{http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/}}
+  {{https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/}}
   and edit them. For example, if you want to modify the Mailing Lists introduction, you should edit the <<<report.mailing-lists.intro>>> property.
 
-  Extract of the default bundle {{{http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/project-info-reports.properties}project-info-reports.properties}}:
+  Extract of the default bundle {{{https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/project-info-reports.properties}project-info-reports.properties}}:
 
 +-----------------+
 report.mailing-lists.intro = These are the mailing lists that have been established for this project. For each list, there is a subscribe, unsubscribe, and an archive link.
@@ -68,9 +68,9 @@ report.mailing-lists.intro = These are the mailing lists that have been establis
 report.mailing-lists.intro = These are the mailing lists that have been established for this project. For each list, there is a subscribe, unsubscribe, and an archive link.\
         <p>\
             Questions related to the usage of Commons components should be posted to the\
-            <a href="http://mail-archives.apache.org/mod_mbox/commons-user/" class="externalLink">User List</a>.\
+            <a href="https://mail-archives.apache.org/mod_mbox/commons-user/" class="externalLink">User List</a>.\
             <br>\
-            The <a href="http://mail-archives.apache.org/mod_mbox/commons-dev/" class="externalLink">Developer List</a>\
+            The <a href="https://mail-archives.apache.org/mod_mbox/commons-dev/" class="externalLink">Developer List</a>\
             is for questions and discussion related to the development of Commons components.\
             <br>\
             Please do not cross-post; developers are also subscribed to the user list.\

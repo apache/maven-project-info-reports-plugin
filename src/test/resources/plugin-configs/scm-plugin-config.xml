@@ -34,9 +34,9 @@ under the License.
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/test</connection>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/test</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/test</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/test</url>
+    <url>https://svn.apache.org/viewvc/maven/test</url>
   </scm>
   <build>
     <plugins>
