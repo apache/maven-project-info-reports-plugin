@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>45</version>
+    <version>47</version>
     <relativePath />
   </parent>
 
@@ -120,12 +120,10 @@ under the License.
     <doxiaVersion>2.0.0</doxiaVersion>
     <doxiaSitetoolsVersion>2.0.0</doxiaSitetoolsVersion>
     <scmVersion>2.2.1</scmVersion>
-    <sitePluginVersion>3.21.0</sitePluginVersion>
+
     <fluidoSkinVersion>2.0.1</fluidoSkinVersion>
     <checkstyle.violation.ignore>ParameterNumber,MethodLength</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2025-02-23T16:16:11Z</project.build.outputTimestamp>
-
-    <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
   </properties>
 
   <dependencies>

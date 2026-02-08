@@ -31,7 +31,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <artifacts.url>http://maven.apache.org/plugins/it/${project.artifactId}</artifacts.url>
+    <artifacts.url>https://maven.apache.org/plugins/it/${project.artifactId}</artifacts.url>
     <fluidoSkinVersion>@fluidoSkinVersion@</fluidoSkinVersion>
   </properties>
 
@@ -48,8 +48,8 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>@sitePluginVersion@</version>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>@version.maven-site-plugin@</version>
       </plugin>
     </plugins>
   </build>
