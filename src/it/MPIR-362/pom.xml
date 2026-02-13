@@ -27,7 +27,7 @@
   <artifactId>MPIR-362</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <url>http://maven.apache.org/plugins/it/${project.artifactId}</url>
+  <url>https://maven.apache.org/plugins/it/${project.artifactId}</url>
 
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
@@ -54,7 +54,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>@sitePluginVersion@</version>
+        <version>@version.maven-site-plugin@</version>
       </plugin>
     </plugins>
   </build>

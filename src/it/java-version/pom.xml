@@ -49,7 +49,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.2</version>
+          <version>@version.maven-compiler-plugin@</version>
         </plugin>
       </plugins>
     </pluginManagement>

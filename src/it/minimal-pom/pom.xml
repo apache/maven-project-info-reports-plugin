@@ -31,7 +31,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <artifacts.url>http://maven.apache.org/plugins/it/${project.artifactId}</artifacts.url>
+    <artifacts.url>https://maven.apache.org/plugins/it/${project.artifactId}</artifacts.url>
   </properties>
 
   <url>${artifacts.url}</url>
@@ -42,7 +42,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>@sitePluginVersion@</version>
+          <version>@version.maven-site-plugin@</version>
           <configuration>
             <locales>default,en,cs,de,es,fr,hu,it,ja,ko,nl,no,pl,pt,pt_BR,sk,sv,tr,zh_CN,zh_TW</locales>
           </configuration>

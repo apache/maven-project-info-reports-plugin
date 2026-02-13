@@ -65,6 +65,7 @@
   </distributionManagement>
 
   <properties>
+    <maven.compiler.release>8</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -78,7 +79,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>@sitePluginVersion@</version>
+        <version>@version.maven-site-plugin@</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>@version.maven-compiler-plugin@</version>
       </plugin>
     </plugins>
   </build>
