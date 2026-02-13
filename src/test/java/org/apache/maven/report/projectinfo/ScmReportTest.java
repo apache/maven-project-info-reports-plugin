@@ -29,11 +29,6 @@ import com.meterware.httpunit.WebResponse;
 import org.apache.maven.plugin.Mojo;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 /**
  * @author Edwin Punzalan
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
