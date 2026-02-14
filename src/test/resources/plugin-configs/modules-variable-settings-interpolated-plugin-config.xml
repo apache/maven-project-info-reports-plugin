@@ -25,14 +25,6 @@ under the License.
   <packaging>pom</packaging>
   <name>modules project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <modules>
     <module>subproject-site-url</module>
   </modules>
@@ -41,9 +33,7 @@ under the License.
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/modules</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.ModulesVariableSettingInterpolationStub"/>
-          <settings implementation="org.apache.maven.report.projectinfo.stubs.SettingsSitePublishVariableStub"/>
+          <outputDirectory>target/modules-variable</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

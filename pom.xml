@@ -136,6 +136,11 @@ under the License.
       <artifactId>maven-reporting-impl</artifactId>
       <version>4.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-shared-jar</artifactId>
+      <version>3.2.0</version>
+    </dependency>
 
     <!-- Maven -->
     <dependency>
@@ -178,11 +183,6 @@ under the License.
       <artifactId>maven-shared-utils</artifactId>
       <version>3.4.2</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-jar</artifactId>
-      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>

@@ -27,16 +27,16 @@ under the License.
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
     </dependency>
   </dependencies>
   <dependencyManagement>
     <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.14.2</version>
       <scope>test</scope>
     </dependency>
     </dependencies>
@@ -47,8 +47,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/dependency-management</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.DependencyManagementStub"/>
+          <outputDirectory>target/dependency-management</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

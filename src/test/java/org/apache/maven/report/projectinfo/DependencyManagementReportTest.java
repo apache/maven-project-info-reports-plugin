@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -26,22 +28,46 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Nick Stolwijk
  * @version $Id$
  * @since 2.1
  */
-public class DependencyManagementReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+public class DependencyManagementReportTest extends AbstractProjectInfoTest {
+
+    @Inject
+    private MavenSession mavenSession;
+
     /**
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
+
+    @BeforeEach
+    void setup() throws Exception {
+        DefaultProjectBuildingRequest pbr = spy(new DefaultProjectBuildingRequest());
+        doAnswer(__ -> mavenSession.getRepositorySession()).when(pbr).getRepositorySession();
+        when(mavenSession.getProjectBuildingRequest()).thenReturn(pbr);
+        readMavenProjectModel(mavenProject, "dependency-management-plugin-config.xml");
+    }
 
     /**
      * Test report
@@ -49,12 +75,13 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "dependency-management-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("dependency-management.html").exists(), "Test html generated");
+    @InjectMojo(goal = "dependency-management", pom = "dependency-management-plugin-config.xml")
+    public void testReport(DependencyManagementReport mojo) throws Exception {
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("dependency-management.html").toURI().toURL();
+        URL reportURL = getTestFile("target/dependency-management/dependency-management.html")
+                .toURI()
+                .toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -77,20 +104,11 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTestCase 
         assertEquals(5, webTables[0].getColumnCount());
         assertEquals(
                 webTables[0].getRowCount(),
-                1
-                        + getTestMavenProject()
-                                .getDependencyManagement()
-                                .getDependencies()
-                                .size());
+                1 + mavenProject.getDependencyManagement().getDependencies().size());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals(getString("report.dependency-management.title"), textBlocks[1].getText());
         assertEquals("test", textBlocks[2].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "dependency-management";
     }
 }
