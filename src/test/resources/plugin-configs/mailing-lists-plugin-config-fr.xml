@@ -25,14 +25,6 @@ under the License.
   <packaging>jar</packaging>
   <name>mailing lists project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <mailingLists>
     <mailingList>
       <name>Test List</name>
@@ -51,9 +43,8 @@ under the License.
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/mailing-lists</outputDirectory>
+          <outputDirectory>target/mailing-lists-fr</outputDirectory>
           <locale>fr</locale>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.MailingListsStub"/>
         </configuration>
       </plugin>
     </plugins>

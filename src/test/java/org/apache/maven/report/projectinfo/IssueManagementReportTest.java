@@ -26,8 +26,12 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+public class IssueManagementReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -49,12 +55,14 @@ public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "issue-management-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("issue-management.html").exists(), "Test html generated");
+    @InjectMojo(goal = "issue-management", pom = "issue-management-plugin-config.xml")
+    public void testReport(IssueManagementReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "issue-management-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("issue-management.html").toURI().toURL();
+        URL reportURL = getTestFile("target/issue-management/issue-management.html")
+                .toURI()
+                .toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -83,10 +91,5 @@ public class IssueManagementReportTest extends AbstractProjectInfoTestCase {
         assertEquals(getString("report.issue-management.overview.title"), textBlocks[1].getText());
         assertEquals("This project uses JIRA.", textBlocks[2].getText()); // due to link pattern
         assertEquals(getString("report.issue-management.name"), textBlocks[3].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "issue-management";
     }
 }

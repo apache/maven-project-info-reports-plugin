@@ -30,8 +30,7 @@ under the License.
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/index</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.IndexStub"/>
+          <outputDirectory>target/index</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

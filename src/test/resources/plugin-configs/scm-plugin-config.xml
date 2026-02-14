@@ -25,14 +25,6 @@ under the License.
   <packaging>jar</packaging>
   <name>scm project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <scm>
     <connection>scm:svn:https://svn.apache.org/repos/asf/maven/test</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/test</developerConnection>
@@ -43,8 +35,7 @@ under the License.
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/scm</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.ScmStub"/>
+          <outputDirectory>target/scm</outputDirectory>
           <checkoutDirectoryName>test-artifactId</checkoutDirectoryName>
         </configuration>
       </plugin>

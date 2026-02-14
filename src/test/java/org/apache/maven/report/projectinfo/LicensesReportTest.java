@@ -26,8 +26,12 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class LicensesReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+public class LicensesReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -49,12 +55,12 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "licenses-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("licenses.html").exists(), "Test html generated");
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config.xml")
+    public void testReport(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
+        URL reportURL = getTestFile("target/licenses/licenses.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -83,12 +89,13 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
     }
 
     @Test
-    public void testReportLinksOnly() throws Exception {
-        generateReport(getGoal(), "licenses-plugin-config-linkonly.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("licenses.html").exists(), "Test html generated");
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-linkonly.xml")
+    public void testReportLinksOnly(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config-linkonly.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("licenses.html").toURI().toURL();
+        URL reportURL =
+                getTestFile("target/licenses-linkonly/licenses.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -116,10 +123,5 @@ public class LicensesReportTest extends AbstractProjectInfoTestCase {
         assertEquals("http://maven.apache.org", links[0].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "licenses";
     }
 }

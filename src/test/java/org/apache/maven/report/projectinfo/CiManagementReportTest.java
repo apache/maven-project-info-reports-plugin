@@ -25,9 +25,13 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.html.HTMLAnchorElement;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class CiManagementReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+public class CiManagementReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -49,12 +55,13 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "ci-management-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("ci-management.html").exists(), "Test html generated");
+    @InjectMojo(goal = "ci-management", pom = "ci-management-plugin-config.xml")
+    public void testReport(CiManagementReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "ci-management-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("ci-management.html").toURI().toURL();
+        URL reportURL =
+                getTestFile("target/ci-mangement/ci-management.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -82,12 +89,14 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testCiNameReport() throws Exception {
-        generateReport(getGoal(), "ci-management-plugin-with-ci-section-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("ci-management.html").exists(), "Test html generated");
+    @InjectMojo(goal = "ci-management", pom = "ci-management-plugin-with-ci-section-config.xml")
+    public void testCiNameReport(CiManagementReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "ci-management-plugin-with-ci-section-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("ci-management.html").toURI().toURL();
+        URL reportURL = getTestFile("target/ci-management-with-ci-section/ci-management.html")
+                .toURI()
+                .toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -107,10 +116,5 @@ public class CiManagementReportTest extends AbstractProjectInfoTestCase {
                 (HTMLAnchorElement) textBlock.getNode().getChildNodes().item(1);
         assertEquals("https://www.jetbrains.com/teamcity/", anchor.getAttribute("href"));
         assertEquals("TeamCity", anchor.getFirstChild().getNodeValue());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "ci-management";
     }
 }

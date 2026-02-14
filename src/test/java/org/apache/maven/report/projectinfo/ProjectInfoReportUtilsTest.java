@@ -20,15 +20,11 @@ package org.apache.maven.report.projectinfo;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.DistributionManagement;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.report.projectinfo.stubs.SettingsStub;
 import org.apache.maven.settings.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +40,7 @@ import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.report.projectinfo.ProjectInfoReportUtils.getArchiveServer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@crim.ca">Vincent Siveton</a>
  * @version $Id$
  */
-public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
+public class ProjectInfoReportUtilsTest {
     private static final int MAX_IDLE_TIME = 30000;
 
     private int port = -1;
@@ -65,32 +62,13 @@ public class ProjectInfoReportUtilsTest extends AbstractMojoTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
 
-        final List<org.apache.maven.settings.Server> servers = new ArrayList<>();
         org.apache.maven.settings.Server server = new org.apache.maven.settings.Server();
         server.setId("localhost");
         server.setUsername("admin");
         server.setPassword("admin");
-        servers.add(server);
-        settingsStub = new SettingsStub() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public org.apache.maven.settings.Server getServer(String serverId) {
-                for (org.apache.maven.settings.Server server : getServers()) {
-                    if (server.getId().equals(serverId)) {
-                        return server;
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public List<org.apache.maven.settings.Server> getServers() {
-                return servers;
-            }
-        };
+        settingsStub = new Settings();
+        settingsStub.addServer(server);
     }
 
     private MavenProject getMavenProjectStub(boolean https) {
