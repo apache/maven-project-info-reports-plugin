@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class ScmReportTest extends AbstractProjectInfoTest {
+class ScmReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -57,7 +57,7 @@ public class ScmReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
-    public void testReport(ScmReport mojo) throws Exception {
+    void testReport(ScmReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
 
         mojo.execute();
@@ -97,7 +97,7 @@ public class ScmReportTest extends AbstractProjectInfoTest {
     @Test
     @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
     @MojoParameter(name = "anonymousConnection", value = "scm:svn")
-    public void testReportWithWrongUrl1(ScmReport mojo) throws Exception {
+    void testReportWithWrongUrl1(ScmReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
         assertTrue(exception.getMessage().contains("This SCM url 'scm:svn' is invalid"));
@@ -106,7 +106,7 @@ public class ScmReportTest extends AbstractProjectInfoTest {
     @Test
     @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
     @MojoParameter(name = "anonymousConnection", value = "scm:svn:http")
-    public void testReportWithWrongUrl2(ScmReport mojo) throws Exception {
+    void testReportWithWrongUrl2(ScmReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
         assertTrue(exception.getMessage().contains("This SCM url 'scm:svn:http' is invalid"));
@@ -115,7 +115,7 @@ public class ScmReportTest extends AbstractProjectInfoTest {
     @Test
     @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
     @MojoParameter(name = "anonymousConnection", value = "scm")
-    public void testReportWithWrongUrl3(ScmReport mojo) throws Exception {
+    void testReportWithWrongUrl3(ScmReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
         assertTrue(exception.getMessage().contains("This SCM url 'scm' is invalid"));

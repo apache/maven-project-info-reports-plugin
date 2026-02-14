@@ -34,7 +34,6 @@ import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
-import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,7 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @MojoTest(realRepositorySession = true)
-public class TeamReportTest extends AbstractProjectInfoTest {
+@Basedir("/plugin-configs")
+class TeamReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -58,18 +58,8 @@ public class TeamReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "team", pom = "team-plugin-config.xml")
-    @Basedir("/plugin-configs")
-    public void testReport(TeamReport mojo) throws Exception {
-        //        File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" +
-        // "team-plugin-config.xml");
-        //        AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
-        setVariableValueToObject(mojo, "showAvatarImages", Boolean.TRUE);
-        setVariableValueToObject(mojo, "externalAvatarImages", Boolean.TRUE);
-        setVariableValueToObject(mojo, "avatarProviderName", "gravatar");
-        setVariableValueToObject(mojo, "avatarBaseUrl", "https://www.gravatar.com/avatar/");
-
+    void testReport(TeamReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "team-plugin-config.xml");
-
         mojo.execute();
 
         URL reportURL = getTestFile("target/team/team.html").toURI().toURL();

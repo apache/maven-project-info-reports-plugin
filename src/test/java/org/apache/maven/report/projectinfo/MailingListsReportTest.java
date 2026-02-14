@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class MailingListsReportTest extends AbstractProjectInfoTest {
+class MailingListsReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -57,7 +57,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config.xml")
-    public void testReport(MailingListsReport mojo) throws Exception {
+    void testReport(MailingListsReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "mailing-lists-plugin-config.xml");
         mojo.execute();
 
@@ -104,7 +104,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "mailing-lists", pom = "custom-bundle/plugin-config.xml")
-    public void testCustomBundle(MailingListsReport mojo) throws Exception {
+    void testCustomBundle(MailingListsReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "custom-bundle/plugin-config.xml");
         mojo.execute();
 
@@ -134,7 +134,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config-fr.xml")
-    public void testFrenchReport(MailingListsReport mojo) throws Exception {
+    void testFrenchReport(MailingListsReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "mailing-lists-plugin-config-fr.xml");
         mojo.execute();
 
@@ -149,7 +149,7 @@ public class MailingListsReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config-invalidlink.xml")
-    public void testInvalidLink(MailingListsReport mojo) throws Exception {
+    void testInvalidLink(MailingListsReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "mailing-lists-plugin-config-invalidlink.xml");
         mojo.execute();
 

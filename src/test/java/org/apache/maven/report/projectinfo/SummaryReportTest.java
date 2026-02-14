@@ -41,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @MojoTest(realRepositorySession = true)
-public class SummaryReportTest extends AbstractProjectInfoTest {
+@Basedir("/plugin-configs")
+class SummaryReportTest extends AbstractProjectInfoTest {
 
     /**
      * WebConversation object
@@ -55,8 +56,7 @@ public class SummaryReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "summary", pom = "summary-plugin-config.xml")
-    @Basedir("/plugin-configs")
-    public void testReport(SummaryReport mojo) throws Exception {
+    void testReport(SummaryReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "summary-plugin-config.xml");
         mojo.execute();
 

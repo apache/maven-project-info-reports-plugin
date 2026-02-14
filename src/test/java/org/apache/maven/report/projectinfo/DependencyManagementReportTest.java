@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class DependencyManagementReportTest extends AbstractProjectInfoTest {
+class DependencyManagementReportTest extends AbstractProjectInfoTest {
 
     @Inject
     private MavenSession mavenSession;
@@ -76,7 +76,7 @@ public class DependencyManagementReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "dependency-management", pom = "dependency-management-plugin-config.xml")
-    public void testReport(DependencyManagementReport mojo) throws Exception {
+    void testReport(DependencyManagementReport mojo) throws Exception {
         mojo.execute();
 
         URL reportURL = getTestFile("target/dependency-management/dependency-management.html")

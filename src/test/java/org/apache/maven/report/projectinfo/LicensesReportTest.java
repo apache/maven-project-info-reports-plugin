@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class LicensesReportTest extends AbstractProjectInfoTest {
+class LicensesReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -56,7 +56,7 @@ public class LicensesReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "licenses", pom = "licenses-plugin-config.xml")
-    public void testReport(LicensesReport mojo) throws Exception {
+    void testReport(LicensesReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "licenses-plugin-config.xml");
         mojo.execute();
 
@@ -90,7 +90,7 @@ public class LicensesReportTest extends AbstractProjectInfoTest {
 
     @Test
     @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-linkonly.xml")
-    public void testReportLinksOnly(LicensesReport mojo) throws Exception {
+    void testReportLinksOnly(LicensesReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "licenses-plugin-config-linkonly.xml");
         mojo.execute();
 

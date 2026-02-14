@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@crim.ca">Vincent Siveton</a>
  * @version $Id$
  */
-public class ProjectInfoReportUtilsTest {
+class ProjectInfoReportUtilsTest {
     private static final int MAX_IDLE_TIME = 30000;
 
     private int port = -1;
@@ -61,8 +61,7 @@ public class ProjectInfoReportUtilsTest {
     private Server jettyServer;
 
     @BeforeEach
-    public void setUp() throws Exception {
-
+    void setUp() throws Exception {
         org.apache.maven.settings.Server server = new org.apache.maven.settings.Server();
         server.setId("localhost");
         server.setUsername("admin");
@@ -87,7 +86,7 @@ public class ProjectInfoReportUtilsTest {
     }
 
     @Test
-    public void testGetInputStreamURL() throws Exception {
+    void testGetInputStreamURL() throws Exception {
         assertTrue(ProjectInfoReportUtils.isArtifactUrlValid("http://my.intern.domain:8080/test"));
 
         // file
@@ -156,7 +155,7 @@ public class ProjectInfoReportUtilsTest {
     }
 
     @Test
-    public void testGetArchiveServer() {
+    void testGetArchiveServer() {
         assertEquals("???UNKNOWN???", getArchiveServer(null));
 
         assertNull(getArchiveServer(""));

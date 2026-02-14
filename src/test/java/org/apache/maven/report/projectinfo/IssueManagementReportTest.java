@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class IssueManagementReportTest extends AbstractProjectInfoTest {
+class IssueManagementReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -56,7 +56,7 @@ public class IssueManagementReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "issue-management", pom = "issue-management-plugin-config.xml")
-    public void testReport(IssueManagementReport mojo) throws Exception {
+    void testReport(IssueManagementReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "issue-management-plugin-config.xml");
         mojo.execute();
 

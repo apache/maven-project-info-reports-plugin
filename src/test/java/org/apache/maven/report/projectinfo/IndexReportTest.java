@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class IndexReportTest extends AbstractProjectInfoTest {
+class IndexReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -55,7 +55,7 @@ public class IndexReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "index", pom = "index-plugin-config.xml")
-    public void testReport(IndexReport mojo) throws Exception {
+    void testReport(IndexReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "index-plugin-config.xml");
         mojo.execute();
 

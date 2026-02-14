@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class CiManagementReportTest extends AbstractProjectInfoTest {
+class CiManagementReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -56,7 +56,7 @@ public class CiManagementReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "ci-management", pom = "ci-management-plugin-config.xml")
-    public void testReport(CiManagementReport mojo) throws Exception {
+    void testReport(CiManagementReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "ci-management-plugin-config.xml");
         mojo.execute();
 
@@ -90,7 +90,7 @@ public class CiManagementReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "ci-management", pom = "ci-management-plugin-with-ci-section-config.xml")
-    public void testCiNameReport(CiManagementReport mojo) throws Exception {
+    void testCiNameReport(CiManagementReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "ci-management-plugin-with-ci-section-config.xml");
         mojo.execute();
 

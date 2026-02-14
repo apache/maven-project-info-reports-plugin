@@ -25,13 +25,6 @@ under the License.
   <packaging>jar</packaging>
   <name>plugin management project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-    </dependency>
-  </dependencies>
   <build>
     <pluginManagement>
       <plugins>
@@ -55,8 +48,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/plugin-management</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.PluginManagementStub"/>
+          <outputDirectory>target/plugin-management</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

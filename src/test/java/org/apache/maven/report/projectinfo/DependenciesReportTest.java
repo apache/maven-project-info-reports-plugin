@@ -31,8 +31,6 @@ import com.meterware.httpunit.WebTable;
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,13 +51,10 @@ import static org.mockito.Mockito.when;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class DependenciesReportTest extends AbstractProjectInfoTest {
+class DependenciesReportTest extends AbstractProjectInfoTest {
 
     @Inject
     private MavenSession mavenSession;
-
-    @Inject
-    private ArtifactHandlerManager artifactHandlerManager;
 
     /**
      * WebConversation object
@@ -71,16 +66,8 @@ public class DependenciesReportTest extends AbstractProjectInfoTest {
         DefaultProjectBuildingRequest pbr = spy(new DefaultProjectBuildingRequest());
         doAnswer(__ -> mavenSession.getRepositorySession()).when(pbr).getRepositorySession();
         when(mavenSession.getProjectBuildingRequest()).thenReturn(pbr);
-        mavenProject.setArtifact(new DefaultArtifact(
-                mavenProject.getGroupId(),
-                mavenProject.getArtifactId(),
-                mavenProject.getVersion(),
-                null,
-                mavenProject.getPackaging(),
-                null,
-                artifactHandlerManager.getArtifactHandler(mavenProject.getPackaging())));
-
         readMavenProjectModel(mavenProject, "dependencies-plugin-config.xml");
+        setArtifactForProject(mavenProject);
     }
 
     /**
@@ -90,11 +77,7 @@ public class DependenciesReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "dependencies", pom = "dependencies-plugin-config.xml")
-    public void testReport(DependenciesReport mojo) throws Exception {
-        //        generateReport(getGoal(), "dependencies-plugin-config.xml");
-        //        org.junit.jupiter.api.Assertions.assertTrue(
-        //                getGeneratedReport("dependencies.html").exists(), "Test html generated");
-
+    void testReport(DependenciesReport mojo) throws Exception {
         mojo.execute();
 
         URL reportURL =

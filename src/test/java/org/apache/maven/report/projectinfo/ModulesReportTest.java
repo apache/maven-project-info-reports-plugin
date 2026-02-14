@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  */
 @MojoTest(realRepositorySession = true)
 @Basedir("/plugin-configs")
-public class ModulesReportTest extends AbstractProjectInfoTest {
+class ModulesReportTest extends AbstractProjectInfoTest {
 
     @Inject
     private MavenSession mavenSession;
@@ -81,8 +81,7 @@ public class ModulesReportTest extends AbstractProjectInfoTest {
      */
     @Test
     @InjectMojo(goal = "modules", pom = "modules-plugin-config.xml")
-    public void testReport(ModulesReport mojo) throws Exception {
-
+    void testReport(ModulesReport mojo) throws Exception {
         readMavenProjectModel(mavenProject, "modules-plugin-config.xml");
         mojo.execute();
 
@@ -149,8 +148,7 @@ public class ModulesReportTest extends AbstractProjectInfoTest {
 
         @Test
         @InjectMojo(goal = "modules", pom = "modules-variable-settings-interpolated-plugin-config.xml")
-        public void testReportModuleLinksVariableSettingsInterpolated(ModulesReport mojo) throws Exception {
-
+        void testReportModuleLinksVariableSettingsInterpolated(ModulesReport mojo) throws Exception {
             mojo.execute();
 
             File reportFile = getTestFile("target/modules-variable/modules.html");
