@@ -142,7 +142,6 @@ public class PluginManagementReportTest extends AbstractProjectInfoTest {
         URL reportURL = getTestFile("target/plugin-management-375/plugin-management.html")
                 .toURI()
                 .toURL();
-        //        URL reportURL = getGeneratedReport("plugin-management.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit

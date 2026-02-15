@@ -82,8 +82,6 @@ class DependenciesReportTest extends AbstractProjectInfoTest {
 
         URL reportURL =
                 getTestFile("target/dependencies/dependencies.html").toURI().toURL();
-
-        //        URL reportURL = ("dependencies.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
