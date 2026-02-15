@@ -18,7 +18,6 @@
  */
 package org.apache.maven.report.projectinfo;
 
-import java.io.File;
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -26,20 +25,26 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoParameter;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Edwin Punzalan
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class ScmReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class ScmReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -51,12 +56,13 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "scm-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("scm.html").exists(), "Test html generated");
+    @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
+    void testReport(ScmReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
 
-        URL reportURL = getGeneratedReport("scm.html").toURI().toURL();
+        mojo.execute();
+
+        URL reportURL = getTestFile("target/scm/scm.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -89,48 +95,29 @@ public class ScmReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReportWithWrongUrl() throws Exception {
-        File pluginXmlFile =
-                new File(getBasedir(), "src/test/resources/plugin-configs/" + "scm-wrong-url-plugin-config.xml");
-        Mojo mojo = createReportMojo(getGoal(), pluginXmlFile);
-
-        setVariableValueToObject(mojo, "anonymousConnection", "scm:svn");
-        try {
-            mojo.execute();
-            fail("IllegalArgumentException NOT catched");
-        } catch (IllegalArgumentException e) {
-            org.junit.jupiter.api.Assertions.assertTrue(true, "IllegalArgumentException catched");
-        }
-
-        tearDown();
-        setUp();
-
-        mojo = lookupMojo("scm", pluginXmlFile);
-        org.junit.jupiter.api.Assertions.assertNotNull(mojo, "Mojo not found.");
-        setVariableValueToObject(mojo, "anonymousConnection", "scm:svn:http");
-        try {
-            mojo.execute();
-            fail("IllegalArgumentException NOT catched");
-        } catch (Exception e) {
-            org.junit.jupiter.api.Assertions.assertTrue(true, "IllegalArgumentException catched");
-        }
-
-        tearDown();
-        setUp();
-
-        mojo = lookupMojo("scm", pluginXmlFile);
-        org.junit.jupiter.api.Assertions.assertNotNull(mojo, "Mojo not found.");
-        setVariableValueToObject(mojo, "anonymousConnection", "scm");
-        try {
-            mojo.execute();
-            fail("IllegalArgumentException NOT catched");
-        } catch (Exception e) {
-            org.junit.jupiter.api.Assertions.assertTrue(true, "IllegalArgumentException catched");
-        }
+    @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
+    @MojoParameter(name = "anonymousConnection", value = "scm:svn")
+    void testReportWithWrongUrl1(ScmReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
+        assertTrue(exception.getMessage().contains("This SCM url 'scm:svn' is invalid"));
     }
 
-    @Override
-    protected String getGoal() {
-        return "scm";
+    @Test
+    @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
+    @MojoParameter(name = "anonymousConnection", value = "scm:svn:http")
+    void testReportWithWrongUrl2(ScmReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
+        assertTrue(exception.getMessage().contains("This SCM url 'scm:svn:http' is invalid"));
+    }
+
+    @Test
+    @InjectMojo(goal = "scm", pom = "scm-plugin-config.xml")
+    @MojoParameter(name = "anonymousConnection", value = "scm")
+    void testReportWithWrongUrl3(ScmReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "scm-plugin-config.xml");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, mojo::execute);
+        assertTrue(exception.getMessage().contains("This SCM url 'scm' is invalid"));
     }
 }

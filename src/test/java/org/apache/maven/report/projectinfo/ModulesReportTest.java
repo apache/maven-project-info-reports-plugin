@@ -18,44 +18,60 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
+import java.util.Arrays;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-import org.apache.maven.plugin.testing.SilentLog;
-import org.apache.maven.report.projectinfo.stubs.SubProject1Stub;
-import org.codehaus.plexus.util.ReflectionUtils;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Profile;
+import org.apache.maven.settings.Settings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author ltheussl
  * @version $Id$
  */
-public class ModulesReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class ModulesReportTest extends AbstractProjectInfoTest {
+
+    @Inject
+    private MavenSession mavenSession;
     /**
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
 
-    @Override
-    protected AbstractProjectInfoReport createReportMojo(String goal, File pluginXmlFile) throws Exception {
-        AbstractProjectInfoReport mojo = super.createReportMojo(goal, pluginXmlFile);
-
-        mojo.setLog(new SilentLog());
-
-        return mojo;
+    @BeforeEach
+    void setup() {
+        DefaultProjectBuildingRequest pbr = spy(new DefaultProjectBuildingRequest());
+        doAnswer(__ -> mavenSession.getRepositorySession()).when(pbr).getRepositorySession();
+        when(mavenSession.getProjectBuildingRequest()).thenReturn(pbr);
     }
 
     /**
@@ -64,12 +80,12 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "modules-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("modules.html").exists(), "Test html generated");
+    @InjectMojo(goal = "modules", pom = "modules-plugin-config.xml")
+    void testReport(ModulesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "modules-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("modules.html").toURI().toURL();
+        URL reportURL = getTestFile("target/modules/modules.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -105,39 +121,42 @@ public class ModulesReportTest extends AbstractProjectInfoTestCase {
     /**
      * Test report with variable from settings interpolation in modules URL links (MPIR-349)
      *
-     * @throws Exception if any
      */
-    @Test
-    public void testReportModuleLinksVariableSettingsInterpolated() throws Exception {
-        String pluginXml = "modules-variable-settings-interpolated-plugin-config.xml";
-        File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + pluginXml);
-        AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
+    @Nested
+    class ReportModuleLinksVariableSettingsInterpolated {
 
-        class SubProjectStub extends SubProject1Stub {
-            @Override
-            public File getBasedir() {
-                return new File("src/test/resources/plugin-configs/subproject-site-url").getAbsoluteFile();
-            }
+        @Inject
+        private Settings settings;
 
-            @Override
-            protected String getPOM() {
-                return "pom.xml";
-            }
+        @BeforeEach
+        void setupProject() throws Exception {
+            readMavenProjectModel(mavenProject, "modules-variable-settings-interpolated-plugin-config.xml");
+
+            MavenProject subProject = new MavenProject();
+            readMavenProjectModel(subProject, "subproject-site-url/pom.xml");
+            subProject.setFile(getTestFile("subproject-site-url/pom.xml"));
+
+            when(mavenSession.getProjects()).thenReturn(Arrays.asList(mavenProject, subProject));
+
+            Profile p = new Profile();
+            p.setId("site-location");
+            p.addProperty("sitePublishLocation", "file://tmp/sitePublish");
+            settings.addProfile(p);
+            // should have impact on the test ...
+            //            settings.setActiveProfiles(Collections.singletonList("site-location"));
         }
-        Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses("reactorProjects", mojo.getClass());
-        field.setAccessible(true);
-        field.set(mojo, Collections.singletonList(new SubProjectStub()));
 
-        generateReport(mojo, pluginXmlFile);
+        @Test
+        @InjectMojo(goal = "modules", pom = "modules-variable-settings-interpolated-plugin-config.xml")
+        void testReportModuleLinksVariableSettingsInterpolated(ModulesReport mojo) throws Exception {
+            mojo.execute();
 
-        org.junit.jupiter.api.Assertions.assertFalse(
-                new String(Files.readAllBytes(getGeneratedReport("modules.html").toPath()), StandardCharsets.UTF_8)
-                        .contains("sitePublishLocation"),
-                "Variable 'sitePublishLocation' should be interpolated");
-    }
-
-    @Override
-    protected String getGoal() {
-        return "modules";
+            File reportFile = getTestFile("target/modules-variable/modules.html");
+            // TODO check this assertions, even if without profiles it is ok
+            assertFalse(
+                    new String(Files.readAllBytes(reportFile.toPath()), StandardCharsets.UTF_8)
+                            .contains("sitePublishLocation"),
+                    "Variable 'sitePublishLocation' should be interpolated");
+        }
     }
 }

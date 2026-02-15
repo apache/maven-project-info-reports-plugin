@@ -25,21 +25,13 @@ under the License.
   <packaging>jar</packaging>
   <name>ci mangement project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/ci-mangement</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.CiManagementStub"/>
+          <skipEmptyReport>false</skipEmptyReport>
+          <outputDirectory>target/ci-mangement</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

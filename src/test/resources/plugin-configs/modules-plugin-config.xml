@@ -25,14 +25,6 @@ under the License.
   <packaging>pom</packaging>
   <name>modules project info</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <modules>
     <module>subproject1</module>
     <module>subproject2</module>
@@ -42,8 +34,7 @@ under the License.
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <configuration>
-          <outputDirectory>target/test-harness/modules</outputDirectory>
-          <project implementation="org.apache.maven.report.projectinfo.stubs.ModulesStub"/>
+          <outputDirectory>target/modules</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

@@ -25,8 +25,12 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class IndexReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class IndexReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -48,12 +54,12 @@ public class IndexReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "index-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("index.html").exists(), "Test html generated");
+    @InjectMojo(goal = "index", pom = "index-plugin-config.xml")
+    void testReport(IndexReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "index-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("index.html").toURI().toURL();
+        URL reportURL = getTestFile("target/index/index.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -71,13 +77,7 @@ public class IndexReportTest extends AbstractProjectInfoTestCase {
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
-        assertEquals(
-                getString("report.index.title") + " " + getTestMavenProject().getName(), textBlocks[1].getText());
+        assertEquals(getString("report.index.title") + " " + mavenProject.getName(), textBlocks[1].getText());
         assertEquals(getString("report.index.nodescription"), textBlocks[2].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "index";
     }
 }

@@ -26,13 +26,13 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GravatarProviderTest {
+class GravatarProviderTest {
 
     @TempDir
     private File tmpFolder;
 
     @Test
-    public void urlShouldBeCorrect() {
+    void urlShouldBeCorrect() {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
         String externalAvatarUrl = gravatarProvider.getAvatarUrl("email@example.com");
@@ -42,7 +42,7 @@ public class GravatarProviderTest {
     }
 
     @Test
-    public void urlForEmptyEmailShouldBeCorrect() {
+    void urlForEmptyEmailShouldBeCorrect() {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
 
@@ -60,7 +60,7 @@ public class GravatarProviderTest {
     }
 
     @Test
-    public void localAvatarPathShouldBeCorrect() throws Exception {
+    void localAvatarPathShouldBeCorrect() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
         gravatarProvider.setOutputDirectory(tmpFolder);
@@ -70,7 +70,7 @@ public class GravatarProviderTest {
     }
 
     @Test
-    public void localAvatarPathShouldHaveDefaultForNotExisting() throws Exception {
+    void localAvatarPathShouldHaveDefaultForNotExisting() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
         gravatarProvider.setOutputDirectory(tmpFolder);
@@ -80,7 +80,7 @@ public class GravatarProviderTest {
     }
 
     @Test
-    public void localAvatarPathShouldBeCorrectForDefault() throws Exception {
+    void localAvatarPathShouldBeCorrectForDefault() throws Exception {
         GravatarProvider gravatarProvider = new GravatarProvider();
         gravatarProvider.setBaseUrl("https://www.gravatar.com/avatar");
         gravatarProvider.setOutputDirectory(tmpFolder);

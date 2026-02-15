@@ -18,7 +18,6 @@
  */
 package org.apache.maven.report.projectinfo;
 
-import java.io.File;
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -29,8 +28,12 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class TeamReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class TeamReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -52,18 +57,12 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        File pluginXmlFile = new File(getBasedir(), "src/test/resources/plugin-configs/" + "team-plugin-config.xml");
-        AbstractProjectInfoReport mojo = createReportMojo(getGoal(), pluginXmlFile);
-        setVariableValueToObject(mojo, "showAvatarImages", Boolean.TRUE);
-        setVariableValueToObject(mojo, "externalAvatarImages", Boolean.TRUE);
-        setVariableValueToObject(mojo, "avatarProviderName", "gravatar");
-        setVariableValueToObject(mojo, "avatarBaseUrl", "https://www.gravatar.com/avatar/");
-        generateReport(mojo, pluginXmlFile);
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("team.html").exists(), "Test html generated");
+    @InjectMojo(goal = "team", pom = "team-plugin-config.xml")
+    void testReport(TeamReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "team-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("team.html").toURI().toURL();
+        URL reportURL = getTestFile("target/team/team.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -99,10 +98,5 @@ public class TeamReportTest extends AbstractProjectInfoTestCase {
         WebLink[] links = emailCell.getLinks();
         assertEquals(1, links.length);
         assertEquals("mailto:vsiveton@apache.org", links[0].getURLString());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "team";
     }
 }

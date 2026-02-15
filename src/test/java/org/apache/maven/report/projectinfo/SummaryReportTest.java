@@ -25,8 +25,12 @@ import com.meterware.httpunit.TextBlock;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class SummaryReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class SummaryReportTest extends AbstractProjectInfoTest {
+
     /**
      * WebConversation object
      */
@@ -48,12 +55,12 @@ public class SummaryReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "summary-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("summary.html").exists(), "Test html generated");
+    @InjectMojo(goal = "summary", pom = "summary-plugin-config.xml")
+    void testReport(SummaryReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "summary-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("summary.html").toURI().toURL();
+        URL reportURL = getTestFile("target/summary/summary.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -76,10 +83,5 @@ public class SummaryReportTest extends AbstractProjectInfoTestCase {
         assertEquals(getString("report.summary.organization.title"), textBlocks[3].getText());
         assertEquals(getString("report.summary.noorganization"), textBlocks[4].getText());
         assertEquals(getString("report.summary.build.title"), textBlocks[5].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "summary";
     }
 }

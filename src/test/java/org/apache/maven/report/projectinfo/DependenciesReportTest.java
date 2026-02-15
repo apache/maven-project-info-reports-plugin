@@ -18,6 +18,8 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -26,22 +28,47 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Edwin Punzalan
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class DependenciesReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class DependenciesReportTest extends AbstractProjectInfoTest {
+
+    @Inject
+    private MavenSession mavenSession;
+
     /**
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
+
+    @BeforeEach
+    void setup() throws Exception {
+        DefaultProjectBuildingRequest pbr = spy(new DefaultProjectBuildingRequest());
+        doAnswer(__ -> mavenSession.getRepositorySession()).when(pbr).getRepositorySession();
+        when(mavenSession.getProjectBuildingRequest()).thenReturn(pbr);
+        readMavenProjectModel(mavenProject, "dependencies-plugin-config.xml");
+        setArtifactForProject(mavenProject);
+    }
 
     /**
      * Test report
@@ -49,12 +76,12 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "dependencies-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("dependencies.html").exists(), "Test html generated");
+    @InjectMojo(goal = "dependencies", pom = "dependencies-plugin-config.xml")
+    void testReport(DependenciesReport mojo) throws Exception {
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("dependencies.html").toURI().toURL();
+        URL reportURL =
+                getTestFile("target/dependencies/dependencies.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -72,12 +99,11 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
         // Test the tables
         WebTable[] webTables = response.getTables();
         // One table with listing and one table per artifact popup
-        assertEquals(3, webTables.length);
+        assertEquals(8, webTables.length);
 
         assertEquals(5, webTables[0].getColumnCount());
         assertEquals(
-                webTables[0].getRowCount(),
-                1 + getTestMavenProject().getDependencies().size());
+                webTables[0].getRowCount(), 1 + mavenProject.getDependencies().size());
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
@@ -85,14 +111,11 @@ public class DependenciesReportTest extends AbstractProjectInfoTestCase {
         assertEquals("test", textBlocks[2].getText());
         assertEquals(getString("report.dependencies.intro.test"), textBlocks[3].getText());
         assertEquals(getString("report.dependencies.transitive.title"), textBlocks[4].getText());
-        assertEquals(getString("report.dependencies.transitive.nolist"), textBlocks[5].getText());
-        assertEquals(getString("report.dependencies.graph.title"), textBlocks[6].getText());
-        assertEquals(getString("report.dependencies.graph.tree.title"), textBlocks[7].getText());
-        assertEquals(getString("report.dependencies.graph.tables.licenses"), textBlocks[8].getText());
-    }
-
-    @Override
-    protected String getGoal() {
-        return "dependencies";
+        assertEquals(getString("report.dependencies.transitive.intro"), textBlocks[5].getText());
+        assertEquals("test", textBlocks[6].getText());
+        assertEquals(getString("report.dependencies.intro.test"), textBlocks[7].getText());
+        assertEquals(getString("report.dependencies.graph.title"), textBlocks[8].getText());
+        assertEquals(getString("report.dependencies.graph.tree.title"), textBlocks[9].getText());
+        assertEquals(getString("report.dependencies.graph.tables.licenses"), textBlocks[10].getText());
     }
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import java.io.File;
 import java.net.URL;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -26,8 +27,12 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @version $Id$
  */
-public class MailingListsReportTest extends AbstractProjectInfoTestCase {
+@MojoTest(realRepositorySession = true)
+@Basedir("/plugin-configs")
+class MailingListsReportTest extends AbstractProjectInfoTest {
     /**
      * WebConversation object
      */
@@ -49,12 +56,13 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testReport() throws Exception {
-        generateReport(getGoal(), "mailing-lists-plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
+    @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config.xml")
+    void testReport(MailingListsReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "mailing-lists-plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
+        URL reportURL =
+                getTestFile("target/mailing-lists/mailing-lists.html").toURI().toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -95,12 +103,14 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testCustomBundle() throws Exception {
-        generateReport("mailing-lists", "custom-bundle/plugin-config.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
+    @InjectMojo(goal = "mailing-lists", pom = "custom-bundle/plugin-config.xml")
+    void testCustomBundle(MailingListsReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "custom-bundle/plugin-config.xml");
+        mojo.execute();
 
-        URL reportURL = getGeneratedReport("mailing-lists.html").toURI().toURL();
+        URL reportURL = getTestFile("target/mailing-lists-custom-bundle/mailing-lists.html")
+                .toURI()
+                .toURL();
         assertNotNull(reportURL);
 
         // HTTPUnit
@@ -123,10 +133,13 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testFrenchReport() throws Exception {
-        generateReport(getGoal(), "mailing-lists-plugin-config-fr.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
+    @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config-fr.xml")
+    void testFrenchReport(MailingListsReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "mailing-lists-plugin-config-fr.xml");
+        mojo.execute();
+
+        File reportFile = getTestFile("target/mailing-lists-fr/mailing-lists.html");
+        assertTrue(reportFile.exists());
     }
 
     /**
@@ -135,14 +148,12 @@ public class MailingListsReportTest extends AbstractProjectInfoTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testInvalidLink() throws Exception {
-        generateReport(getGoal(), "mailing-lists-plugin-config-invalidlink.xml");
-        org.junit.jupiter.api.Assertions.assertTrue(
-                getGeneratedReport("mailing-lists.html").exists(), "Test html generated");
-    }
+    @InjectMojo(goal = "mailing-lists", pom = "mailing-lists-plugin-config-invalidlink.xml")
+    void testInvalidLink(MailingListsReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "mailing-lists-plugin-config-invalidlink.xml");
+        mojo.execute();
 
-    @Override
-    protected String getGoal() {
-        return "mailing-lists";
+        File reportFile = getTestFile("target/mailing-lists-invalidlink/mailing-lists.html");
+        assertTrue(reportFile.exists());
     }
 }
