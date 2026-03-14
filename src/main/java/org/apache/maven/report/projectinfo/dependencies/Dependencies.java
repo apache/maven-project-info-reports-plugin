@@ -20,25 +20,34 @@ package org.apache.maven.report.projectinfo.dependencies;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
-import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 2.1
  */
 public class Dependencies {
+    private static final Logger LOG = LoggerFactory.getLogger(Dependencies.class);
+
     private final MavenProject project;
 
     private final DependencyNode dependencyNode;
@@ -73,7 +82,22 @@ public class Dependencies {
     /**
      * @since 2.1
      */
-    private Map<String, JarData> dependencyDetails;
+    private Map<String, JarDataSummary> dependencyDetails;
+
+    /**
+     * @since 3.9.1
+     */
+    private File pluginCacheBaseDir;
+
+    /**
+     * @since 3.9.1
+     */
+    private ObjectWriter objectWriter;
+
+    /**
+     * @since 3.9.1
+     */
+    private ObjectReader objectReader;
 
     /**
      * Default constructor
@@ -81,11 +105,22 @@ public class Dependencies {
      * @param project the MavenProject.
      * @param dependencyTreeNode the DependencyNode.
      * @param classesAnalyzer the JarClassesAnalysis.
+     * @param pluginCacheBaseDir the base dir for the cache file
      */
-    public Dependencies(MavenProject project, DependencyNode dependencyTreeNode, JarClassesAnalysis classesAnalyzer) {
+    public Dependencies(
+            MavenProject project,
+            DependencyNode dependencyTreeNode,
+            JarClassesAnalysis classesAnalyzer,
+            File pluginCacheBaseDir) {
         this.project = project;
         this.dependencyNode = dependencyTreeNode;
         this.classesAnalyzer = classesAnalyzer;
+        this.dependencyDetails = new HashMap<>();
+        this.pluginCacheBaseDir = pluginCacheBaseDir;
+
+        ObjectMapper mapper = new ObjectMapper();
+        objectReader = mapper.readerFor(JarDataSummary.class);
+        objectWriter = mapper.writer();
     }
 
     /**
@@ -201,41 +236,77 @@ public class Dependencies {
     }
 
     /**
+     * Get details on the content of the JAR file.
+     *
      * @param artifact the artifact.
      * @return the jardata object from the artifact
      * @throws IOException if any
      */
-    public JarData getJarDependencyDetails(Artifact artifact) throws IOException {
-        if (dependencyDetails == null) {
-            dependencyDetails = new HashMap<>();
-        }
-
-        JarData jarData = dependencyDetails.get(artifact.getId());
-        if (jarData != null) {
-            return jarData;
+    public JarDataSummary getJarDependencyDetails(Artifact artifact) throws IOException {
+        JarDataSummary jarDataSummary = dependencyDetails.get(artifact.getId());
+        if (jarDataSummary != null) {
+            return jarDataSummary;
         }
 
         File file = getFile(artifact);
 
         if (file.isDirectory()) {
-            jarData = new JarData(artifact.getFile(), null, new ArrayList<JarEntry>());
-
-            jarData.setJarClasses(new JarClasses());
+            jarDataSummary = JarDataSummary.DIRECTORY_JAR_DATA_SUMMARY;
         } else {
-            JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
-
-            try {
-                classesAnalyzer.analyze(jarAnalyzer);
-            } finally {
-                jarAnalyzer.closeQuietly();
-            }
-
-            jarData = jarAnalyzer.getJarData();
+            jarDataSummary = extractJarDataFromDependency(artifact, file);
         }
 
-        dependencyDetails.put(artifact.getId(), jarData);
+        dependencyDetails.put(artifact.getId(), jarDataSummary);
 
-        return jarData;
+        return jarDataSummary;
+    }
+
+    private JarDataSummary extractJarDataFromDependency(Artifact artifact, File file) throws IOException {
+        Path cachedArtifactDir = getCacheDirectory(pluginCacheBaseDir, artifact);
+        Path cacheFile = cachedArtifactDir.resolve("jar-data.json");
+
+        BasicFileAttributes fileAttr = null;
+
+        if (Files.exists(cacheFile)) {
+            try {
+                JarDataSummary jarDataSummary = objectReader.readValue(cacheFile.toFile());
+
+                // cheap file change check
+                fileAttr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                if (jarDataSummary.getFsize() == fileAttr.size()
+                        && jarDataSummary.getTs() == fileAttr.lastModifiedTime().toMillis()) {
+                    LOG.debug("JarDataSummary cached for: {}", artifact);
+                    return jarDataSummary;
+                }
+            } catch (IOException ioe) {
+                LOG.warn("Loading JarDataSummary from cache failed: {}", artifact, ioe);
+            }
+        }
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
+
+        try {
+            classesAnalyzer.analyze(jarAnalyzer);
+        } finally {
+            jarAnalyzer.closeQuietly();
+        }
+
+        JarData jarData = jarAnalyzer.getJarData();
+        JarDataSummary jarDataSummary = JarDataSummary.fromJarData(jarData);
+        if (fileAttr == null) {
+            fileAttr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        }
+        jarDataSummary.setFileAttributes(fileAttr);
+
+        // Save the result to our cache for next time
+        try {
+            Files.createDirectories(cachedArtifactDir);
+            objectWriter.writeValue(cacheFile.toFile(), jarDataSummary);
+        } catch (IOException ioe) {
+            LOG.warn("Saving JarDataSummary to cache failed: {}", artifact, ioe);
+        }
+        LOG.debug("JarDataSummary analyzed for: {}", artifact);
+        return jarDataSummary;
     }
 
     // ----------------------------------------------------------------------
@@ -275,7 +346,8 @@ public class Dependencies {
         File file = artifact.getFile();
 
         if (file.isDirectory()) {
-            // MPIR-322: if target/classes directory, try target/artifactId-version[-classifier].jar
+            // MPIR-322: if target/classes directory, try
+            // target/artifactId-version[-classifier].jar
             String filename = artifact.getArtifactId() + '-' + artifact.getVersion();
             if (StringUtils.isNotEmpty(artifact.getClassifier())) {
                 filename += '-' + artifact.getClassifier();
@@ -290,5 +362,25 @@ public class Dependencies {
         }
 
         return file;
+    }
+
+    /**
+     * Generates a cache directory following the GAV + Classifier structure. Path:
+     * root/.cache/<plugin>/groupId/artifactId/version/[classifier]
+     */
+    private Path getCacheDirectory(File root, Artifact artifact) {
+        // 1. Convert dots to folder separators for the GroupId
+        String groupPath = artifact.getGroupId().replace('.', File.separatorChar);
+
+        // 2. Build the base path: groupId / artifactId / version
+        Path path = Paths.get(root.getAbsolutePath(), groupPath, artifact.getArtifactId(), artifact.getVersion());
+
+        // 3. Handle the Classifier if it exists
+        // Most artifacts don't have one (null or empty string)
+        if (artifact.hasClassifier()) {
+            path = path.resolve(artifact.getClassifier());
+        }
+
+        return path;
     }
 }
