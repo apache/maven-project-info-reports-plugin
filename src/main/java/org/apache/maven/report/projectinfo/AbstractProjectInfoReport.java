@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -40,7 +39,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.interpolation.EnvarBasedValueSource;
@@ -48,6 +46,7 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PrefixedObjectValueSource;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Base class with the things that should be in AbstractMavenReport anyway.
@@ -62,17 +61,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
 
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
-
-    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
-    protected List<ArtifactRepository> remoteRepositories;
-
-    /**
-     * Plugin repositories used for the project.
-     *
-     * @since 3.1.0
-     */
-    @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true, required = true)
-    protected List<ArtifactRepository> pluginRepositories;
 
     /**
      * The current user system settings for use in Maven.
@@ -222,11 +210,13 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     protected abstract String getI18Nsection();
 
     /** {@inheritDoc} */
+    @Override
     public String getName(Locale locale) {
         return getI18nString(locale, "name");
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getDescription(Locale locale) {
         return getI18nString(locale, "description");
     }
@@ -272,61 +262,73 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultLanguage() {
             return locale.getLanguage();
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultCountry() {
             return locale.getCountry();
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultBundleName() {
             return bundleName;
         }
 
         /** {@inheritDoc} */
+        @Override
         public String[] getBundleNames() {
             return new String[] {bundleName};
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle() {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle(String bundleName) {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle(String bundleName, String languageHeader) {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle(String bundleName, Locale locale) {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public Locale getLocale(String languageHeader) {
             return new Locale(languageHeader);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString(String key) {
             return getString(bundleName, locale, key);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString(String key, Locale locale) {
             return getString(bundleName, locale, key);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString(String bundleName, Locale locale, String key) {
             String value;
 
@@ -369,26 +371,31 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format(String key, Object arg1) {
             return format(bundleName, locale, key, new Object[] {arg1});
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format(String key, Object arg1, Object arg2) {
             return format(bundleName, locale, key, new Object[] {arg1, arg2});
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format(String bundleName, Locale locale, String key, Object arg1) {
             return format(bundleName, locale, key, new Object[] {arg1});
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format(String bundleName, Locale locale, String key, Object arg1, Object arg2) {
             return format(bundleName, locale, key, new Object[] {arg1, arg2});
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format(String bundleName, Locale locale, String key, Object[] args) {
             if (locale == null) {
                 locale = getLocale(null);
