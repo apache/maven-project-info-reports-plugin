@@ -28,6 +28,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.Plugin;
@@ -41,9 +44,9 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Generates the Project Plugins report.
@@ -54,9 +57,16 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "plugins", requiresDependencyResolution = ResolutionScope.TEST)
 public class PluginsReport extends AbstractProjectInfoReport {
 
+    private final ArtifactHandlerManager artifactHandlerManager;
+
     @Inject
-    public PluginsReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
+    public PluginsReport(
+            RepositorySystem repositorySystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            I18N i18n,
+            ProjectBuilder projectBuilder) {
         super(repositorySystem, i18n, projectBuilder);
+        this.artifactHandlerManager = artifactHandlerManager;
     }
     // ----------------------------------------------------------------------
     // Public methods
@@ -75,6 +85,8 @@ public class PluginsReport extends AbstractProjectInfoReport {
 
     @Override
     public void executeReport(Locale locale) {
+        ArtifactHandler artifactHandler = artifactHandlerManager.getArtifactHandler("pom");
+
         PluginsRenderer r = new PluginsRenderer(
                 getLog(),
                 getSink(),
@@ -84,7 +96,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 project.getReportPlugins(),
                 project,
                 projectBuilder,
-                repositorySystem,
+                artifactHandler,
                 getSession().getProjectBuildingRequest());
         r.render();
     }
@@ -117,11 +129,13 @@ public class PluginsReport extends AbstractProjectInfoReport {
 
         private final ProjectBuilder projectBuilder;
 
-        private final RepositorySystem repositorySystem;
+        private final ArtifactHandler artifactHandler;
 
         private final ProjectBuildingRequest buildingRequest;
 
         /**
+         * The renderer constructor.
+         *
          * @param log {@link #log}
          * @param sink {@link Sink}
          * @param locale {@link Locale}
@@ -130,9 +144,8 @@ public class PluginsReport extends AbstractProjectInfoReport {
          * @param reports {@link Artifact}
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
-         * @param repositorySystem {@link RepositorySystem}
+         * @param artifactHandler the artifact handler
          * @param buildingRequest {@link ProjectBuildingRequest}
-         *
          */
         public PluginsRenderer(
                 Log log,
@@ -143,7 +156,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 List<ReportPlugin> reports,
                 MavenProject project,
                 ProjectBuilder projectBuilder,
-                RepositorySystem repositorySystem,
+                ArtifactHandler artifactHandler,
                 ProjectBuildingRequest buildingRequest) {
             super(sink, i18n, locale);
 
@@ -157,7 +170,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
 
             this.projectBuilder = projectBuilder;
 
-            this.repositorySystem = repositorySystem;
+            this.artifactHandler = artifactHandler;
 
             this.buildingRequest = buildingRequest;
         }
@@ -206,8 +219,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
             for (GAV plugin : list) {
                 VersionRange versionRange = VersionRange.createFromVersion(plugin.getVersion());
 
-                Artifact pluginArtifact = repositorySystem.createProjectArtifact(
-                        plugin.getGroupId(), plugin.getArtifactId(), versionRange.toString());
+                Artifact pluginArtifact = createProjectArtifact(plugin, versionRange);
                 try {
                     MavenProject pluginProject =
                             projectBuilder.build(pluginArtifact, buildRequest).getProject();
@@ -230,6 +242,17 @@ public class PluginsReport extends AbstractProjectInfoReport {
         // ----------------------------------------------------------------------
         // Private methods
         // ----------------------------------------------------------------------
+
+        private Artifact createProjectArtifact(GAV plugin, VersionRange versionRange) {
+            return new DefaultArtifact(
+                    plugin.getGroupId(),
+                    plugin.getArtifactId(),
+                    versionRange.toString(),
+                    null, // scope — project artifacts have none
+                    "pom",
+                    null, // classifier — project artifacts have none
+                    artifactHandler);
+        }
 
         private String[] getPluginTableHeader() {
             // reused key...
