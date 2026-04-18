@@ -100,7 +100,7 @@ under the License.
   </scm>
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/apache/maven-project-info-reports-plugin/isuess</url>
+    <url>https://github.com/apache/maven-project-info-reports-plugin/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
