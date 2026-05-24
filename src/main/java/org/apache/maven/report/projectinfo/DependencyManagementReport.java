@@ -22,18 +22,16 @@ import javax.inject.Inject;
 
 import java.util.Locale;
 
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Generates the Project Dependency Management report.
@@ -57,24 +55,19 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
     // Mojo components
     // ----------------------------------------------------------------------
 
-    /**
-     * Artifact metadata source component.
-     *
-     * @since 2.4
-     */
-    protected final ArtifactMetadataSource artifactMetadataSource;
-
     private final RepositoryUtils repoUtils;
+
+    private final ArtifactHandlerManager artifactHandlerManager;
 
     @Inject
     protected DependencyManagementReport(
             RepositorySystem repositorySystem,
+            ArtifactHandlerManager artifactHandlerManager,
             I18N i18n,
             ProjectBuilder projectBuilder,
-            ArtifactMetadataSource artifactMetadataSource,
             RepositoryUtils repoUtils) {
         super(repositorySystem, i18n, projectBuilder);
-        this.artifactMetadataSource = artifactMetadataSource;
+        this.artifactHandlerManager = artifactHandlerManager;
         this.repoUtils = repoUtils;
     }
 
@@ -94,22 +87,16 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
 
     @Override
     public void executeReport(Locale locale) {
-        ProjectBuildingRequest buildingRequest =
-                new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
-        buildingRequest.setLocalRepository(getSession().getLocalRepository());
-        buildingRequest.setRemoteRepositories(remoteRepositories);
-        buildingRequest.setPluginArtifactRepositories(pluginRepositories);
-        buildingRequest.setProcessPlugins(false);
-
         DependencyManagementRenderer r = new DependencyManagementRenderer(
                 getSink(),
                 locale,
                 getI18N(locale),
                 getLog(),
                 getManagementDependencies(),
-                artifactMetadataSource,
+                repoSession,
+                remoteProjectRepositories,
                 repositorySystem,
-                buildingRequest,
+                artifactHandlerManager,
                 repoUtils,
                 getLicenseMappings());
         r.render();

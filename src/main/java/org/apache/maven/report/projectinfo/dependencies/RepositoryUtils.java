@@ -52,7 +52,11 @@ public class RepositoryUtils {
     private final Provider<MavenSession> sessionProvider;
 
     /**
+     * The class constructor.
+     *
      * @param projectBuilder {@link ProjectBuilder}
+     * @param repositorySystem the maven resolver repository system
+     * @param sessionProvider the maven session provider
      */
     @Inject
     public RepositoryUtils(

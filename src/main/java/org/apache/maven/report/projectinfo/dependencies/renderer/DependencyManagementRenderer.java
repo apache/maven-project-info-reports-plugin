@@ -24,11 +24,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
@@ -37,15 +40,19 @@ import org.apache.maven.model.License;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.AbstractProjectInfoRenderer;
 import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResult;
 
 /**
  * @author Nick Stolwijk
@@ -56,11 +63,13 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
     private final Log log;
 
-    private final ArtifactMetadataSource artifactMetadataSource;
+    private final RepositorySystemSession repoSession;
+
+    private final List<RemoteRepository> remoteProjectRepositories;
 
     private final RepositorySystem repositorySystem;
 
-    private final ProjectBuildingRequest buildingRequest;
+    private final ArtifactHandlerManager artifactHandlerManager;
 
     private final RepositoryUtils repoUtils;
 
@@ -74,9 +83,10 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
      * @param i18n {@link I18N}
      * @param log {@link Log}
      * @param dependencies {@link ManagementDependencies}
-     * @param artifactMetadataSource {@link ArtifactMetadataSource}
-     * @param repositorySystem {@link RepositorySystem}
-     * @param buildingRequest {@link ProjectBuildingRequest}
+     * @param repoSession the repository session
+     * @param remoteProjectRepositories the list for remote repositories
+     * @param repositorySystem the maven resolver {@link RepositorySystem}
+     * @param artifactHandlerManager the artifact handler manager
      * @param repoUtils {@link RepositoryUtils}
      * @param licenseMappings {@link LicenseMapping}
      */
@@ -86,18 +96,20 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             I18N i18n,
             Log log,
             ManagementDependencies dependencies,
-            ArtifactMetadataSource artifactMetadataSource,
+            RepositorySystemSession repoSession,
+            List<RemoteRepository> remoteProjectRepositories,
             RepositorySystem repositorySystem,
-            ProjectBuildingRequest buildingRequest,
+            ArtifactHandlerManager artifactHandlerManager,
             RepositoryUtils repoUtils,
             Map<String, String> licenseMappings) {
         super(sink, i18n, locale);
 
         this.log = log;
         this.dependencies = dependencies;
-        this.artifactMetadataSource = artifactMetadataSource;
+        this.repoSession = repoSession;
+        this.remoteProjectRepositories = remoteProjectRepositories;
         this.repositorySystem = repositorySystem;
-        this.buildingRequest = buildingRequest;
+        this.artifactHandlerManager = artifactHandlerManager;
         this.repoUtils = repoUtils;
         this.licenseMappings = licenseMappings;
     }
@@ -197,15 +209,18 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private String[] getDependencyRow(Dependency dependency, boolean hasClassifier) {
 
-        Artifact artifact = repositorySystem.createArtifact(
+        ArtifactHandler handler = artifactHandlerManager.getArtifactHandler(dependency.getType());
+
+        Artifact artifact = new DefaultArtifact(
                 dependency.getGroupId(),
                 dependency.getArtifactId(),
                 dependency.getVersion(),
                 dependency.getScope(),
-                dependency.getType());
+                dependency.getType(),
+                dependency.getClassifier(),
+                handler);
 
         StringBuilder licensesBuffer = new StringBuilder();
         String url = null;
@@ -216,8 +231,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
                 // MPIR-216: no direct version but version range: need to choose one precise version
                 log.debug("Resolving range for DependencyManagement on " + artifact.getId());
 
-                List<ArtifactVersion> versions = artifactMetadataSource.retrieveAvailableVersions(
-                        artifact, buildingRequest.getLocalRepository(), buildingRequest.getRemoteRepositories());
+                List<ArtifactVersion> versions = retrieveAvailableVersions(artifact);
 
                 // only use versions from range
                 for (Iterator<ArtifactVersion> iter = versions.iterator(); iter.hasNext(); ) {
@@ -252,8 +266,11 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             }
         } catch (InvalidVersionSpecificationException e) {
             log.warn("Unable to parse version for " + artifact.getId(), e);
-        } catch (ArtifactMetadataRetrievalException e) {
-            log.warn("Unable to retrieve versions for " + artifact.getId() + " from repository.", e);
+        } catch (VersionRangeResolutionException e) {
+            log.warn(
+                    "Unable to retrieve versions range for " + artifact.getId() + " range: " + e.getResult()
+                            + " from repository.",
+                    e);
         } catch (ProjectBuildingException e) {
             if (log.isDebugEnabled()) {
                 log.warn("Unable to create Maven project for " + artifact.getId() + " from repository.", e);
@@ -282,6 +299,40 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             dependency.getType(),
             licensesBuffer.toString()
         };
+    }
+
+    /**
+     * Resolves all available versions for a given artifact using the Maven Resolver API.
+     *
+     * @param artifact the artifact to resolve
+     * @return the list of available versions
+     *
+     * @throws VersionRangeResolutionException if an error is present.
+     *
+     * @since 3.9.1
+     */
+    private List<ArtifactVersion> retrieveAvailableVersions(Artifact artifact) throws VersionRangeResolutionException {
+
+        // "[,)" means "all versions from the beginning of time" — open range
+        org.eclipse.aether.artifact.DefaultArtifact aetherArtifact = new org.eclipse.aether.artifact.DefaultArtifact(
+                artifact.getGroupId(),
+                artifact.getArtifactId(),
+                artifact.getClassifier(),
+                artifact.getType(),
+                "[0,)" // open version range to capture every published version
+                );
+
+        VersionRangeRequest request = new VersionRangeRequest(
+                aetherArtifact,
+                remoteProjectRepositories,
+                null // request context — null is fine for standard resolution
+                );
+
+        VersionRangeResult result = repositorySystem.resolveVersionRange(repoSession, request);
+
+        return result.getVersions().stream()
+                .map(v -> new DefaultArtifactVersion(v.toString()))
+                .collect(Collectors.toList());
     }
 
     private Comparator<Dependency> getDependencyComparator() {

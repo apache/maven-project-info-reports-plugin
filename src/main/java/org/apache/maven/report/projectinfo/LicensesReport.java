@@ -39,9 +39,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Generates the Project Licenses report.
