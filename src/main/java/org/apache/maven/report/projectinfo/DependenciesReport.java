@@ -125,7 +125,8 @@ public class DependenciesReport extends AbstractProjectInfoReport {
         if (result && skipEmptyReport) {
             // This seems to be a bit too much but the DependenciesRenderer applies the same logic
             DependencyNode dependencyNode = resolveProject();
-            Dependencies dependencies = new Dependencies(project, dependencyNode, classesAnalyzer);
+            Dependencies dependencies =
+                    new Dependencies(project, dependencyNode, classesAnalyzer, repoUtils.getPluginCacheBaseDir());
             result = dependencies.hasDependencies();
         }
 
@@ -142,7 +143,8 @@ public class DependenciesReport extends AbstractProjectInfoReport {
 
         DependencyNode dependencyNode = resolveProject();
 
-        Dependencies dependencies = new Dependencies(project, dependencyNode, classesAnalyzer);
+        Dependencies dependencies =
+                new Dependencies(project, dependencyNode, classesAnalyzer, repoUtils.getPluginCacheBaseDir());
 
         DependenciesReportConfiguration config = new DependenciesReportConfiguration(dependencyDetailsEnabled);
 

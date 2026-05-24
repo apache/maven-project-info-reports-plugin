@@ -24,12 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,13 +55,10 @@ import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
+import org.apache.maven.report.projectinfo.dependencies.JarDataSummary;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer.TotalCell.SummaryTableRowOrder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.jar.JarData;
-import org.apache.maven.shared.jar.classes.JarClasses;
-import org.apache.maven.shared.jar.classes.JarVersionedRuntime;
-import org.apache.maven.shared.jar.classes.JarVersionedRuntimes;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -85,6 +82,8 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     private final DependencyNode dependencyNode;
 
     private final Dependencies dependencies;
+
+    // private final FileDetailsCache cache;
 
     private final DependenciesReportConfiguration configuration;
 
@@ -412,11 +411,12 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             File artifactFile = dependencies.getFile(artifact);
 
             totaldeps.incrementTotal(artifact.getScope());
-            totaldepsize.addTotal(artifactFile.length(), artifact.getScope());
 
             if (JAR_SUBTYPE.contains(artifact.getType().toLowerCase())) {
                 try {
-                    JarData jarData = dependencies.getJarDependencyDetails(artifact);
+                    JarDataSummary jarData = dependencies.getJarDependencyDetails(artifact);
+
+                    totaldepsize.addTotal(jarData.getFsize(), artifact.getScope());
 
                     totalentries.addTotal(jarData.getNumEntries(), artifact.getScope());
                     totalclasses.addTotal(jarData.getNumClasses(), artifact.getScope());
@@ -453,7 +453,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     }
 
                     String name = artifactFile.getName();
-                    String fileLength = fileLengthDecimalFormat.format(artifactFile.length());
+                    String fileLength = fileLengthDecimalFormat.format(jarData.getFsize());
 
                     if (artifactFile.isDirectory()) {
                         File parent = artifactFile.getParentFile();
@@ -471,9 +471,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                             name, fileLength, String.valueOf(jarData.getNumEntries()), "", "", "", "", sealedCellValue
                         });
 
-                        JarVersionedRuntimes versionedRuntimes = jarData.getVersionedRuntimes();
-                        Collection<JarVersionedRuntime> versionedRuntimeList =
-                                versionedRuntimes.getVersionedRuntimeMap().values();
+                        List<JarDataSummary.VersionedRuntime> versionedRuntimeList = jarData.getVersionedRuntimes();
 
                         // root content information row
                         tableRow(hasSealed, new String[] {
@@ -487,10 +485,8 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                             ""
                         });
 
-                        for (JarVersionedRuntime versionedRuntime : versionedRuntimeList) {
-                            JarClasses versionedJarClasses = versionedRuntime.getJarClasses();
-
-                            debugInformationCellValue = versionedJarClasses.isDebugPresent()
+                        for (JarDataSummary.VersionedRuntime versionedRuntime : versionedRuntimeList) {
+                            debugInformationCellValue = versionedRuntime.isDebugPresent()
                                     ? debugInformationCellYes
                                     : debugInformationCellNo;
 
@@ -498,10 +494,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                                 versionedTag,
                                 "",
                                 String.valueOf(versionedRuntime.getNumEntries()),
-                                String.valueOf(
-                                        versionedJarClasses.getClassNames().size()),
-                                String.valueOf(versionedJarClasses.getPackages().size()),
-                                versionedJarClasses.getJdkRevision(),
+                                String.valueOf(versionedRuntime.getNumClasses()),
+                                String.valueOf(versionedRuntime.getNumPackages()),
+                                versionedRuntime.getJdkRevision(),
                                 debugInformationCellValue,
                                 ""
                             });
@@ -522,15 +517,18 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     createExceptionInfoTableRow(artifact, artifactFile, e, hasSealed);
                 }
             } else {
+                long fileSize;
+                try {
+                    fileSize = Files.size(artifactFile.toPath());
+                } catch (IOException e) {
+                    log.warn("Could not get file size", e);
+                    fileSize = artifactFile.length();
+                }
+
+                totaldepsize.addTotal(fileSize, artifact.getScope());
+
                 tableRow(hasSealed, new String[] {
-                    artifactFile.getName(),
-                    fileLengthDecimalFormat.format(artifactFile.length()),
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
+                    artifactFile.getName(), fileLengthDecimalFormat.format(fileSize), "", "", "", "", "", ""
                 });
             }
         }
@@ -1073,7 +1071,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             if (artifact.getFile() != null
                     && JAR_SUBTYPE.contains(artifact.getType().toLowerCase())) {
                 try {
-                    JarData jarDetails = dependencies.getJarDependencyDetails(artifact);
+                    JarDataSummary jarDetails = dependencies.getJarDependencyDetails(artifact);
                     if (jarDetails.isSealed()) {
                         return true;
                     }

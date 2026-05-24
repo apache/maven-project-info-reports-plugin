@@ -23,6 +23,8 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import java.io.File;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -100,5 +102,18 @@ public class RepositoryUtils {
         buildingRequest.setProcessPlugins(false);
 
         return projectBuilder.build(artifact, allowStubModel, buildingRequest).getProject();
+    }
+
+    /**
+     * Get the cache base directory.
+     *
+     * @return the file representing the base directory
+     *
+     * @since 3.9.1
+     */
+    public File getPluginCacheBaseDir() {
+        MavenSession session = sessionProvider.get();
+        File repoBase = session.getRepositorySession().getLocalRepository().getBasedir();
+        return new File(repoBase, ".cache/mpir");
     }
 }
