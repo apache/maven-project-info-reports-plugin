@@ -34,7 +34,6 @@ import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -49,8 +48,6 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PrefixedObjectValueSource;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
-import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /**
  * Base class with the things that should be in AbstractMavenReport anyway.
@@ -189,49 +186,6 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
 
     protected MojoExecution getMojoExecution() {
         return mojoExecution;
-    }
-
-    /**
-     * @param pluginId The id of the plugin
-     * @return The information about the plugin
-     */
-    protected Plugin getPlugin(String pluginId) {
-        if ((getProject().getBuild() == null) || (getProject().getBuild().getPluginsAsMap() == null)) {
-            return null;
-        }
-
-        Plugin plugin = getProject().getBuild().getPluginsAsMap().get(pluginId);
-
-        if ((plugin == null)
-                && (getProject().getBuild().getPluginManagement() != null)
-                && (getProject().getBuild().getPluginManagement().getPluginsAsMap() != null)) {
-            plugin = getProject()
-                    .getBuild()
-                    .getPluginManagement()
-                    .getPluginsAsMap()
-                    .get(pluginId);
-        }
-
-        return plugin;
-    }
-
-    /**
-     * @param pluginId the pluginId
-     * @param param the child which should be checked
-     * @return the value of the dom tree
-     */
-    protected String getPluginParameter(String pluginId, String param) {
-        Plugin plugin = getPlugin(pluginId);
-        if (plugin != null) {
-            Xpp3Dom xpp3Dom = (Xpp3Dom) plugin.getConfiguration();
-            if (xpp3Dom != null
-                    && xpp3Dom.getChild(param) != null
-                    && StringUtils.isNotEmpty(xpp3Dom.getChild(param).getValue())) {
-                return xpp3Dom.getChild(param).getValue();
-            }
-        }
-
-        return null;
     }
 
     /**

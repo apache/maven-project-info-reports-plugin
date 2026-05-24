@@ -24,9 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.maven.archiver.BuildHelper;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Organization;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
@@ -143,29 +145,16 @@ public class SummaryReport extends AbstractProjectInfoReport {
         }
 
         private String getMinimumJavaVersion() {
+            final Plugin compilerPlugin = BuildHelper.getCompilerPlugin(project);
 
-            final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
-            String releaseConfigured = getPluginParameter(pluginId, "release");
-            String sourceConfigured = getPluginParameter(pluginId, "source");
-            String targetConfigured = getPluginParameter(pluginId, "target");
-
-            String releaseProperty = project.getProperties().getProperty("maven.compiler.release");
-
-            String forkFlag = getPluginParameter(pluginId, "fork");
+            String forkFlag = BuildHelper.getPluginParameter(project, compilerPlugin, "fork", "maven.compiler.fork");
             if ("true".equalsIgnoreCase(forkFlag)) {
-                return getPluginParameter(pluginId, "compilerVersion");
-            } else if (releaseConfigured != null) {
-                return releaseConfigured;
-            } else if (targetConfigured != null) {
-                return targetConfigured;
-            } else if (sourceConfigured != null) {
-                return sourceConfigured;
-            } else if (releaseProperty != null) {
-                return releaseProperty;
-            } else {
-                // ${maven.compiler.target} default value
-                return project.getProperties().getProperty("maven.compiler.target");
+                // now deprecated
+                // https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#compilerVersion
+                return BuildHelper.getPluginParameter(
+                        project, compilerPlugin, "compilerVersion", "maven.compiler.compilerVersion");
             }
+            return BuildHelper.discoverJavaRelease(project);
         }
 
         private void tableRowWithLink(String[] content) {
