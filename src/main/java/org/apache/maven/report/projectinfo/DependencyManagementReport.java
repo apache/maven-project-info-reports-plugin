@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import java.util.Locale;
 
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
@@ -32,7 +31,6 @@ import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -57,24 +55,11 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
     // Mojo components
     // ----------------------------------------------------------------------
 
-    /**
-     * Artifact metadata source component.
-     *
-     * @since 2.4
-     */
-    protected final ArtifactMetadataSource artifactMetadataSource;
-
     private final RepositoryUtils repoUtils;
 
     @Inject
-    protected DependencyManagementReport(
-            RepositorySystem repositorySystem,
-            I18N i18n,
-            ProjectBuilder projectBuilder,
-            ArtifactMetadataSource artifactMetadataSource,
-            RepositoryUtils repoUtils) {
-        super(repositorySystem, i18n, projectBuilder);
-        this.artifactMetadataSource = artifactMetadataSource;
+    protected DependencyManagementReport(I18N i18n, ProjectBuilder projectBuilder, RepositoryUtils repoUtils) {
+        super(i18n, projectBuilder);
         this.repoUtils = repoUtils;
     }
 
@@ -107,8 +92,6 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
                 getI18N(locale),
                 getLog(),
                 getManagementDependencies(),
-                artifactMetadataSource,
-                repositorySystem,
                 buildingRequest,
                 repoUtils,
                 getLicenseMappings());

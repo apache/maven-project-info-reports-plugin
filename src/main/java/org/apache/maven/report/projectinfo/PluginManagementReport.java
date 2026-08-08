@@ -39,8 +39,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
@@ -64,9 +64,12 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
     @Parameter
     private List<String> pluginManagementExcludes = null;
 
+    private final RepositoryUtils repoUtils;
+
     @Inject
-    public PluginManagementReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(repositorySystem, i18n, projectBuilder);
+    public PluginManagementReport(I18N i18n, ProjectBuilder projectBuilder, RepositoryUtils repoUtils) {
+        super(i18n, projectBuilder);
+        this.repoUtils = repoUtils;
     }
 
     // ----------------------------------------------------------------------
@@ -83,7 +86,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
                 project.getPluginManagement().getPlugins(),
                 project,
                 projectBuilder,
-                repositorySystem,
+                repoUtils,
                 getSession().getProjectBuildingRequest(),
                 pluginManagementExcludes);
         r.render();
@@ -129,7 +132,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
 
         private final ProjectBuilder projectBuilder;
 
-        private final RepositorySystem repositorySystem;
+        private final RepositoryUtils repoUtils;
 
         private final ProjectBuildingRequest buildingRequest;
 
@@ -143,7 +146,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
          * @param plugins {@link Plugin}
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
-         * @param repositorySystem {@link RepositorySystem}
+         * @param repoUtils {@link RepositoryUtils}
          * @param buildingRequest {@link ProjectBuildingRequest}
          * @param excludes the list of plugins to be excluded from the report
          */
@@ -155,7 +158,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
                 List<Plugin> plugins,
                 MavenProject project,
                 ProjectBuilder projectBuilder,
-                RepositorySystem repositorySystem,
+                RepositoryUtils repoUtils,
                 ProjectBuildingRequest buildingRequest,
                 List<String> excludes) {
             super(sink, i18n, locale);
@@ -168,7 +171,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
 
             this.projectBuilder = projectBuilder;
 
-            this.repositorySystem = repositorySystem;
+            this.repoUtils = repoUtils;
 
             this.buildingRequest = buildingRequest;
 
@@ -223,7 +226,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
                     versionRange = VersionRange.createFromVersion(plugin.getVersion());
                 }
 
-                Artifact pluginArtifact = repositorySystem.createProjectArtifact(
+                Artifact pluginArtifact = repoUtils.createProjectArtifact(
                         plugin.getGroupId(), plugin.getArtifactId(), versionRange.toString());
 
                 if (patternExcludesArtifactFilter.include(pluginArtifact)) {

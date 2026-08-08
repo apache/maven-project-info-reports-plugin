@@ -47,7 +47,6 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.DependencyVersionMap;
 import org.apache.maven.report.projectinfo.dependencies.SinkSerializingDependencyNodeVisitor;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.filter.StrictPatternIncludesArtifactFilter;
 import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilderException;
@@ -99,11 +98,8 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
     @Inject
     protected DependencyConvergenceReport(
-            RepositorySystem repositorySystem,
-            I18N i18n,
-            ProjectBuilder projectBuilder,
-            DependencyCollectorBuilder dependencyCollectorBuilder) {
-        super(repositorySystem, i18n, projectBuilder);
+            I18N i18n, ProjectBuilder projectBuilder, DependencyCollectorBuilder dependencyCollectorBuilder) {
+        super(i18n, projectBuilder);
         this.dependencyCollectorBuilder = dependencyCollectorBuilder;
     }
 

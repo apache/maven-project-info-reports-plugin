@@ -40,8 +40,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -54,9 +54,12 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "plugins", requiresDependencyResolution = ResolutionScope.TEST)
 public class PluginsReport extends AbstractProjectInfoReport {
 
+    private final RepositoryUtils repoUtils;
+
     @Inject
-    public PluginsReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(repositorySystem, i18n, projectBuilder);
+    public PluginsReport(I18N i18n, ProjectBuilder projectBuilder, RepositoryUtils repoUtils) {
+        super(i18n, projectBuilder);
+        this.repoUtils = repoUtils;
     }
     // ----------------------------------------------------------------------
     // Public methods
@@ -84,7 +87,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 project.getReportPlugins(),
                 project,
                 projectBuilder,
-                repositorySystem,
+                repoUtils,
                 getSession().getProjectBuildingRequest());
         r.render();
     }
@@ -117,7 +120,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
 
         private final ProjectBuilder projectBuilder;
 
-        private final RepositorySystem repositorySystem;
+        private final RepositoryUtils repoUtils;
 
         private final ProjectBuildingRequest buildingRequest;
 
@@ -130,7 +133,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
          * @param reports {@link Artifact}
          * @param project {@link MavenProject}
          * @param projectBuilder {@link ProjectBuilder}
-         * @param repositorySystem {@link RepositorySystem}
+         * @param repoUtils {@link RepositoryUtils}
          * @param buildingRequest {@link ProjectBuildingRequest}
          *
          */
@@ -143,7 +146,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 List<ReportPlugin> reports,
                 MavenProject project,
                 ProjectBuilder projectBuilder,
-                RepositorySystem repositorySystem,
+                RepositoryUtils repoUtils,
                 ProjectBuildingRequest buildingRequest) {
             super(sink, i18n, locale);
 
@@ -157,7 +160,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
 
             this.projectBuilder = projectBuilder;
 
-            this.repositorySystem = repositorySystem;
+            this.repoUtils = repoUtils;
 
             this.buildingRequest = buildingRequest;
         }
@@ -206,7 +209,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
             for (GAV plugin : list) {
                 VersionRange versionRange = VersionRange.createFromVersion(plugin.getVersion());
 
-                Artifact pluginArtifact = repositorySystem.createProjectArtifact(
+                Artifact pluginArtifact = repoUtils.createProjectArtifact(
                         plugin.getGroupId(), plugin.getArtifactId(), versionRange.toString());
                 try {
                     MavenProject pluginProject =

@@ -32,7 +32,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.scm.manager.ScmManager;
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository;
 import org.apache.maven.scm.provider.hg.repository.HgScmProviderRepository;
@@ -99,9 +98,8 @@ public class ScmReport extends AbstractProjectInfoReport {
     protected final ScmManager scmManager;
 
     @Inject
-    public ScmReport(
-            RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder, ScmManager scmManager) {
-        super(repositorySystem, i18n, projectBuilder);
+    public ScmReport(I18N i18n, ProjectBuilder projectBuilder, ScmManager scmManager) {
+        super(i18n, projectBuilder);
         this.scmManager = scmManager;
     }
 

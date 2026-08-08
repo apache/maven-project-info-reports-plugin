@@ -38,7 +38,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.report.projectinfo.avatars.AvatarsProvider;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -91,12 +90,8 @@ public class TeamReport extends AbstractProjectInfoReport {
     private final Map<String, AvatarsProvider> avatarsProviders;
 
     @Inject
-    public TeamReport(
-            RepositorySystem repositorySystem,
-            I18N i18n,
-            ProjectBuilder projectBuilder,
-            Map<String, AvatarsProvider> avatarsProviders) {
-        super(repositorySystem, i18n, projectBuilder);
+    public TeamReport(I18N i18n, ProjectBuilder projectBuilder, Map<String, AvatarsProvider> avatarsProviders) {
+        super(i18n, projectBuilder);
         this.avatarsProviders = avatarsProviders;
     }
 

@@ -28,7 +28,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 
 /**
@@ -56,8 +55,8 @@ public final class DependencyInformationReport extends AbstractProjectInfoReport
     protected String packaging;
 
     @Inject
-    public DependencyInformationReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(repositorySystem, i18n, projectBuilder);
+    public DependencyInformationReport(I18N i18n, ProjectBuilder projectBuilder) {
+        super(i18n, projectBuilder);
     }
 
     // ----------------------------------------------------------------------

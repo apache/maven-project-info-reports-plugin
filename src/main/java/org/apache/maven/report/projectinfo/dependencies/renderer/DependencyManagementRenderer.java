@@ -20,14 +20,11 @@ package org.apache.maven.report.projectinfo.dependencies.renderer;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -43,9 +40,9 @@ import org.apache.maven.report.projectinfo.LicenseMapping;
 import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
 
 /**
  * @author Nick Stolwijk
@@ -55,10 +52,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
     private final ManagementDependencies dependencies;
 
     private final Log log;
-
-    private final ArtifactMetadataSource artifactMetadataSource;
-
-    private final RepositorySystem repositorySystem;
 
     private final ProjectBuildingRequest buildingRequest;
 
@@ -74,8 +67,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
      * @param i18n {@link I18N}
      * @param log {@link Log}
      * @param dependencies {@link ManagementDependencies}
-     * @param artifactMetadataSource {@link ArtifactMetadataSource}
-     * @param repositorySystem {@link RepositorySystem}
      * @param buildingRequest {@link ProjectBuildingRequest}
      * @param repoUtils {@link RepositoryUtils}
      * @param licenseMappings {@link LicenseMapping}
@@ -86,8 +77,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             I18N i18n,
             Log log,
             ManagementDependencies dependencies,
-            ArtifactMetadataSource artifactMetadataSource,
-            RepositorySystem repositorySystem,
             ProjectBuildingRequest buildingRequest,
             RepositoryUtils repoUtils,
             Map<String, String> licenseMappings) {
@@ -95,8 +84,6 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
         this.log = log;
         this.dependencies = dependencies;
-        this.artifactMetadataSource = artifactMetadataSource;
-        this.repositorySystem = repositorySystem;
         this.buildingRequest = buildingRequest;
         this.repoUtils = repoUtils;
         this.licenseMappings = licenseMappings;
@@ -197,10 +184,9 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private String[] getDependencyRow(Dependency dependency, boolean hasClassifier) {
 
-        Artifact artifact = repositorySystem.createArtifact(
+        Artifact artifact = repoUtils.createArtifact(
                 dependency.getGroupId(),
                 dependency.getArtifactId(),
                 dependency.getVersion(),
@@ -216,15 +202,8 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
                 // MPIR-216: no direct version but version range: need to choose one precise version
                 log.debug("Resolving range for DependencyManagement on " + artifact.getId());
 
-                List<ArtifactVersion> versions = artifactMetadataSource.retrieveAvailableVersions(
-                        artifact, buildingRequest.getLocalRepository(), buildingRequest.getRemoteRepositories());
-
-                // only use versions from range
-                for (Iterator<ArtifactVersion> iter = versions.iterator(); iter.hasNext(); ) {
-                    if (!range.containsVersion(iter.next())) {
-                        iter.remove();
-                    }
-                }
+                List<ArtifactVersion> versions =
+                        repoUtils.getAvailableVersions(artifact, buildingRequest.getRemoteRepositories());
 
                 // select latest, assuming pom information will be the most accurate
                 if (!versions.isEmpty()) {
@@ -252,7 +231,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             }
         } catch (InvalidVersionSpecificationException e) {
             log.warn("Unable to parse version for " + artifact.getId(), e);
-        } catch (ArtifactMetadataRetrievalException e) {
+        } catch (VersionRangeResolutionException e) {
             log.warn("Unable to retrieve versions for " + artifact.getId() + " from repository.", e);
         } catch (ProjectBuildingException e) {
             if (log.isDebugEnabled()) {

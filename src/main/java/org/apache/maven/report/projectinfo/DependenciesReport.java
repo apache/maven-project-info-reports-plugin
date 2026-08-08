@@ -46,7 +46,6 @@ import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfig
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
@@ -103,13 +102,12 @@ public class DependenciesReport extends AbstractProjectInfoReport {
 
     @Inject
     protected DependenciesReport(
-            RepositorySystem repositorySystem,
             I18N i18n,
             ProjectBuilder projectBuilder,
             @Named("default") DependencyGraphBuilder dependencyGraphBuilder,
             JarClassesAnalysis classesAnalyzer,
             RepositoryUtils repoUtils) {
-        super(repositorySystem, i18n, projectBuilder);
+        super(i18n, projectBuilder);
         this.dependencyGraphBuilder = dependencyGraphBuilder;
         this.classesAnalyzer = classesAnalyzer;
         this.repoUtils = repoUtils;

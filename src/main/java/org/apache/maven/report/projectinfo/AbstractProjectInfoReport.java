@@ -40,7 +40,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.interpolation.EnvarBasedValueSource;
@@ -121,19 +120,13 @@ public abstract class AbstractProjectInfoReport extends AbstractMavenReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Artifact Factory component.
-     */
-    final RepositorySystem repositorySystem;
-
-    /**
      * Internationalization component, could support also custom bundle using {@link #customBundle}.
      */
     private I18N i18n;
 
     protected final ProjectBuilder projectBuilder;
 
-    protected AbstractProjectInfoReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        this.repositorySystem = repositorySystem;
+    protected AbstractProjectInfoReport(I18N i18n, ProjectBuilder projectBuilder) {
         this.i18n = i18n;
         this.projectBuilder = projectBuilder;
     }

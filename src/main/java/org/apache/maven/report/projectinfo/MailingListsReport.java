@@ -33,7 +33,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -48,8 +47,8 @@ import org.codehaus.plexus.util.StringUtils;
 public class MailingListsReport extends AbstractProjectInfoReport {
 
     @Inject
-    public MailingListsReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
-        super(repositorySystem, i18n, projectBuilder);
+    public MailingListsReport(I18N i18n, ProjectBuilder projectBuilder) {
+        super(i18n, projectBuilder);
     }
     // ----------------------------------------------------------------------
     // Public methods
