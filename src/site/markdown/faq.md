@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+---
+title: Frequently Asked Questions
+---
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -19,43 +21,36 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<faqs xmlns="http://maven.apache.org/FML/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/FML/1.0 http://maven.apache.org/xsd/fml-1.0.xsd" id="FAQ" title="Frequently Asked Questions">
-  <part id="General">
-    <faq id="Is it possible to customize the labels of the Project Reports Menu">
-      <question>Is it possible to customize the labels of the Project Reports Menu?</question>
-      <answer>
-        <p>
-        Not yet. See the related issue: <a href="https://issues.apache.org/jira/browse/MPIR-35">MPIR-35</a>
-        </p>
-      </answer>
-    </faq>
+<a id="top"></a>
 
-    <faq id="How to exclude SCM anonymous access info">
-      <question>How to exclude SCM access info?</question>
-      <answer>
-        <p>
-          See the <a href="examples/scm-report.html#How_to_exclude_SCM_anonymous_access_info">SCM report documentation</a>.
-        </p>
-      </answer>
-    </faq>
+# Frequently Asked Questions
 
-    <faq id="How to use developer/contributor time zone">
-      <question>How to use developer/contributor time zone?</question>
-      <answer>
-        <p>
-          Please refer to the <a href="http://maven.apache.org/pom.html#Developers">developer section</a> of the POM reference.
-        </p>
-      </answer>
-    </faq>
+1. [Is it possible to customize the labels of the Project Reports Menu?](#Is_it_possible_to_customize_the_labels_of_the_Project_Reports_Menu)
+2. [How to exclude SCM access info?](#How_to_exclude_SCM_anonymous_access_info)
+3. [How to use developer/contributor time zone?](#How_to_use_developer.2Fcontributor_time_zone)
+4. [Is it possible to customize the reports rendering?](#Is_it_possible_to_customize_the_reports_rendering)
 
-    <faq id="Is it possible to customize the reports rendering">
-      <question>Is it possible to customize the reports rendering?</question>
-      <answer>
-        <p>
-          Not yet, but <a href="https://github.com/apache/maven-project-info-reports-plugin/issues/">patches</a> are always welcome!
-          You could only <a href="./examples/custom-report.html">customize</a> the texts in the reports.
-        </p>
-      </answer>
-    </faq>
-  </part>
-</faqs>
+<a id="Is_it_possible_to_customize_the_labels_of_the_Project_Reports_Menu"></a>
+
+### Is it possible to customize the labels of the Project Reports Menu?
+
+Not yet. See the related issue: [MPIR-35](https://issues.apache.org/jira/browse/MPIR-35)
+
+<a id="How_to_exclude_SCM_anonymous_access_info"></a>
+
+### How to exclude SCM access info?
+
+See the [SCM report documentation](examples/scm-report.html#How_to_exclude_SCM_anonymous_access_info).
+
+<a id="How_to_use_developer.2Fcontributor_time_zone"></a>
+
+### How to use developer/contributor time zone?
+
+Please refer to the [developer section](http://maven.apache.org/pom.html#Developers) of the POM reference.
+
+<a id="Is_it_possible_to_customize_the_reports_rendering"></a>
+
+### Is it possible to customize the reports rendering?
+
+Not yet, but [patches](https://github.com/apache/maven-project-info-reports-plugin/issues/) are always welcome!
+You could only [customize](./examples/custom-report.html) the texts in the reports.
