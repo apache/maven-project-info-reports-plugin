@@ -86,8 +86,20 @@ public class ModulesReport extends AbstractProjectInfoReport {
                 .render();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated use {@link #getOutputPath()} instead
+     */
+    @Override
+    @Deprecated
     public String getOutputName() {
+        return getOutputPath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getOutputPath() {
         return "modules";
     }
 
