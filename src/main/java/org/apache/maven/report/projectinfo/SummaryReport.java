@@ -62,8 +62,20 @@ public class SummaryReport extends AbstractProjectInfoReport {
         new ProjectSummaryRenderer(getSink(), locale).render();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated use {@link #getOutputPath()} instead
+     */
+    @Override
+    @Deprecated
     public String getOutputName() {
+        return getOutputPath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getOutputPath() {
         return "summary";
     }
 

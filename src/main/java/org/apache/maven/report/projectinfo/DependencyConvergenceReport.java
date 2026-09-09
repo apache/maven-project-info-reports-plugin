@@ -112,9 +112,19 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     /**
+     * @deprecated use {@link #getOutputPath()} instead
+     */
+    @Override
+    @Deprecated
+    public String getOutputName() {
+        return getOutputPath();
+    }
+
+    /**
      * {@inheritDoc}
      */
-    public String getOutputName() {
+    @Override
+    public String getOutputPath() {
         return "dependency-convergence";
     }
 

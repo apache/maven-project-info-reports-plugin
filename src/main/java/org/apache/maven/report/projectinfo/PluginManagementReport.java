@@ -101,8 +101,20 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
         r.render();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated use {@link #getOutputPath()} instead
+     */
+    @Override
+    @Deprecated
     public String getOutputName() {
+        return getOutputPath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getOutputPath() {
         return "plugin-management";
     }
 
