@@ -18,9 +18,26 @@
  */
 package org.apache.maven.report.projectinfo;
 
-import java.io.File;
-import java.net.URL;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.nio.file.Files;
+import java.security.KeyStore;
+
+import com.sun.net.httpserver.BasicAuthenticator;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
@@ -28,17 +45,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.security.Constraint;
-import org.mortbay.jetty.security.ConstraintMapping;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.report.projectinfo.ProjectInfoReportUtils.getArchiveServer;
@@ -52,13 +58,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 class ProjectInfoReportUtilsTest {
-    private static final int MAX_IDLE_TIME = 30000;
-
     private int port = -1;
 
     private Settings settingsStub;
 
-    private Server jettyServer;
+    private HttpServer httpServer;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -108,7 +112,7 @@ class ProjectInfoReportUtilsTest {
         assertTrue(content.contains("Свобода всем народам!"));
 
         // http + no auth
-        startJetty(false, false);
+        startServer(false, false);
 
         url = new URL("http://localhost:" + port + "/project-info-reports.properties");
 
@@ -116,10 +120,10 @@ class ProjectInfoReportUtilsTest {
         assertNotNull(content);
         assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
-        stopJetty();
+        stopServer();
 
         // http + auth
-        startJetty(false, true);
+        startServer(false, true);
 
         url = new URL("http://localhost:" + port + "/project-info-reports.properties");
 
@@ -127,10 +131,10 @@ class ProjectInfoReportUtilsTest {
         assertNotNull(content);
         assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
-        stopJetty();
+        stopServer();
 
         // https + no auth
-        startJetty(true, false);
+        startServer(true, false);
 
         url = new URL("https://localhost:" + port + "/project-info-reports.properties");
 
@@ -138,10 +142,10 @@ class ProjectInfoReportUtilsTest {
         assertNotNull(content);
         assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
-        stopJetty();
+        stopServer();
 
         // https + auth
-        startJetty(true, true);
+        startServer(true, true);
 
         url = new URL("https://localhost:" + port + "/project-info-reports.properties");
 
@@ -149,7 +153,7 @@ class ProjectInfoReportUtilsTest {
         assertNotNull(content);
         assertTrue(content.contains("Licensed to the Apache Software Foundation"));
 
-        stopJetty();
+        stopServer();
 
         // TODO need to test with a proxy
     }
@@ -182,72 +186,75 @@ class ProjectInfoReportUtilsTest {
         assertEquals("maven.announce.markmail.org", getArchiveServer("http://maven.announce.markmail.org"));
     }
 
-    private void startJetty(boolean isSSL, boolean withAuth) throws Exception {
-        jettyServer = new Server();
-        jettyServer.setStopAtShutdown(true);
-
-        Connector connector = (isSSL ? getSSLConnector() : getDefaultConnector());
-        jettyServer.setConnectors(new Connector[] {connector});
-
-        WebAppContext webapp = new WebAppContext();
-        webapp.setContextPath("/");
-        webapp.setResourceBase(getBasedir() + "/target/classes/");
-
-        webapp.setServer(jettyServer);
-
-        if (withAuth) {
-            Constraint constraint = new Constraint();
-            constraint.setName(Constraint.__BASIC_AUTH);
-            constraint.setRoles(new String[] {"user", "admin"});
-            constraint.setAuthenticate(true);
-
-            ConstraintMapping cm = new ConstraintMapping();
-            cm.setConstraint(constraint);
-            cm.setPathSpec("/*");
-
-            SecurityHandler sh = new SecurityHandler();
-            sh.setUserRealm(new HashUserRealm("MyRealm", getBasedir() + "/src/test/resources/realm.properties"));
-            sh.setConstraintMappings(new ConstraintMapping[] {cm});
-
-            webapp.addHandler(sh);
+    /**
+     * Starts a local server on an ephemeral port that serves the files under {@code target/classes}, the same
+     * document root the Jetty fixture used before, optionally over TLS with the key pair that
+     * {@code keytool-maven-plugin} generates at {@code target/jetty.jks} and optionally behind basic auth for
+     * the {@code admin} user that {@link #setUp()} puts into the settings stub.
+     */
+    private void startServer(boolean isSSL, boolean withAuth) throws Exception {
+        InetSocketAddress address = new InetSocketAddress("localhost", 0);
+        if (isSSL) {
+            HttpsServer httpsServer = HttpsServer.create(address, 0);
+            httpsServer.setHttpsConfigurator(new HttpsConfigurator(createSslContext()));
+            httpServer = httpsServer;
+        } else {
+            httpServer = HttpServer.create(address, 0);
         }
 
-        DefaultHandler defaultHandler = new DefaultHandler();
-        defaultHandler.setServer(jettyServer);
+        final File documentRoot = new File(getBasedir(), "target/classes");
+        HttpHandler handler = new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                File file = new File(documentRoot, exchange.getRequestURI().getPath());
+                if (!file.isFile()) {
+                    exchange.sendResponseHeaders(404, -1);
+                    exchange.close();
+                    return;
+                }
+                byte[] body = Files.readAllBytes(file.toPath());
+                exchange.sendResponseHeaders(200, body.length);
+                try (OutputStream out = exchange.getResponseBody()) {
+                    out.write(body);
+                }
+            }
+        };
+        HttpContext context = httpServer.createContext("/", handler);
 
-        Handler[] handlers = new Handler[2];
-        handlers[0] = webapp;
-        handlers[1] = defaultHandler;
-        jettyServer.setHandlers(handlers);
+        if (withAuth) {
+            context.setAuthenticator(new BasicAuthenticator("MyRealm") {
+                @Override
+                public boolean checkCredentials(String username, String password) {
+                    return "admin".equals(username) && "admin".equals(password);
+                }
+            });
+        }
 
-        jettyServer.start();
+        httpServer.start();
 
-        port = connector.getLocalPort();
+        port = httpServer.getAddress().getPort();
     }
 
-    private void stopJetty() throws Exception {
-        if (jettyServer != null) {
-            jettyServer.stop();
+    private void stopServer() {
+        if (httpServer != null) {
+            httpServer.stop(0);
 
-            jettyServer = null;
+            httpServer = null;
 
             port = -1;
         }
     }
 
-    private Connector getDefaultConnector() {
-        Connector connector = new SelectChannelConnector();
-        connector.setMaxIdleTime(MAX_IDLE_TIME);
-        return connector;
-    }
-
-    private Connector getSSLConnector() {
-        SslSocketConnector connector = new SslSocketConnector();
-        connector.setKeystore(getBasedir() + "/target/jetty.jks");
-        connector.setPassword("apache");
-        connector.setKeyPassword("apache");
-        connector.setTruststore(getBasedir() + "/target/jetty.jks");
-        connector.setTrustPassword("apache");
-        return connector;
+    private SSLContext createSslContext() throws Exception {
+        char[] password = "apache".toCharArray();
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (InputStream in = new FileInputStream(new File(getBasedir(), "target/jetty.jks"))) {
+            keyStore.load(in, password);
+        }
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        keyManagerFactory.init(keyStore, password);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+        return sslContext;
     }
 }
