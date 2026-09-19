@@ -64,6 +64,8 @@ public class ProjectInfoReportUtils {
     /** The timeout when getting the url input stream */
     private static final int TIMEOUT = 1000 * 5;
 
+    private static final String USER_AGENT = buildUserAgent();
+
     /**
      * Get the input stream using UTF-8 as character encoding from a URL.
      *
@@ -208,6 +210,34 @@ public class ProjectInfoReportUtils {
     }
 
     /**
+     * The <code>User-Agent</code> sent with every HTTP request this plugin makes, so that server operators
+     * can identify the traffic and find this project: <code>maven-project-info-reports-plugin/VERSION
+     * (+https://maven.apache.org/plugins/maven-project-info-reports-plugin/)</code>.
+     *
+     * @return the user agent string, never null
+     * @since 3.9.1
+     */
+    public static String getUserAgent() {
+        return USER_AGENT;
+    }
+
+    private static String buildUserAgent() {
+        String version = "unknown";
+        try (InputStream in = ProjectInfoReportUtils.class.getResourceAsStream(
+                "/META-INF/maven/org.apache.maven.plugins/maven-project-info-reports-plugin/pom.properties")) {
+            if (in != null) {
+                Properties p = new Properties();
+                p.load(in);
+                version = p.getProperty("version", version);
+            }
+        } catch (IOException e) {
+            // keep "unknown"
+        }
+        return "maven-project-info-reports-plugin/" + version
+                + " (+https://maven.apache.org/plugins/maven-project-info-reports-plugin/)";
+    }
+
+    /**
      * @param url not null
      * @param project not null
      * @param settings not null
@@ -218,6 +248,7 @@ public class ProjectInfoReportUtils {
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(TIMEOUT);
         conn.setReadTimeout(TIMEOUT);
+        conn.setRequestProperty("User-Agent", USER_AGENT);
 
         // conn authorization
         // @formatter:off

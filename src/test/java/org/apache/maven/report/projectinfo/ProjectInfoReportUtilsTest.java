@@ -155,6 +155,15 @@ class ProjectInfoReportUtilsTest {
     }
 
     @Test
+    void testGetUserAgent() {
+        String userAgent = ProjectInfoReportUtils.getUserAgent();
+        assertTrue(userAgent.startsWith("maven-project-info-reports-plugin/"), userAgent);
+        assertTrue(
+                userAgent.endsWith("(+https://maven.apache.org/plugins/maven-project-info-reports-plugin/)"),
+                userAgent);
+    }
+
+    @Test
     void testGetArchiveServer() {
         assertEquals("???UNKNOWN???", getArchiveServer(null));
 
