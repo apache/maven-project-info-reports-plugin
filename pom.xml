@@ -324,12 +324,6 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.1.26</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-impl</artifactId>
       <version>${resolverVersion}</version>
@@ -401,7 +395,7 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
-      <!-- To use Jetty SSL in tests -->
+      <!-- Key pair for the HTTPS server in ProjectInfoReportUtilsTest -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>keytool-maven-plugin</artifactId>
