@@ -30,15 +30,15 @@ try
         return false;
     }
 
-    String[] reports = { "dependency-info",
+    String[] reports = [ "dependency-info",
                          "index",
                          "plugin-management",
                          "plugins",
                          "project-info",
                          "summary"
-                       };
+                       ] as String[];
 
-    String[] skippedReports = { "dependencies",
+    String[] skippedReports = [ "dependencies",
                                 "integration",
                                 "issue-management",
                                 "licenses",
@@ -48,7 +48,7 @@ try
                                 "team",
                                 "distribution-management",
                                 "modules"
-                              };
+                              ] as String[];
 
     for ( String report : reports )
     {
