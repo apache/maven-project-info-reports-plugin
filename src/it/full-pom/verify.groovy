@@ -31,7 +31,7 @@ try
         return false;
     }
 
-    String[] reports = { "index",                  // <report>index</report>
+    String[] reports = [ "index",                  // <report>index</report>
                          "summary",                // <report>summary</report>
                          "licenses",               // <report>licenses</report>
                          "team",                   // <report>team</report>
@@ -46,7 +46,7 @@ try
                          "plugin-management",      // <report>plugin-management</report>
                          "plugins",                // <report>plugins</report>
                          "distribution-management" // <report>distribution-management</report>
-                       };
+                       ] as String[];
     String info = FileUtils.fileRead( new File( siteDir, "project-info.html"), "UTF-8" );
     int index1 = 10;
     int index2 = 10;
