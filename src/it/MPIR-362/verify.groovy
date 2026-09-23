@@ -18,3 +18,9 @@
  */
 File log = new File( basedir, 'build.log' )
 assert !( log.text =~ /\[WARNING\] Unable to create Maven project for com\.sun:javaws:pom:.* from repository\./ )
+
+// the only managed dependency here declares an explicit version, so nothing was resolved from the
+// dependency tree and the "resolved version" note must not be shown
+File report = new File( basedir, 'target/site/dependency-management.html' )
+assert report.exists() : 'The dependency-management report was not generated'
+assert !report.text.contains( 'Versions shown in parentheses' ) : 'The resolved-version note should not be shown when no version was resolved'
