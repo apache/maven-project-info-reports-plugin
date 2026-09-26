@@ -283,7 +283,12 @@ public class JarDataSummary {
         List<VersionedRuntime> versionedRuntimes = null;
         if (props.getProperty("versionedRuntimes") != null) {
             int count = getInt(props, "versionedRuntimes");
-            versionedRuntimes = new ArrayList<>(count);
+            if (count < 0) {
+                throw new IllegalArgumentException("Malformed field 'versionedRuntimes'");
+            }
+            // the list is deliberately not sized from the count: it comes from a file which is not trusted, and a
+            // count larger than the entries present fails on the first missing one
+            versionedRuntimes = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 String prefix = "versionedRuntimes." + i + '.';
                 versionedRuntimes.add(new VersionedRuntime(
