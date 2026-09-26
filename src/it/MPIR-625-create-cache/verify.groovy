@@ -111,6 +111,9 @@ assert logContent.contains('JarDataSummary analyzed for: org.codehaus.plexus:ple
 
 assert !logContent.contains('JarDataSummary cached for:')
 
+// a cache file which does not exist yet is not a failure to load it
+assert !logContent.contains('Loading JarDataSummary from cache failed')
+
 // the summaries are written to the default cache directory, ${project.build.directory}/mpir-cache
 File cacheDir = new File( basedir, 'target/mpir-cache' )
 [ 'org/codehaus/plexus/plexus-utils/4.0.0', 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT', 'org/apache/commons/commons-math3/3.6.1/tools' ].each { String artifactPath ->

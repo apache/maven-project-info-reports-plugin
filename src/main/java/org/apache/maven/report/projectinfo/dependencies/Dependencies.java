@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -323,7 +324,7 @@ public class Dependencies {
 
         BasicFileAttributes fileAttr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 
-        if (cacheFile != null && Files.exists(cacheFile)) {
+        if (cacheFile != null) {
             JarDataSummary cached = readCache(artifact, cacheFile);
 
             // cheap file change check
@@ -345,9 +346,9 @@ public class Dependencies {
     }
 
     /**
-     * @return the cached summary, or <code>null</code> if it cannot be used: it is unreadable, invalid, or was
-     *         written by a different version of the cache file format. In all those cases the JAR file is analyzed
-     *         again.
+     * @return the cached summary, or <code>null</code> if it cannot be used: it does not exist yet, is unreadable,
+     *         invalid, or was written by a different version of the cache file format. In all those cases the JAR
+     *         file is analyzed again.
      */
     private JarDataSummary readCache(Artifact artifact, Path cacheFile) {
         Properties props = new Properties();
@@ -358,6 +359,9 @@ public class Dependencies {
                 LOG.debug("JarDataSummary cache of a different version ignored for: {}", artifact);
             }
             return cached;
+        } catch (NoSuchFileException e) {
+            // not cached yet
+            return null;
         } catch (IOException | IllegalArgumentException e) {
             LOG.warn("Loading JarDataSummary from cache failed: {}", artifact, e);
             return null;
