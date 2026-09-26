@@ -16,7 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-def cacheDir = new File( basedir, 'target/mpir-cache' )
+def cacheDir = new File( basedir, 'target/custom-cache' )
 cacheDir.deleteDir()
+
+//
+// Write cache files as if they were written by a future version of the plugin, with a different format. They must
+// be ignored (and not be considered a failure): the jar files are analyzed again.
+//
+[ 'org/codehaus/plexus/plexus-utils/4.0.0', 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT', 'org/apache/commons/commons-math3/3.6.1/tools' ].each { String artifactPath ->
+    File cacheFile = new File( cacheDir, artifactPath + '/jar-data.properties' )
+    cacheFile.parentFile.mkdirs()
+    cacheFile.text = "v=2\nsomeFieldOfTheFuture=1\n"
+}
 
 return true

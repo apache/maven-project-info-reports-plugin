@@ -81,6 +81,24 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     @Parameter(property = "dependency.details.enabled", defaultValue = "true")
     private boolean dependencyDetailsEnabled;
 
+    /**
+     * Directory where the summary of the file details of each dependency (see {@code dependencyDetailsEnabled}) is
+     * cached between builds, so that the JAR files which have not changed are not analyzed again. A relative path is
+     * relative to the project's base directory.
+     * <p>
+     * The cache is deleted by <code>mvn clean</code> with the default value. Set it to a path outside of the build
+     * directory to keep it across cleans. An empty value disables the cache: every JAR file is analyzed on every
+     * build. To do so set the property <code>dependency.details.cacheDirectory</code> to an empty value (on the
+     * command line, or in the POM's <code>&lt;properties&gt;</code>); an empty
+     * <code>&lt;dependencyDetailsCacheDirectory/&gt;</code> element in the plugin configuration is not enough, as
+     * Maven then uses the default value.
+     * </p>
+     *
+     * @since 3.9.1
+     */
+    @Parameter(property = "dependency.details.cacheDirectory", defaultValue = "${project.build.directory}/mpir-cache")
+    private String dependencyDetailsCacheDirectory;
+
     // ----------------------------------------------------------------------
     // Mojo components
     // ----------------------------------------------------------------------
@@ -126,7 +144,7 @@ public class DependenciesReport extends AbstractProjectInfoReport {
             // This seems to be a bit too much but the DependenciesRenderer applies the same logic
             DependencyNode dependencyNode = resolveProject();
             Dependencies dependencies =
-                    new Dependencies(project, dependencyNode, classesAnalyzer, repoUtils.getPluginCacheBaseDir());
+                    new Dependencies(project, dependencyNode, classesAnalyzer, getDependencyDetailsCacheDirectory());
             result = dependencies.hasDependencies();
         }
 
@@ -144,7 +162,7 @@ public class DependenciesReport extends AbstractProjectInfoReport {
         DependencyNode dependencyNode = resolveProject();
 
         Dependencies dependencies =
-                new Dependencies(project, dependencyNode, classesAnalyzer, repoUtils.getPluginCacheBaseDir());
+                new Dependencies(project, dependencyNode, classesAnalyzer, getDependencyDetailsCacheDirectory());
 
         DependenciesReportConfiguration config = new DependenciesReportConfiguration(dependencyDetailsEnabled);
 
@@ -186,6 +204,20 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
     // Private methods
     // ----------------------------------------------------------------------
+
+    /**
+     * @return the directory where the file details of the dependencies are cached, or <code>null</code> if the cache
+     *         is disabled
+     */
+    private File getDependencyDetailsCacheDirectory() {
+        if (dependencyDetailsCacheDirectory == null
+                || dependencyDetailsCacheDirectory.trim().isEmpty()) {
+            return null;
+        }
+
+        File directory = new File(dependencyDetailsCacheDirectory.trim());
+        return directory.isAbsolute() ? directory : new File(project.getBasedir(), directory.getPath());
+    }
 
     /**
      * @return resolve the dependency tree

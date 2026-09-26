@@ -414,7 +414,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
             if (JAR_SUBTYPE.contains(artifact.getType().toLowerCase())) {
                 try {
-                    JarDataSummary jarData = dependencies.getJarDependencyDetails(artifact);
+                    JarDataSummary jarData = dependencies.getJarDependencySummary(artifact);
 
                     totaldepsize.addTotal(jarData.getFsize(), artifact.getScope());
 
@@ -1071,7 +1071,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             if (artifact.getFile() != null
                     && JAR_SUBTYPE.contains(artifact.getType().toLowerCase())) {
                 try {
-                    JarDataSummary jarDetails = dependencies.getJarDependencyDetails(artifact);
+                    JarDataSummary jarDetails = dependencies.getJarDependencySummary(artifact);
                     if (jarDetails.isSealed()) {
                         return true;
                     }

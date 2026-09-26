@@ -16,119 +16,82 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-def cacheDir = new File(localRepositoryPath, '.cache/mpir')
-cacheDir.deleteDir();
+def cacheDir = new File( basedir, 'target/mpir-cache' )
+cacheDir.deleteDir()
+
+def writeCache = { String artifactPath, String content ->
+    File cacheFile = new File( cacheDir, artifactPath + '/jar-data.properties' )
+    cacheFile.parentFile.mkdirs()
+    cacheFile.text = content
+}
+
+// the entries of the multi-release runtimes, in the format of the cache file
+def runtimes = { int numEntries, List<String> jdkRevisions ->
+    StringBuilder sb = new StringBuilder( "versionedRuntimes=${jdkRevisions.size()}\n" )
+    jdkRevisions.eachWithIndex { String jdkRevision, int i ->
+        sb << "versionedRuntimes.${i}.debugPresent=true\n"
+        sb << "versionedRuntimes.${i}.numEntries=${numEntries}\n"
+        sb << "versionedRuntimes.${i}.numClasses=1\n"
+        sb << "versionedRuntimes.${i}.numPackages=1\n"
+        sb << "versionedRuntimes.${i}.jdkRevision=${jdkRevision}\n"
+    }
+    return sb.toString()
+}
+
+def localRepoFile = { String path ->
+    File file = new File( localRepositoryPath, path )
+    assert file.exists() : "Artifact file ${file} does not exist"
+    return file
+}
 
 //
-// Regenerate valir cached JarDataSummary by forcing the last modified timestamp and file size 
-// to that of the actual dependency jar file.
+// Write valid cached summaries, forcing the last modified timestamp and file size to those of the actual
+// dependency jar file, so that they are not considered stale.
 //
 
-def artifactFile1 = new File(localRepositoryPath, 'org/codehaus/plexus/plexus-utils/4.0.0/plexus-utils-4.0.0.jar')
-assert artifactFile1.exists(), "Artifact file ${artifactFile1} does not exist"
-// set the last modified time equals to the file, so that it is not considered stale.
-long artifactFile1LastModified = artifactFile1.lastModified()
+File plexusJar = localRepoFile( 'org/codehaus/plexus/plexus-utils/4.0.0/plexus-utils-4.0.0.jar' )
+writeCache( 'org/codehaus/plexus/plexus-utils/4.0.0', """\
+v=1
+sealed=false
+numEntries=128
+numClasses=86
+numPackages=7
+jdkRevision=1.8
+debugPresent=true
+multiRelease=true
+numRootEntries=110
+fsize=${plexusJar.length()}
+ts=${plexusJar.lastModified()}
+""" + runtimes( 6, ['9', '10', '11'] ) )
 
-def artifactCacheFile = new File(cacheDir, 'org/codehaus/plexus/plexus-utils/4.0.0/jar-data.json')
-artifactCacheFile.parentFile.mkdirs()
-artifactCacheFile.text = """\
-{
-  "v": 1,
-  "numEntries": 128,
-  "numClasses": 86,
-  "numPackages": 7,
-  "jdkRevision": "1.8",
-  "debugPresent": true,
-  "multiRelease": true,
-  "versionedRuntimes": [
-    {
-      "debugPresent": true,
-      "numEntries": 6,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "9"
-    },
-    {
-      "debugPresent": true,
-      "numEntries": 6,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "10"
-    },
-    {
-      "debugPresent": true,
-      "numEntries": 6,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "11"
-    }
-  ],
-  "numRootEntries": 110,
-  "fsize": 192368,
-  "ts": ${artifactFile1LastModified},
-  "sealed": false
-}"""
+File snapshotJar = localRepoFile( 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/snapshot-test-1.0-SNAPSHOT.jar' )
+writeCache( 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT', """\
+v=1
+sealed=false
+numEntries=37
+numClasses=1
+numPackages=1
+jdkRevision=1.8
+debugPresent=true
+multiRelease=true
+numRootEntries=17
+fsize=${snapshotJar.length()}
+ts=${snapshotJar.lastModified()}
+""" + runtimes( 10, ['9', '11'] ) )
 
-
-def artifactFile2 = new File(localRepositoryPath, 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/snapshot-test-1.0-SNAPSHOT.jar')
-assert artifactFile2.exists(), "Artifact file ${artifactFile2} does not exist"
-// set the last modified time equals to the file, so that it is not considered stale.
-long artifactFile2LastModified = artifactFile2.lastModified()
-
-def artifactCacheFile2 = new File(cacheDir, 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/jar-data.json')
-artifactCacheFile2.parentFile.mkdirs()
-artifactCacheFile2.text = """\
-{
-  "v": 1,
-  "numEntries": 37,
-  "numClasses": 1,
-  "numPackages": 1,
-  "jdkRevision": "1.8",
-  "debugPresent": true,
-  "multiRelease": true,
-  "versionedRuntimes": [
-    {
-      "debugPresent": true,
-      "numEntries": 10,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "9"
-    },
-    {
-      "debugPresent": true,
-      "numEntries": 10,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "11"
-    }
-  ],
-  "numRootEntries": 17,
-  "fsize": 10201,
-  "ts": ${artifactFile2LastModified},
-  "sealed": false
-}"""
-
-def artifactFile3 = new File(localRepositoryPath, 'org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1-tools.jar')
-assert artifactFile3.exists(), "Artifact file ${artifactFile3} does not exist"
-// set the last modified time equals to the file, so that it is not considered stale.
-long artifactFile3LastModified = artifactFile3.lastModified()
-
-def artifactCacheFile3 = new File(cacheDir, 'org/apache/commons/commons-math3/3.6.1/tools/jar-data.json')
-artifactCacheFile3.parentFile.mkdirs()
-artifactCacheFile3.text = """\
-{
-  "v": 1,
-  "numEntries": 10,
-  "numClasses": 2,
-  "numPackages": 1,
-  "jdkRevision": "1.5",
-  "debugPresent": true,
-  "multiRelease": false,
-  "versionedRuntimes": null,
-  "numRootEntries": 0,
-  "fsize": 12007,
-  "ts": ${artifactFile3LastModified},
-  "sealed": false
-}"""
+File mathJar = localRepoFile( 'org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1-tools.jar' )
+writeCache( 'org/apache/commons/commons-math3/3.6.1/tools', """\
+v=1
+sealed=false
+numEntries=10
+numClasses=2
+numPackages=1
+jdkRevision=1.5
+debugPresent=true
+multiRelease=false
+numRootEntries=0
+fsize=${mathJar.length()}
+ts=${mathJar.lastModified()}
+""" )
 
 return true

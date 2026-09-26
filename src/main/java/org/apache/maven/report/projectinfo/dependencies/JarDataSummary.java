@@ -22,8 +22,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.maven.shared.jar.JarData;
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarVersionedRuntime;
@@ -36,7 +36,7 @@ import org.apache.maven.shared.jar.classes.JarVersionedRuntime;
 public class JarDataSummary {
 
     /**
-     * version to save in the cache file
+     * version to save in the cache file; a cache file written with any other version is ignored
      */
     private static final int VERSION = 1;
 
@@ -55,8 +55,7 @@ public class JarDataSummary {
     /**
      * is sealed
      */
-    @JsonProperty("sealed")
-    private boolean aSealed;
+    private boolean sealedJar;
 
     private int numEntries;
 
@@ -81,11 +80,9 @@ public class JarDataSummary {
 
     private long ts;
 
-    private JarDataSummary() {}
-
     private JarDataSummary(
             int v,
-            boolean aSealed,
+            boolean sealedJar,
             int numEntries,
             int numClasses,
             int numPackages,
@@ -98,7 +95,7 @@ public class JarDataSummary {
             long ts) {
         super();
         this.v = v;
-        this.aSealed = aSealed;
+        this.sealedJar = sealedJar;
         this.numEntries = numEntries;
         this.numClasses = numClasses;
         this.numPackages = numPackages;
@@ -126,7 +123,7 @@ public class JarDataSummary {
      * @return return true if it is sealed.
      */
     public boolean isSealed() {
-        return aSealed;
+        return sealedJar;
     }
 
     /**
@@ -230,6 +227,122 @@ public class JarDataSummary {
     }
 
     /**
+     * Convert this summary to the flat key/value form which is stored in the cache file. The entries of the
+     * multi-release runtimes are stored as <code>versionedRuntimes.<i>n</i>.<i>field</i></code>.
+     *
+     * @return the properties representing this summary, never <code>null</code>.
+     * @see #fromProperties(Properties)
+     */
+    public Properties toProperties() {
+        Properties props = new Properties();
+        props.setProperty("v", String.valueOf(v));
+        props.setProperty("sealed", String.valueOf(sealedJar));
+        props.setProperty("numEntries", String.valueOf(numEntries));
+        props.setProperty("numClasses", String.valueOf(numClasses));
+        props.setProperty("numPackages", String.valueOf(numPackages));
+        if (jdkRevision != null) {
+            props.setProperty("jdkRevision", jdkRevision);
+        }
+        props.setProperty("debugPresent", String.valueOf(debugPresent));
+        props.setProperty("multiRelease", String.valueOf(multiRelease));
+        props.setProperty("numRootEntries", String.valueOf(numRootEntries));
+        props.setProperty("fsize", String.valueOf(fsize));
+        props.setProperty("ts", String.valueOf(ts));
+        if (versionedRuntimes != null) {
+            props.setProperty("versionedRuntimes", String.valueOf(versionedRuntimes.size()));
+            for (int i = 0; i < versionedRuntimes.size(); i++) {
+                VersionedRuntime runtime = versionedRuntimes.get(i);
+                String prefix = "versionedRuntimes." + i + '.';
+                props.setProperty(prefix + "debugPresent", String.valueOf(runtime.isDebugPresent()));
+                props.setProperty(prefix + "numEntries", String.valueOf(runtime.getNumEntries()));
+                props.setProperty(prefix + "numClasses", String.valueOf(runtime.getNumClasses()));
+                props.setProperty(prefix + "numPackages", String.valueOf(runtime.getNumPackages()));
+                if (runtime.getJdkRevision() != null) {
+                    props.setProperty(prefix + "jdkRevision", runtime.getJdkRevision());
+                }
+            }
+        }
+        return props;
+    }
+
+    /**
+     * Create a JarDataSummary from the contents of a cache file.
+     *
+     * @param props the properties read from the cache file.
+     * @return the summary, or <code>null</code> if the properties were written with a version of the cache file
+     *         format which is not the current one (in which case they must not be used).
+     * @throws IllegalArgumentException if the properties are not a valid cache file (a field is missing or
+     *         malformed).
+     * @see #toProperties()
+     */
+    public static JarDataSummary fromProperties(Properties props) {
+        if (getInt(props, "v") != VERSION) {
+            return null;
+        }
+
+        List<VersionedRuntime> versionedRuntimes = null;
+        if (props.getProperty("versionedRuntimes") != null) {
+            int count = getInt(props, "versionedRuntimes");
+            versionedRuntimes = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                String prefix = "versionedRuntimes." + i + '.';
+                versionedRuntimes.add(new VersionedRuntime(
+                        getBoolean(props, prefix + "debugPresent"),
+                        getInt(props, prefix + "numEntries"),
+                        getInt(props, prefix + "numClasses"),
+                        getInt(props, prefix + "numPackages"),
+                        props.getProperty(prefix + "jdkRevision")));
+            }
+        }
+
+        return new JarDataSummary(
+                VERSION,
+                getBoolean(props, "sealed"),
+                getInt(props, "numEntries"),
+                getInt(props, "numClasses"),
+                getInt(props, "numPackages"),
+                props.getProperty("jdkRevision"),
+                getBoolean(props, "debugPresent"),
+                getBoolean(props, "multiRelease"),
+                versionedRuntimes,
+                getInt(props, "numRootEntries"),
+                getLong(props, "fsize"),
+                getLong(props, "ts"));
+    }
+
+    private static String getRequired(Properties props, String key) {
+        String value = props.getProperty(key);
+        if (value == null) {
+            throw new IllegalArgumentException("Missing field '" + key + "'");
+        }
+        return value.trim();
+    }
+
+    private static int getInt(Properties props, String key) {
+        try {
+            return Integer.parseInt(getRequired(props, key));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Malformed field '" + key + "'", e);
+        }
+    }
+
+    private static long getLong(Properties props, String key) {
+        try {
+            return Long.parseLong(getRequired(props, key));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Malformed field '" + key + "'", e);
+        }
+    }
+
+    private static boolean getBoolean(Properties props, String key) {
+        String value = getRequired(props, key);
+        if (!"true".equals(value) && !"false".equals(value)) {
+            throw new IllegalArgumentException("Malformed field '" + key + "'");
+        }
+        return Boolean.parseBoolean(value);
+    }
+
+    /**
      * Create a new JarDataSummary from the contents of the jarData argument.
      *
      * @param jarData the JAR data contents.
@@ -279,11 +392,6 @@ public class JarDataSummary {
         private int numPackages;
 
         private String jdkRevision;
-
-        /**
-         * Default constructor
-         */
-        public VersionedRuntime() {}
 
         /**
          * The constructor with all attributes.

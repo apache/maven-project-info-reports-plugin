@@ -16,7 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-def cacheDir = new File( basedir, 'target/mpir-cache' )
-cacheDir.deleteDir()
+File log = new File( basedir, 'build.log' )
+String logContent = log.text
+
+// without cache the jar files are always analyzed
+assert logContent.contains( 'JarDataSummary analyzed for: org.apache.commons:commons-math3:jar:tools:3.6.1:compile' )
+assert logContent.contains( 'JarDataSummary analyzed for: org.apache.maven.its.mpir-465:snapshot-test:jar:1.0-SNAPSHOT:compile' )
+assert logContent.contains( 'JarDataSummary analyzed for: org.codehaus.plexus:plexus-utils:jar:4.0.0:compile' )
+assert !logContent.contains( 'JarDataSummary cached for:' )
+
+// ...and nothing is written to disk
+new File( basedir, 'target' ).eachFileRecurse { File file ->
+    assert file.name != 'jar-data.properties' : "The cache file ${file} was written"
+}
+assert !new File( basedir, 'target/mpir-cache' ).exists()
 
 return true

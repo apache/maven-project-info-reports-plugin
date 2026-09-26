@@ -110,3 +110,19 @@ assert logContent.contains('JarDataSummary analyzed for: org.apache.maven.its.mp
 assert logContent.contains('JarDataSummary analyzed for: org.codehaus.plexus:plexus-utils:jar:4.0.0:compile')
 
 assert !logContent.contains('JarDataSummary cached for:')
+
+// the summaries are written to the default cache directory, ${project.build.directory}/mpir-cache
+File cacheDir = new File( basedir, 'target/mpir-cache' )
+[ 'org/codehaus/plexus/plexus-utils/4.0.0', 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT', 'org/apache/commons/commons-math3/3.6.1/tools' ].each { String artifactPath ->
+    File cacheFile = new File( cacheDir, artifactPath + '/jar-data.properties' )
+    assert cacheFile.exists() : "The cache file ${cacheFile} was not written"
+
+    Properties props = new Properties()
+    cacheFile.withReader( 'UTF-8' ) { Reader reader -> props.load( reader ) }
+    assert props.getProperty( 'v' ) == '1' : "Unexpected version in ${cacheFile}"
+}
+
+// no temporary file is left behind by writing the cache files
+cacheDir.eachFileRecurse { File file -> assert !file.name.endsWith( '.tmp' ) : "Left over ${file}" }
+
+return true

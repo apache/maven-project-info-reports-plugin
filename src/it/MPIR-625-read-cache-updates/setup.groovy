@@ -16,79 +16,71 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+def cacheDir = new File( basedir, 'target/mpir-cache' )
+cacheDir.deleteDir()
 
-def cacheDir = new File(localRepositoryPath, '.cache/mpir')
-cacheDir.deleteDir();
+def writeCache = { String artifactPath, String content ->
+    File cacheFile = new File( cacheDir, artifactPath + '/jar-data.properties' )
+    cacheFile.parentFile.mkdirs()
+    cacheFile.text = content
+}
 
-//
-// Modify cached summary data so that it forces to re analyze the actual jar file.
-//
-
-def artifactCacheFile = new File(cacheDir, 'org/codehaus/plexus/plexus-utils/4.0.0/jar-data.json')
-artifactCacheFile.parentFile.mkdirs()
-artifactCacheFile.text = '%& corrupted json file ((())'
-
-
-def artifactFile2 = new File(localRepositoryPath, 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/snapshot-test-1.0-SNAPSHOT.jar')
-assert artifactFile2.exists(), "Artifact file ${artifactFile2} does not exist"
-// set the last modified time of the cache to the past, so that the cache is considered stale and will be updated by the plugin
-long artifactFile2LastModified = artifactFile2.lastModified() - 1L
-
-def artifactCacheFile2 = new File(cacheDir, 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/jar-data.json')
-artifactCacheFile2.parentFile.mkdirs()
-artifactCacheFile2.text = """\
-{
-  "v": 1,
-  "numEntries": 37,
-  "numClasses": 1,
-  "numPackages": 1,
-  "jdkRevision": "1.8",
-  "debugPresent": true,
-  "multiRelease": true,
-  "versionedRuntimes": [
-    {
-      "debugPresent": true,
-      "numEntries": 10,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "9"
-    },
-    {
-      "debugPresent": true,
-      "numEntries": 10,
-      "numClasses": 1,
-      "numPackages": 1,
-      "jdkRevision": "11"
+// the entries of the multi-release runtimes, in the format of the cache file
+def runtimes = { int numEntries, List<String> jdkRevisions ->
+    StringBuilder sb = new StringBuilder( "versionedRuntimes=${jdkRevisions.size()}\n" )
+    jdkRevisions.eachWithIndex { String jdkRevision, int i ->
+        sb << "versionedRuntimes.${i}.debugPresent=true\n"
+        sb << "versionedRuntimes.${i}.numEntries=${numEntries}\n"
+        sb << "versionedRuntimes.${i}.numClasses=1\n"
+        sb << "versionedRuntimes.${i}.numPackages=1\n"
+        sb << "versionedRuntimes.${i}.jdkRevision=${jdkRevision}\n"
     }
-  ],
-  "numRootEntries": 17,
-  "fsize": 10201,
-  "ts": ${artifactFile2LastModified},
-  "sealed": false
-}"""
+    return sb.toString()
+}
 
-def artifactFile3 = new File(localRepositoryPath, 'org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1-tools.jar')
-assert artifactFile3.exists(), "Artifact file ${artifactFile3} does not exist"
-// set the file size of the cache different to the real file size, so that the cache is considered stale and will be updated by the plugin
-long artifactFile3FileSize = artifactFile3.length() + 1L
-long artifactFile3LastModified = artifactFile3.lastModified()
+def localRepoFile = { String path ->
+    File file = new File( localRepositoryPath, path )
+    assert file.exists() : "Artifact file ${file} does not exist"
+    return file
+}
 
-def artifactCacheFile3 = new File(cacheDir, 'org/apache/commons/commons-math3/3.6.1/tools/jar-data.json')
-artifactCacheFile3.parentFile.mkdirs()
-artifactCacheFile3.text = """\
-{
-  "v": 1,
-  "numEntries": 10,
-  "numClasses": 2,
-  "numPackages": 1,
-  "jdkRevision": "1.5",
-  "debugPresent": true,
-  "multiRelease": false,
-  "versionedRuntimes": null,
-  "numRootEntries": 0,
-  "fsize": ${artifactFile3FileSize},
-  "ts": ${artifactFile3LastModified},
-  "sealed": false
-}"""
+//
+// Write cached summaries which are unusable, so that the actual jar files are analyzed again.
+//
+
+// not a valid cache file
+writeCache( 'org/codehaus/plexus/plexus-utils/4.0.0', '%& corrupted cache file ((())' )
+
+// the last modified time in the cache is different to that of the file, so that the cache is considered stale
+File snapshotJar = localRepoFile( 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT/snapshot-test-1.0-SNAPSHOT.jar' )
+writeCache( 'org/apache/maven/its/mpir-465/snapshot-test/1.0-SNAPSHOT', """\
+v=1
+sealed=false
+numEntries=37
+numClasses=1
+numPackages=1
+jdkRevision=1.8
+debugPresent=true
+multiRelease=true
+numRootEntries=17
+fsize=${snapshotJar.length()}
+ts=${snapshotJar.lastModified() - 1L}
+""" + runtimes( 10, ['9', '11'] ) )
+
+// the file size in the cache is different to that of the file, so that the cache is considered stale
+File mathJar = localRepoFile( 'org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1-tools.jar' )
+writeCache( 'org/apache/commons/commons-math3/3.6.1/tools', """\
+v=1
+sealed=false
+numEntries=10
+numClasses=2
+numPackages=1
+jdkRevision=1.5
+debugPresent=true
+multiRelease=false
+numRootEntries=0
+fsize=${mathJar.length() + 1L}
+ts=${mathJar.lastModified()}
+""" )
 
 return true
