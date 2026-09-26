@@ -335,8 +335,7 @@ public class Dependencies {
             }
         }
 
-        JarDataSummary jarDataSummary = JarDataSummary.fromJarData(analyze(file));
-        jarDataSummary.setFileAttributes(fileAttr);
+        JarDataSummary jarDataSummary = JarDataSummary.fromJarData(analyze(file), fileAttr);
 
         if (cacheFile != null) {
             writeCache(artifact, cacheFile, jarDataSummary);

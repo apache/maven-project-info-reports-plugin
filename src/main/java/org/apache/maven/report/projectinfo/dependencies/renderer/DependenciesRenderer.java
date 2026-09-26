@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
@@ -82,8 +81,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     private final DependencyNode dependencyNode;
 
     private final Dependencies dependencies;
-
-    // private final FileDetailsCache cache;
 
     private final DependenciesReportConfiguration configuration;
 
@@ -517,18 +514,17 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     createExceptionInfoTableRow(artifact, artifactFile, e, hasSealed);
                 }
             } else {
-                long fileSize;
-                try {
-                    fileSize = Files.size(artifactFile.toPath());
-                } catch (IOException e) {
-                    log.warn("Could not get file size", e);
-                    fileSize = artifactFile.length();
-                }
-
-                totaldepsize.addTotal(fileSize, artifact.getScope());
+                totaldepsize.addTotal(artifactFile.length(), artifact.getScope());
 
                 tableRow(hasSealed, new String[] {
-                    artifactFile.getName(), fileLengthDecimalFormat.format(fileSize), "", "", "", "", "", ""
+                    artifactFile.getName(),
+                    fileLengthDecimalFormat.format(artifactFile.length()),
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
                 });
             }
         }

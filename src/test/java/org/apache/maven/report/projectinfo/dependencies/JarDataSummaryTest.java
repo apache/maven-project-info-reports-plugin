@@ -65,6 +65,8 @@ class JarDataSummaryTest {
         JarDataSummary copy = JarDataSummary.fromProperties(summary.toProperties());
 
         assertEquals(validProperties(), copy.toProperties());
+        assertEquals(1, copy.getV());
+        assertEquals(1, JarDataSummary.DIRECTORY_JAR_DATA_SUMMARY.getV());
         assertTrue(copy.isSealed());
         assertEquals(128, copy.getNumEntries());
         assertEquals(192368L, copy.getFsize());

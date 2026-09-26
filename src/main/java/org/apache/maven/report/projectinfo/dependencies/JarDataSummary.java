@@ -50,35 +50,35 @@ public class JarDataSummary {
      * version of the serialized object (to support backward/forward compatibility in the future) Simplest version type
      * with int. No need to use semver strings for this.
      */
-    private int v;
+    private final int v;
 
     /**
      * is sealed
      */
-    private boolean sealedJar;
+    private final boolean sealedJar;
 
-    private int numEntries;
+    private final int numEntries;
 
-    private int numClasses;
+    private final int numClasses;
 
-    private int numPackages;
+    private final int numPackages;
 
-    private String jdkRevision;
+    private final String jdkRevision;
 
-    private boolean debugPresent;
+    private final boolean debugPresent;
 
-    private boolean multiRelease;
+    private final boolean multiRelease;
 
-    private List<VersionedRuntime> versionedRuntimes;
+    private final List<VersionedRuntime> versionedRuntimes;
 
-    private int numRootEntries;
+    private final int numRootEntries;
 
     /**
-     * file size (fsize) and creation timestamp (ts) as a cheap file change detector
+     * file size (fsize) and last modification timestamp (ts) as a cheap file change detector
      */
-    private long fsize;
+    private final long fsize;
 
-    private long ts;
+    private final long ts;
 
     private JarDataSummary(
             int v,
@@ -217,16 +217,6 @@ public class JarDataSummary {
     }
 
     /**
-     * Set the attributes used for checking if file has changed.
-     *
-     * @param fattr the File Attributes to set.
-     */
-    public void setFileAttributes(BasicFileAttributes fattr) {
-        this.fsize = fattr.size();
-        this.ts = fattr.lastModifiedTime().toMillis();
-    }
-
-    /**
      * Convert this summary to the flat key/value form which is stored in the cache file. The entries of the
      * multi-release runtimes are stored as <code>versionedRuntimes.<i>n</i>.<i>field</i></code>.
      *
@@ -351,9 +341,10 @@ public class JarDataSummary {
      * Create a new JarDataSummary from the contents of the jarData argument.
      *
      * @param jarData the JAR data contents.
+     * @param fileAttributes the attributes of the JAR file, kept to detect later if it has changed.
      * @return a new instance of JarDataSummary.
      */
-    public static JarDataSummary fromJarData(JarData jarData) {
+    public static JarDataSummary fromJarData(JarData jarData, BasicFileAttributes fileAttributes) {
         List<VersionedRuntime> versionedRuntimes = null;
         if (jarData.isMultiRelease()) {
             Collection<JarVersionedRuntime> jarVersionedRuntimes =
@@ -380,23 +371,23 @@ public class JarDataSummary {
                 jarData.isMultiRelease(),
                 versionedRuntimes,
                 jarData.getRootEntries() == null ? 0 : jarData.getNumRootEntries(),
-                0,
-                0);
+                fileAttributes.size(),
+                fileAttributes.lastModifiedTime().toMillis());
     }
 
     /**
      * Summary information for multi-release JAR
      */
     public static class VersionedRuntime {
-        private boolean debugPresent;
+        private final boolean debugPresent;
 
-        private int numEntries;
+        private final int numEntries;
 
-        private int numClasses;
+        private final int numClasses;
 
-        private int numPackages;
+        private final int numPackages;
 
-        private String jdkRevision;
+        private final String jdkRevision;
 
         /**
          * The constructor with all attributes.
