@@ -18,12 +18,23 @@
  */
 package org.apache.maven.report.projectinfo.dependencies;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 
 import org.apache.maven.artifact.Artifact;
@@ -34,11 +45,15 @@ import org.apache.maven.shared.jar.JarData;
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 2.1
  */
 public class Dependencies {
+    private static final Logger LOG = LoggerFactory.getLogger(Dependencies.class);
+
     private final MavenProject project;
 
     private final DependencyNode dependencyNode;
@@ -76,16 +91,47 @@ public class Dependencies {
     private Map<String, JarData> dependencyDetails;
 
     /**
+     * @since 3.9.1
+     */
+    private final Map<String, JarDataSummary> dependencySummaries = new HashMap<>();
+
+    /**
+     * @since 3.9.1
+     */
+    private final File cacheDirectory;
+
+    /**
+     * Constructor which does not cache the file details of the dependencies between builds.
+     *
+     * @param project the MavenProject.
+     * @param dependencyTreeNode the DependencyNode.
+     * @param classesAnalyzer the JarClassesAnalysis.
+     * @deprecated use {@link #Dependencies(MavenProject, DependencyNode, JarClassesAnalysis, File)} instead
+     */
+    @Deprecated
+    public Dependencies(MavenProject project, DependencyNode dependencyTreeNode, JarClassesAnalysis classesAnalyzer) {
+        this(project, dependencyTreeNode, classesAnalyzer, null);
+    }
+
+    /**
      * Default constructor
      *
      * @param project the MavenProject.
      * @param dependencyTreeNode the DependencyNode.
      * @param classesAnalyzer the JarClassesAnalysis.
+     * @param cacheDirectory the directory where the summary of the file details of each dependency is cached
+     *            between builds, or <code>null</code> to not cache them.
+     * @since 3.9.1
      */
-    public Dependencies(MavenProject project, DependencyNode dependencyTreeNode, JarClassesAnalysis classesAnalyzer) {
+    public Dependencies(
+            MavenProject project,
+            DependencyNode dependencyTreeNode,
+            JarClassesAnalysis classesAnalyzer,
+            File cacheDirectory) {
         this.project = project;
         this.dependencyNode = dependencyTreeNode;
         this.classesAnalyzer = classesAnalyzer;
+        this.cacheDirectory = cacheDirectory;
     }
 
     /**
@@ -222,20 +268,134 @@ public class Dependencies {
 
             jarData.setJarClasses(new JarClasses());
         } else {
-            JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
-
-            try {
-                classesAnalyzer.analyze(jarAnalyzer);
-            } finally {
-                jarAnalyzer.closeQuietly();
-            }
-
-            jarData = jarAnalyzer.getJarData();
+            jarData = analyze(file);
         }
 
         dependencyDetails.put(artifact.getId(), jarData);
 
         return jarData;
+    }
+
+    /**
+     * Get a summary of the details on the content of the JAR file: the values that are shown in the report. Unlike
+     * {@link #getJarDependencyDetails(Artifact)}, the JAR file is not analyzed again if the summary was cached by a
+     * previous build and the file has not changed since.
+     *
+     * @param artifact the artifact.
+     * @return the summary of the JAR file details
+     * @throws IOException if the JAR file cannot be analyzed
+     * @since 3.9.1
+     */
+    public JarDataSummary getJarDependencySummary(Artifact artifact) throws IOException {
+        JarDataSummary jarDataSummary = dependencySummaries.get(artifact.getId());
+        if (jarDataSummary != null) {
+            return jarDataSummary;
+        }
+
+        File file = getFile(artifact);
+
+        if (file.isDirectory()) {
+            jarDataSummary = JarDataSummary.DIRECTORY_JAR_DATA_SUMMARY;
+        } else {
+            jarDataSummary = summarize(artifact, file);
+        }
+
+        dependencySummaries.put(artifact.getId(), jarDataSummary);
+
+        return jarDataSummary;
+    }
+
+    private JarData analyze(File file) throws IOException {
+        JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
+
+        try {
+            classesAnalyzer.analyze(jarAnalyzer);
+        } finally {
+            jarAnalyzer.closeQuietly();
+        }
+
+        return jarAnalyzer.getJarData();
+    }
+
+    private JarDataSummary summarize(Artifact artifact, File file) throws IOException {
+        Path cacheFile = cacheDirectory == null
+                ? null
+                : getCacheDirectory(cacheDirectory, artifact).resolve("jar-data.properties");
+
+        BasicFileAttributes fileAttr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+
+        if (cacheFile != null) {
+            JarDataSummary cached = readCache(artifact, cacheFile);
+
+            // cheap file change check
+            if (cached != null
+                    && cached.getFsize() == fileAttr.size()
+                    && cached.getTs() == fileAttr.lastModifiedTime().toMillis()) {
+                LOG.debug("JarDataSummary cached for: {}", artifact);
+                return cached;
+            }
+        }
+
+        JarDataSummary jarDataSummary = JarDataSummary.fromJarData(analyze(file), fileAttr);
+
+        if (cacheFile != null) {
+            writeCache(artifact, cacheFile, jarDataSummary);
+        }
+        LOG.debug("JarDataSummary analyzed for: {}", artifact);
+        return jarDataSummary;
+    }
+
+    /**
+     * @return the cached summary, or <code>null</code> if it cannot be used: it does not exist yet, is unreadable,
+     *         invalid, or was written by a different version of the cache file format. In all those cases the JAR
+     *         file is analyzed again.
+     */
+    private JarDataSummary readCache(Artifact artifact, Path cacheFile) {
+        Properties props = new Properties();
+        try (BufferedReader reader = Files.newBufferedReader(cacheFile, StandardCharsets.UTF_8)) {
+            props.load(reader);
+            JarDataSummary cached = JarDataSummary.fromProperties(props);
+            if (cached == null) {
+                LOG.debug("JarDataSummary cache of a different version ignored for: {}", artifact);
+            }
+            return cached;
+        } catch (NoSuchFileException e) {
+            // not cached yet
+            return null;
+        } catch (IOException | IllegalArgumentException e) {
+            LOG.warn("Loading JarDataSummary from cache failed: {}", artifact, e);
+            return null;
+        }
+    }
+
+    /**
+     * Save the summary to the cache for the next build. A failure to do so is not an error: the cache is only an
+     * optimization. The file is moved into place once fully written, so that a build running concurrently (which may
+     * share the cache directory) never reads a partially written file.
+     */
+    private void writeCache(Artifact artifact, Path cacheFile, JarDataSummary jarDataSummary) {
+        Path tmpFile = null;
+        try {
+            Files.createDirectories(cacheFile.getParent());
+            tmpFile = Files.createTempFile(cacheFile.getParent(), "jar-data", ".tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(tmpFile, StandardCharsets.UTF_8)) {
+                jarDataSummary.toProperties().store(writer, null);
+            }
+            try {
+                Files.move(tmpFile, cacheFile, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmpFile, cacheFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException ioe) {
+            LOG.warn("Saving JarDataSummary to cache failed: {}", artifact, ioe);
+            if (tmpFile != null) {
+                try {
+                    Files.deleteIfExists(tmpFile);
+                } catch (IOException ignored) {
+                    // nothing more can be done
+                }
+            }
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -275,7 +435,8 @@ public class Dependencies {
         File file = artifact.getFile();
 
         if (file.isDirectory()) {
-            // MPIR-322: if target/classes directory, try target/artifactId-version[-classifier].jar
+            // MPIR-322: if target/classes directory, try
+            // target/artifactId-version[-classifier].jar
             String filename = artifact.getArtifactId() + '-' + artifact.getVersion();
             if (StringUtils.isNotEmpty(artifact.getClassifier())) {
                 filename += '-' + artifact.getClassifier();
@@ -290,5 +451,25 @@ public class Dependencies {
         }
 
         return file;
+    }
+
+    /**
+     * Generates a cache directory following the GAV + Classifier structure. Path:
+     * root/groupId/artifactId/version/[classifier]
+     */
+    private Path getCacheDirectory(File root, Artifact artifact) {
+        // 1. Convert dots to folder separators for the GroupId
+        String groupPath = artifact.getGroupId().replace('.', File.separatorChar);
+
+        // 2. Build the base path: groupId / artifactId / version
+        Path path = Paths.get(root.getAbsolutePath(), groupPath, artifact.getArtifactId(), artifact.getVersion());
+
+        // 3. Handle the Classifier if it exists
+        // Most artifacts don't have one (null or empty string)
+        if (artifact.hasClassifier()) {
+            path = path.resolve(artifact.getClassifier());
+        }
+
+        return path;
     }
 }
