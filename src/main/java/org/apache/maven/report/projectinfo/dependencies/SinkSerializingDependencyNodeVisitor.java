@@ -21,8 +21,6 @@ package org.apache.maven.report.projectinfo.dependencies;
 import java.util.List;
 
 import org.apache.maven.doxia.sink.Sink;
-import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 
 /**
  * A dependency node visitor that serializes visited nodes to a sink writer. It's used to serialize tree in project

@@ -44,21 +44,14 @@ import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.report.projectinfo.dependencies.DependencyNode;
+import org.apache.maven.report.projectinfo.dependencies.DependencyNodeVisitor;
+import org.apache.maven.report.projectinfo.dependencies.DependencyTreeBuilder;
+import org.apache.maven.report.projectinfo.dependencies.DependencyTreeException;
 import org.apache.maven.report.projectinfo.dependencies.DependencyVersionMap;
 import org.apache.maven.report.projectinfo.dependencies.SinkSerializingDependencyNodeVisitor;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.artifact.filter.StrictPatternIncludesArtifactFilter;
-import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilder;
-import org.apache.maven.shared.dependency.graph.DependencyCollectorBuilderException;
-import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.dependency.graph.filter.AncestorOrSelfDependencyNodeFilter;
-import org.apache.maven.shared.dependency.graph.filter.AndDependencyNodeFilter;
-import org.apache.maven.shared.dependency.graph.filter.ArtifactDependencyNodeFilter;
-import org.apache.maven.shared.dependency.graph.filter.DependencyNodeFilter;
-import org.apache.maven.shared.dependency.graph.traversal.BuildingDependencyNodeVisitor;
-import org.apache.maven.shared.dependency.graph.traversal.CollectingDependencyNodeVisitor;
-import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
-import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
 import org.codehaus.plexus.i18n.I18N;
 import org.eclipse.aether.RepositorySystem;
 
@@ -92,19 +85,9 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
     // Mojo parameters
     // ----------------------------------------------------------------------
 
-    /**
-     * Raw dependency collector builder, will use it to build dependency tree.
-     */
-    private final DependencyCollectorBuilder dependencyCollectorBuilder;
-
     @Inject
-    protected DependencyConvergenceReport(
-            RepositorySystem repositorySystem,
-            I18N i18n,
-            ProjectBuilder projectBuilder,
-            DependencyCollectorBuilder dependencyCollectorBuilder) {
+    protected DependencyConvergenceReport(RepositorySystem repositorySystem, I18N i18n, ProjectBuilder projectBuilder) {
         super(repositorySystem, i18n, projectBuilder);
-        this.dependencyCollectorBuilder = dependencyCollectorBuilder;
     }
 
     // ----------------------------------------------------------------------
@@ -405,44 +388,16 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
      * @return the serialized dependency tree
      */
     private void serializeDependencyTree(DependencyNode rootNode, String key, Sink sink) {
-        DependencyNodeVisitor visitor = getSerializingDependencyNodeVisitor(sink);
+        List<String> patterns = Arrays.asList(key.split(","));
 
-        visitor = new BuildingDependencyNodeVisitor(visitor);
+        getLog().debug("+ Filtering dependency tree by artifact include patterns: " + patterns);
 
-        DependencyNodeFilter nodeFilter = createDependencyNodeFilter(key);
+        // keep only the nodes matching the key and their ancestors
+        DependencyNode tree = rootNode.prune(new StrictPatternIncludesArtifactFilter(patterns));
 
-        if (nodeFilter != null) {
-            CollectingDependencyNodeVisitor collectingVisitor = new CollectingDependencyNodeVisitor();
-            DependencyNodeVisitor firstPassVisitor = new FilteringDependencyNodeVisitor(collectingVisitor, nodeFilter);
-            rootNode.accept(firstPassVisitor);
-
-            DependencyNodeFilter secondPassFilter =
-                    new AncestorOrSelfDependencyNodeFilter(collectingVisitor.getNodes());
-            visitor = new FilteringDependencyNodeVisitor(visitor, secondPassFilter);
+        if (tree != null) {
+            tree.accept(getSerializingDependencyNodeVisitor(sink));
         }
-
-        rootNode.accept(visitor);
-    }
-
-    /**
-     * Gets the dependency node filter to use when serializing the dependency graph.
-     *
-     * @return the dependency node filter, or <code>null</code> if none required
-     */
-    private DependencyNodeFilter createDependencyNodeFilter(String includes) {
-        List<DependencyNodeFilter> filters = new ArrayList<>();
-
-        // filter includes
-        if (includes != null) {
-            List<String> patterns = Arrays.asList(includes.split(","));
-
-            getLog().debug("+ Filtering dependency tree by artifact include patterns: " + patterns);
-
-            ArtifactFilter artifactFilter = new StrictPatternIncludesArtifactFilter(patterns);
-            filters.add(new ArtifactDependencyNodeFilter(artifactFilter));
-        }
-
-        return filters.isEmpty() ? null : new AndDependencyNodeFilter(filters);
     }
 
     /**
@@ -851,8 +806,9 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
      */
     private DependencyNode getNode(ProjectBuildingRequest buildingRequest) throws MavenReportException {
         try {
-            return dependencyCollectorBuilder.collectDependencyGraph(buildingRequest, filter);
-        } catch (DependencyCollectorBuilderException e) {
+            return DependencyTreeBuilder.collectVerbose(
+                    repositorySystem, buildingRequest.getProject(), buildingRequest.getRepositorySession(), filter);
+        } catch (DependencyTreeException e) {
             throw new MavenReportException("Could not build dependency tree: " + e.getMessage(), e);
         }
     }

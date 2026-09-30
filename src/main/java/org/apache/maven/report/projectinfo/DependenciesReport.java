@@ -19,7 +19,6 @@
 package org.apache.maven.report.projectinfo;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,17 +37,16 @@ import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.project.ProjectDependenciesResolver;
 import org.apache.maven.report.projectinfo.dependencies.Dependencies;
 import org.apache.maven.report.projectinfo.dependencies.DependenciesReportConfiguration;
+import org.apache.maven.report.projectinfo.dependencies.DependencyNode;
+import org.apache.maven.report.projectinfo.dependencies.DependencyTreeBuilder;
+import org.apache.maven.report.projectinfo.dependencies.DependencyTreeException;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependenciesRenderer;
 import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
-import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
-import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.IOUtil;
@@ -86,11 +84,11 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Dependency graph builder component.
+     * Project dependencies resolver component.
      *
-     * @since 2.5
+     * @since 3.9.1
      */
-    private final DependencyGraphBuilder dependencyGraphBuilder;
+    private final ProjectDependenciesResolver dependenciesResolver;
 
     /**
      * Jar classes analyzer component.
@@ -106,11 +104,11 @@ public class DependenciesReport extends AbstractProjectInfoReport {
             RepositorySystem repositorySystem,
             I18N i18n,
             ProjectBuilder projectBuilder,
-            @Named("default") DependencyGraphBuilder dependencyGraphBuilder,
+            ProjectDependenciesResolver dependenciesResolver,
             JarClassesAnalysis classesAnalyzer,
             RepositoryUtils repoUtils) {
         super(repositorySystem, i18n, projectBuilder);
-        this.dependencyGraphBuilder = dependencyGraphBuilder;
+        this.dependenciesResolver = dependenciesResolver;
         this.classesAnalyzer = classesAnalyzer;
         this.repoUtils = repoUtils;
     }
@@ -191,11 +189,9 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     private DependencyNode resolveProject() {
         try {
             ArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_TEST);
-            ProjectBuildingRequest buildingRequest =
-                    new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
-            buildingRequest.setProject(project);
-            return dependencyGraphBuilder.buildDependencyGraph(buildingRequest, artifactFilter);
-        } catch (DependencyGraphBuilderException e) {
+            return DependencyTreeBuilder.resolve(
+                    dependenciesResolver, project, getSession().getRepositorySession(), artifactFilter);
+        } catch (DependencyTreeException e) {
             getLog().error("Unable to build dependency tree.", e);
             return null;
         }
