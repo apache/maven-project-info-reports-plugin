@@ -40,10 +40,8 @@ import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.report.projectinfo.dependencies.DependencyNode;
 import org.apache.maven.report.projectinfo.dependencies.DependencyNodeVisitor;
 import org.apache.maven.report.projectinfo.dependencies.DependencyTreeBuilder;
@@ -654,13 +652,8 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
         Map<String, List<ReverseDependencyLink>> conflictingDependencyMap = new TreeMap<>();
         Map<String, List<ReverseDependencyLink>> allDependencies = new TreeMap<>();
 
-        ProjectBuildingRequest buildingRequest =
-                new DefaultProjectBuildingRequest(getSession().getProjectBuildingRequest());
-
         for (MavenProject reactorProject : reactorProjects) {
-            buildingRequest.setProject(reactorProject);
-
-            DependencyNode node = getNode(buildingRequest);
+            DependencyNode node = getNode(reactorProject);
 
             this.projectMap.put(reactorProject, node);
 
@@ -800,14 +793,14 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
     /**
      * Get root node of dependency tree for a given project
      *
-     * @param buildingRequest
+     * @param project the project
      * @return root node of dependency tree
      * @throws MavenReportException
      */
-    private DependencyNode getNode(ProjectBuildingRequest buildingRequest) throws MavenReportException {
+    private DependencyNode getNode(MavenProject project) throws MavenReportException {
         try {
             return DependencyTreeBuilder.collectVerbose(
-                    repositorySystem, buildingRequest.getProject(), buildingRequest.getRepositorySession(), filter);
+                    repositorySystem, project, getSession().getRepositorySession(), filter);
         } catch (DependencyTreeException e) {
             throw new MavenReportException("Could not build dependency tree: " + e.getMessage(), e);
         }
@@ -820,16 +813,10 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
      * @return set of descendants artifacts.
      */
     private Set<Artifact> getAllDescendants(DependencyNode node) {
-        Set<Artifact> children = null;
-        if (node.getChildren() != null) {
-            children = new HashSet<>();
-            for (DependencyNode depNode : node.getChildren()) {
-                children.add(depNode.getArtifact());
-                Set<Artifact> subNodes = getAllDescendants(depNode);
-                if (subNodes != null) {
-                    children.addAll(subNodes);
-                }
-            }
+        Set<Artifact> children = new HashSet<>();
+        for (DependencyNode depNode : node.getChildren()) {
+            children.add(depNode.getArtifact());
+            children.addAll(getAllDescendants(depNode));
         }
         return children;
     }
