@@ -18,7 +18,12 @@
  */
 package org.apache.maven.report.projectinfo;
 
+import javax.inject.Inject;
+
+import java.io.File;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
@@ -29,6 +34,8 @@ import com.meterware.httpunit.WebResponse;
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.execution.MavenSession;
+import org.eclipse.aether.SessionData;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
@@ -48,6 +55,9 @@ class LicensesReportTest extends AbstractProjectInfoTest {
      * WebConversation object
      */
     private static final WebConversation WEB_CONVERSATION = new WebConversation();
+
+    @Inject
+    private MavenSession mavenSession;
 
     /**
      * Test report
@@ -123,5 +133,55 @@ class LicensesReportTest extends AbstractProjectInfoTest {
         assertEquals("http://maven.apache.org", links[0].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString());
         assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getText());
+    }
+
+    /**
+     * A later module of the same build must not download a license text the build already has: the report renders
+     * whatever the session-scoped cache holds for the URL.
+     */
+    @Test
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config.xml")
+    void testLicenseContentComesFromSessionCache(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config.xml");
+
+        String cachedText = "License text cached earlier in this build (MPIR-586)";
+        Map<String, Object> cache = new ConcurrentHashMap<>();
+        cache.put(
+                LicensesReport.licenseContentCacheKey(new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"), null),
+                cachedText);
+        mavenSession.getRepositorySession().getData().set(LicensesReport.LICENSE_CONTENT_CACHE_KEY, cache);
+
+        mojo.execute();
+
+        URL reportURL = getTestFile("target/licenses/licenses.html").toURI().toURL();
+        WebResponse response = WEB_CONVERSATION.getResponse(new GetMethodWebRequest(reportURL.toString()));
+        assertTrue(response.getText().contains(cachedText), "report should render the cached license text");
+        assertEquals(1, cache.size(), "no other URL should have been fetched");
+    }
+
+    /**
+     * The first render of a license URL in a build puts its text into the session-scoped cache, under the key later
+     * modules will look up. Uses a local license file so the test needs no network.
+     */
+    @Test
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-local.xml")
+    @SuppressWarnings("unchecked")
+    void testLicenseContentIsCachedForLaterModules(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config-local.xml");
+        SessionData sessionData = mavenSession.getRepositorySession().getData();
+        sessionData.set(LicensesReport.LICENSE_CONTENT_CACHE_KEY, null);
+
+        mojo.execute();
+
+        Map<String, Object> cache = (Map<String, Object>) sessionData.get(LicensesReport.LICENSE_CONTENT_CACHE_KEY);
+        assertNotNull(cache, "the first render should create the session cache");
+        URL licenseUrl = new File(mavenProject.getBasedir(), "licenses-local-LICENSE.txt")
+                .toURI()
+                .toURL();
+        String expectedKey = LicensesReport.licenseContentCacheKey(licenseUrl, null);
+        assertEquals(1, cache.size(), cache.keySet().toString());
+        assertTrue(
+                ((String) cache.get(expectedKey)).contains("Local license text for MPIR-586"),
+                "cached text should be the license file content");
     }
 }
