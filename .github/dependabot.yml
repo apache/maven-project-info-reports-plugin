@@ -27,6 +27,17 @@ updates:
     # Mockito 5 requires Java 11; the build still runs on JDK 8
     - dependency-name: "org.mockito:*"
       versions: [">= 5.0.0"]
+    # 3.x plugins build against the latest Maven 3.9.x
+    - dependency-name: org.apache.maven:maven-artifact
+      versions: [">= 3.10.0"]
+    - dependency-name: org.apache.maven:maven-core
+      versions: [">= 3.10.0"]
+    - dependency-name: org.apache.maven:maven-model
+      versions: [">= 3.10.0"]
+    - dependency-name: org.apache.maven:maven-plugin-api
+      versions: [">= 3.10.0"]
+    - dependency-name: org.apache.maven:maven-settings
+      versions: [">= 3.10.0"]
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
