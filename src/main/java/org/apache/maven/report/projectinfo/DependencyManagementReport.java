@@ -20,17 +20,28 @@ package org.apache.maven.report.projectinfo;
 
 import javax.inject.Inject;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.DefaultDependencyResolutionRequest;
+import org.apache.maven.project.DependencyResolutionException;
+import org.apache.maven.project.DependencyResolutionRequest;
+import org.apache.maven.project.DependencyResolutionResult;
 import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectDependenciesResolver;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.apache.maven.report.projectinfo.dependencies.renderer.DependencyManagementRenderer;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
+import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -59,16 +70,20 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
 
     private final ArtifactHandlerManager artifactHandlerManager;
 
+    private final ProjectDependenciesResolver projectDependenciesResolver;
+
     @Inject
     protected DependencyManagementReport(
             RepositorySystem repositorySystem,
             ArtifactHandlerManager artifactHandlerManager,
             I18N i18n,
             ProjectBuilder projectBuilder,
-            RepositoryUtils repoUtils) {
+            RepositoryUtils repoUtils,
+            ProjectDependenciesResolver projectDependenciesResolver) {
         super(repositorySystem, i18n, projectBuilder);
         this.artifactHandlerManager = artifactHandlerManager;
         this.repoUtils = repoUtils;
+        this.projectDependenciesResolver = projectDependenciesResolver;
     }
 
     // ----------------------------------------------------------------------
@@ -98,7 +113,8 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
                 repositorySystem,
                 artifactHandlerManager,
                 repoUtils,
-                getLicenseMappings());
+                getLicenseMappings(),
+                hasManagedDependencyWithoutVersion() ? resolveDependencies() : null);
         r.render();
     }
 
@@ -141,5 +157,53 @@ public class DependencyManagementReport extends AbstractProjectInfoReport {
         }
 
         return managementDependencies;
+    }
+
+    /**
+     * @return true if at least one managed dependency declares no version.
+     */
+    private boolean hasManagedDependencyWithoutVersion() {
+        List<Dependency> managementDependencies = getManagementDependencies().getManagementDependencies();
+        for (Dependency dependency : managementDependencies) {
+            if (StringUtils.isBlank(dependency.getVersion())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Resolve the project's transitive dependencies exactly as a normal build (e.g. {@code mvn test}) would,
+     * and flatten the result into a map keyed by {@code groupId:artifactId}. This is used to look up the
+     * version that would apply to a managed dependency declaring no version of its own (MPIR-397): that
+     * version can only come from the project's actual, mediated dependency graph.
+     * <p>
+     * {@link ProjectDependenciesResolver} is the same core component Maven's own lifecycle uses internally to
+     * satisfy a Mojo's {@code requiresDependencyResolution}; calling it directly here means the resolution
+     * does not depend on how this report happens to be invoked (a plain {@code mvn site}, a direct
+     * {@code dependency-management} goal execution, an IDE, etc.).
+     *
+     * @return the resolved dependencies of the project, keyed by {@code groupId:artifactId}
+     */
+    private Map<String, Artifact> resolveDependencies() {
+        Map<String, Artifact> resolvedArtifacts = new HashMap<>();
+
+        DependencyResolutionRequest request = new DefaultDependencyResolutionRequest(project, repoSession);
+        DependencyResolutionResult result;
+        try {
+            result = projectDependenciesResolver.resolve(request);
+        } catch (DependencyResolutionException e) {
+            getLog().warn("Unable to fully resolve project dependencies for the dependency-management report.", e);
+            result = e.getResult();
+            if (result == null) {
+                return resolvedArtifacts;
+            }
+        }
+
+        for (org.eclipse.aether.graph.Dependency dependency : result.getResolvedDependencies()) {
+            Artifact artifact = org.apache.maven.RepositoryUtils.toArtifact(dependency.getArtifact());
+            resolvedArtifacts.put(artifact.getGroupId() + ':' + artifact.getArtifactId(), artifact);
+        }
+        return resolvedArtifacts;
     }
 }
