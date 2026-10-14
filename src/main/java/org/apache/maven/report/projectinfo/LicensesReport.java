@@ -26,7 +26,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,8 @@ import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.i18n.I18N;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.SessionData;
 
 /**
  * Generates the Project Licenses report.
@@ -65,10 +69,12 @@ public class LicensesReport extends AbstractProjectInfoReport {
      * Whether the only render links to the license documents instead of inlining them.
      * <br/>
      * If the system is in {@link #offline} mode, the linkOnly parameter will be always <code>true</code>.
+     * <br/>
+     * The user property <code>licenses.linkOnly</code> is available since 3.9.1.
      *
      * @since 2.3
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(property = "licenses.linkOnly", defaultValue = "false")
     private boolean linkOnly;
 
     /**
@@ -131,9 +137,54 @@ public class LicensesReport extends AbstractProjectInfoReport {
     @Override
     public void executeReport(Locale locale) {
         LicensesRenderer r = new LicensesRenderer(
-                getSink(), getProject(), getI18N(locale), locale, settings, linkOnly, licenseFileEncoding);
+                getSink(),
+                getProject(),
+                getI18N(locale),
+                locale,
+                settings,
+                linkOnly,
+                licenseFileEncoding,
+                getLicenseContentCache());
 
         r.render();
+    }
+
+    /**
+     * Key of the per-build cache of downloaded license texts in the {@link SessionData}.
+     */
+    static final String LICENSE_CONTENT_CACHE_KEY = LicensesReport.class.getName() + ".licenseContent";
+
+    /**
+     * Cache key for a license URL: the encoding is normalised the way {@link ProjectInfoReportUtils#getContent}
+     * does, so that <code>null</code>, an empty string and <code>UTF-8</code> share one download.
+     */
+    static String licenseContentCacheKey(URL licenseUrl, String encoding) {
+        String normalisedEncoding =
+                encoding == null || encoding.isEmpty() ? "UTF-8" : encoding.toUpperCase(Locale.ROOT);
+        return licenseUrl.toExternalForm() + '\n' + normalisedEncoding;
+    }
+
+    /**
+     * Returns the cache of license texts downloaded during this build, keyed by URL and encoding. It lives in the
+     * repository session so that every module of a reactor sharing one <code>&lt;licenses&gt;</code> section
+     * downloads each URL once instead of once per module (MPIR #586); a failed download is cached as well so the
+     * connect timeout is paid once. A plain map is returned when there is no session data, as in some tests.
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getLicenseContentCache() {
+        RepositorySystemSession repositorySession =
+                getSession() == null ? null : getSession().getRepositorySession();
+        SessionData data = repositorySession == null ? null : repositorySession.getData();
+        if (data == null) {
+            return new ConcurrentHashMap<>();
+        }
+        Object cache = data.get(LICENSE_CONTENT_CACHE_KEY);
+        if (cache == null) {
+            // compare-and-set: SessionData.computeIfAbsent does not exist in the resolver of Maven 3.6.3
+            data.set(LICENSE_CONTENT_CACHE_KEY, null, new ConcurrentHashMap<String, Object>());
+            cache = data.get(LICENSE_CONTENT_CACHE_KEY);
+        }
+        return (Map<String, Object>) cache;
     }
 
     /**
@@ -213,6 +264,11 @@ public class LicensesReport extends AbstractProjectInfoReport {
 
         private final String licenseFileEncoding;
 
+        /**
+         * License text, or the failure message, per URL and encoding, shared across the build.
+         */
+        private final Map<String, Object> licenseContentCache;
+
         LicensesRenderer(
                 Sink sink,
                 MavenProject project,
@@ -220,7 +276,8 @@ public class LicensesReport extends AbstractProjectInfoReport {
                 Locale locale,
                 Settings settings,
                 boolean linkOnly,
-                String licenseFileEncoding) {
+                String licenseFileEncoding,
+                Map<String, Object> licenseContentCache) {
             super(sink, i18n, locale);
 
             this.project = project;
@@ -230,6 +287,8 @@ public class LicensesReport extends AbstractProjectInfoReport {
             this.linkOnly = linkOnly;
 
             this.licenseFileEncoding = licenseFileEncoding;
+
+            this.licenseContentCache = licenseContentCache;
         }
 
         @Override
@@ -326,7 +385,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
         private void renderLicenseContent(URL licenseUrl) {
             try {
                 // All licenses are supposed to be in English...
-                String licenseContent = ProjectInfoReportUtils.getContent(licenseUrl, settings, licenseFileEncoding);
+                String licenseContent = getLicenseContent(licenseUrl);
 
                 // TODO: we should check for a text/html mime type instead, and possibly use a html parser to do this a
                 // bit more cleanly/reliably.
@@ -349,6 +408,35 @@ public class LicensesReport extends AbstractProjectInfoReport {
                 }
             } catch (IOException e) {
                 paragraph("Can't read the url [" + licenseUrl + "] : " + e.getMessage());
+            }
+        }
+
+        /**
+         * Fetches the license text once per build: later modules asking for the same URL get the cached text, or
+         * the cached failure, without another request to the server hosting the license.
+         */
+        private String getLicenseContent(URL licenseUrl) throws IOException {
+            String key = licenseContentCacheKey(licenseUrl, licenseFileEncoding);
+            // computeIfAbsent so that modules built in parallel wait for one download instead of each starting one
+            Object cached = licenseContentCache.computeIfAbsent(key, k -> {
+                try {
+                    return ProjectInfoReportUtils.getContent(licenseUrl, settings, licenseFileEncoding);
+                } catch (IOException e) {
+                    return new Failure(e.getMessage());
+                }
+            });
+            if (cached instanceof Failure) {
+                throw new IOException(((Failure) cached).message);
+            }
+            return (String) cached;
+        }
+
+        /** A download that failed earlier in this build; only the message is kept. */
+        private static final class Failure {
+            private final String message;
+
+            Failure(String message) {
+                this.message = message;
             }
         }
 
