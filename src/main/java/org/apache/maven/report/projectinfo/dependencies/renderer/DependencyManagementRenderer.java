@@ -24,10 +24,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.InvalidArtifactRTException;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -75,6 +77,8 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
     private final Map<String, String> licenseMappings;
 
+    private final Map<String, Artifact> resolvedArtifacts;
+
     /**
      * Default constructor
      *
@@ -89,6 +93,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
      * @param artifactHandlerManager the artifact handler manager
      * @param repoUtils {@link RepositoryUtils}
      * @param licenseMappings {@link LicenseMapping}
+     * @param resolvedArtifacts the resolved artifacts of the project keyed by {@code groupId:artifactId}, may be null
      */
     public DependencyManagementRenderer(
             Sink sink,
@@ -101,7 +106,8 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             RepositorySystem repositorySystem,
             ArtifactHandlerManager artifactHandlerManager,
             RepositoryUtils repoUtils,
-            Map<String, String> licenseMappings) {
+            Map<String, String> licenseMappings,
+            Map<String, Artifact> resolvedArtifacts) {
         super(sink, i18n, locale);
 
         this.log = log;
@@ -112,6 +118,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         this.artifactHandlerManager = artifactHandlerManager;
         this.repoUtils = repoUtils;
         this.licenseMappings = licenseMappings;
+        this.resolvedArtifacts = resolvedArtifacts;
     }
 
     // ----------------------------------------------------------------------
@@ -187,6 +194,11 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
             startSection(scope);
 
             paragraph(getI18nString("intro." + scope));
+
+            if (hasDependencyWithoutVersion(artifacts)) {
+                paragraph(getI18nString("resolvedVersionNote"));
+            }
+
             startTable();
 
             boolean hasClassifier = false;
@@ -209,14 +221,35 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         }
     }
 
+    /**
+     * @param artifacts the managed dependencies of a given scope
+     * @return {@code true} if at least one of them declares no version, i.e. its version will be resolved from
+     *         the project dependency tree and rendered in parentheses in the version column
+     */
+    private boolean hasDependencyWithoutVersion(List<Dependency> artifacts) {
+        for (Dependency dependency : artifacts) {
+            if (StringUtils.isBlank(dependency.getVersion())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String[] getDependencyRow(Dependency dependency, boolean hasClassifier) {
 
         ArtifactHandler handler = artifactHandlerManager.getArtifactHandler(dependency.getType());
 
+        boolean isResolvedArtifact = false;
+        String version = dependency.getVersion();
+        if (StringUtils.isBlank(version)) {
+            version = resolveVersion(dependency);
+            isResolvedArtifact = true;
+        }
+
         Artifact artifact = new DefaultArtifact(
                 dependency.getGroupId(),
                 dependency.getArtifactId(),
-                dependency.getVersion(),
+                version,
                 dependency.getScope(),
                 dependency.getType(),
                 dependency.getClassifier(),
@@ -225,7 +258,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         StringBuilder licensesBuffer = new StringBuilder();
         String url = null;
         try {
-            VersionRange range = VersionRange.createFromVersionSpec(dependency.getVersion());
+            VersionRange range = VersionRange.createFromVersionSpec(version);
 
             if (range.getRecommendedVersion() == null) {
                 // MPIR-216: no direct version but version range: need to choose one precise version
@@ -278,11 +311,12 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
         String artifactIdCell = ProjectInfoReportUtils.getArtifactIdCell(artifact.getArtifactId(), url);
 
+        String versionColumn = isResolvedArtifact ? '(' + version + ')' : version;
         if (hasClassifier) {
             return new String[] {
                 dependency.getGroupId(),
                 artifactIdCell,
-                dependency.getVersion(),
+                versionColumn,
                 dependency.getClassifier(),
                 dependency.getType(),
                 licensesBuffer.toString()
@@ -290,12 +324,32 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
         }
 
         return new String[] {
-            dependency.getGroupId(),
-            artifactIdCell,
-            dependency.getVersion(),
-            dependency.getType(),
-            licensesBuffer.toString()
+            dependency.getGroupId(), artifactIdCell, versionColumn, dependency.getType(), licensesBuffer.toString()
         };
+    }
+
+    /**
+     * Resolve the version of a managed dependency that declares none, from the project's actual, mediated
+     * dependency graph (see {@link org.apache.maven.report.projectinfo.DependencyManagementReport#resolveDependencies()}).
+     *
+     * @param dependency the managed dependency without a declared version
+     * @return the resolved version
+     * @throws InvalidArtifactRTException if the dependency could not be found in the resolved dependency graph
+     */
+    private String resolveVersion(Dependency dependency) {
+        Artifact resolvedArtifact = null;
+        if (resolvedArtifacts != null) {
+            resolvedArtifact = resolvedArtifacts.get(dependency.getGroupId() + ':' + dependency.getArtifactId());
+        }
+        if (resolvedArtifact != null) {
+            return resolvedArtifact.getVersion();
+        }
+        throw new InvalidArtifactRTException(
+                dependency.getGroupId(),
+                dependency.getArtifactId(),
+                null,
+                dependency.getType(),
+                "The version cannot be empty.");
     }
 
     /**
@@ -365,8 +419,10 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
                     return result;
                 }
 
-                // We don't consider the version range in the comparison, just the resolved version
-                return a1.getVersion().compareTo(a2.getVersion());
+                // We don't consider the version range in the comparison, just the resolved version;
+                // a managed dependency without a version is resolved before we get here, but compare
+                // defensively in case resolution ever leaves it null
+                return Objects.toString(a1.getVersion(), "").compareTo(Objects.toString(a2.getVersion(), ""));
             }
         };
     }
