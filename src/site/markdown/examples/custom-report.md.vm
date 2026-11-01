@@ -73,7 +73,7 @@ report.mailing-lists.intro = These are the mailing lists that have been establis
             Read the archives first in case your question has already been answered.\
             If not, then subscribe to the appropriate list and post your question.\
         </p>\
-        <p>
+        <p>\
             <strong>Note:</strong> please don't send patches or attachments to any of the mailing lists.\
             Patches are best handled via the <i>Issue Tracking</i> system.\
             Otherwise, please upload the file to a public server and include the URL in the mail.\
