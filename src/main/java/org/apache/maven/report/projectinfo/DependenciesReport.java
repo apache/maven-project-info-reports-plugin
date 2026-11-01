@@ -71,7 +71,7 @@ public class DependenciesReport extends AbstractProjectInfoReport {
     /**
      * Project dependencies resolver component.
      *
-     * @since 3.9.1
+     * @since 3.10.0
      */
     private final ProjectDependenciesResolver dependenciesResolver;
 

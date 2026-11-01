@@ -21,7 +21,7 @@ package org.apache.maven.report.projectinfo.dependencies;
 /**
  * Signals that the dependency tree of a project could not be built.
  *
- * @since 3.9.1
+ * @since 3.10.0
  */
 public class DependencyTreeException extends Exception {
     private static final long serialVersionUID = 1L;

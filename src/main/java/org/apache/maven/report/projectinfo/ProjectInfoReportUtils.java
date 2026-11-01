@@ -215,7 +215,7 @@ public class ProjectInfoReportUtils {
      * (+https://maven.apache.org/plugins/maven-project-info-reports-plugin/)</code>.
      *
      * @return the user agent string, never null
-     * @since 3.9.1
+     * @since 3.10.0
      */
     public static String getUserAgent() {
         return USER_AGENT;

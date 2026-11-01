@@ -21,7 +21,7 @@ package org.apache.maven.report.projectinfo.dependencies;
 /**
  * Visitor of a {@link DependencyNode} tree.
  *
- * @since 3.9.1
+ * @since 3.10.0
  */
 public interface DependencyNodeVisitor {
     /**
