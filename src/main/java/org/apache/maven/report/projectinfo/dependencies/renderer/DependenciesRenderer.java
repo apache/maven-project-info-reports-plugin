@@ -22,8 +22,6 @@ import javax.swing.text.html.HTML.Attribute;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
@@ -74,12 +72,6 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
  */
 public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
-    /** URL for the 'icon_info_sml.gif' image */
-    private static final String IMG_INFO_URL = "./images/icon_info_sml.gif";
-
-    /** URL for the 'close.gif' image */
-    private static final String IMG_CLOSE_URL = "./images/close.gif";
-
     private static final Set<String> JAR_SUBTYPE;
 
     private final DependencyNode dependencyNode;
@@ -97,9 +89,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
     private final MessageFormat javaVersionFormat =
             new MessageFormat("{0,choice,0#|1.1#{0,number,0.0}|9#{0,number,0}}", Locale.ROOT);
-
-    /** Counter for unique IDs that is consistent across generations. */
-    private int idCounter = 0;
 
     /**
      * Will be filled with license name / set of projects.
@@ -302,29 +291,6 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     }
 
     private void renderSectionDependencyTree() {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        pw.println("      function toggleDependencyDetails( divId, imgId )");
-        pw.println("      {");
-        pw.println("        var div = document.getElementById( divId );");
-        pw.println("        var img = document.getElementById( imgId );");
-        pw.println("        if( div.style.display == '' )");
-        pw.println("        {");
-        pw.println("          div.style.display = 'none';");
-        pw.printf("          img.src='%s';%n", IMG_INFO_URL);
-        pw.printf("          img.alt='%s';%n", getI18nString("graph.icon.information"));
-        pw.println("        }");
-        pw.println("        else");
-        pw.println("        {");
-        pw.println("          div.style.display = '';");
-        pw.printf("          img.src='%s';%n", IMG_CLOSE_URL);
-        pw.printf("          img.alt='%s';%n", getI18nString("graph.icon.close"));
-        pw.println("        }");
-        pw.println("      }");
-
-        javaScript(sw.toString());
-
         // for Dependencies Graph Tree
         startSection(getI18nString("graph.tree.title"));
 
@@ -794,22 +760,12 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
     private void printDependencyListing(DependencyNode node) {
         Artifact artifact = node.getArtifact();
         String id = artifact.getId();
-        String dependencyDetailId = "_dep" + idCounter++;
-        String imgId = "_img" + idCounter++;
 
         sink.listItem();
 
         sink.text(id + (StringUtils.isNotEmpty(artifact.getScope()) ? " (" + artifact.getScope() + ") " : " "));
 
-        String javascript = String.format(
-                "<img id=\"%s\" src=\"%s\" alt=\"%s\""
-                        + " onclick=\"toggleDependencyDetails( '%s', '%s' );\""
-                        + " style=\"cursor: pointer; vertical-align: text-bottom;\" />",
-                imgId, IMG_INFO_URL, getI18nString("graph.icon.information"), dependencyDetailId, imgId);
-
-        sink.rawText(javascript);
-
-        printDescriptionsAndURLs(node, dependencyDetailId);
+        printDescriptionsAndURLs(node);
 
         if (!node.getChildren().isEmpty()) {
             boolean toBeIncluded = false;
@@ -833,12 +789,12 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         sink.listItem_();
     }
 
-    private void printDescriptionsAndURLs(DependencyNode node, String uid) {
+    private void printDescriptionsAndURLs(DependencyNode node) {
         Artifact artifact = node.getArtifact();
         String id = artifact.getId();
         String unknownLicenseMessage = getI18nString("graph.tables.unknown");
 
-        sink.rawText("<div id=\"" + uid + "\" style=\"display:none\">");
+        sink.rawText("<details><summary>" + getI18nString("graph.icon.information") + "</summary>");
 
         if (!Artifact.SCOPE_SYSTEM.equals(artifact.getScope())) {
             try {
@@ -976,7 +932,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             endTable();
         }
 
-        sink.rawText("</div>");
+        sink.rawText("</details>");
     }
 
     private void printGroupedLicenses() {

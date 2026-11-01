@@ -21,6 +21,8 @@ package org.apache.maven.report.projectinfo;
 import javax.inject.Inject;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -41,6 +43,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doAnswer;
@@ -125,5 +128,14 @@ public class DependencyConvergenceReportTest extends AbstractProjectInfoTest {
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
         assertEquals(getString("report.dependency-convergence.reactor.name"), textBlocks[1].getText());
+
+        // Marks are text, not images
+        String html = new String(
+                Files.readAllBytes(getTestFile("target/dependency-convergence/dependency-convergence.html")
+                        .toPath()),
+                StandardCharsets.UTF_8);
+        assertTrue(html.contains("&#x2714; " + getString("report.dependency-convergence.icon.success")));
+        assertFalse(html.contains("icon_success_sml"));
+        assertFalse(html.contains("icon_error_sml"));
     }
 }

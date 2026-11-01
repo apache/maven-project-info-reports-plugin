@@ -123,6 +123,18 @@ try
         return false;
     }
 
+    // MPIR #687: tree details use <details>/<summary>, no images or JavaScript
+    if ( !content.contains( "<details><summary>" ) || !content.contains( "</details>" ) )
+    {
+        System.err.println( "dependencies.html doesn't contain <details><summary> for the dependency tree" );
+        return false;
+    }
+    if ( content.contains( "toggleDependencyDetails" ) || content.contains( "icon_info_sml" ) || content.contains( "close.gif" ) )
+    {
+        System.err.println( "dependencies.html still uses images or JavaScript for dependency details" );
+        return false;
+    }
+
     // MPIR-216: dependency with range
     File dependencyMgmt = new File( siteDir, "dependency-management.html");
     content = FileUtils.fileRead( dependencyMgmt, "UTF-8" );
@@ -138,6 +150,18 @@ try
     if ( !content.contains( "You do not have 100% convergence." ) )
     {
         System.err.println( "dependency-convergence not rendered correctly" );
+        return false;
+    }
+
+    // MPIR #687: convergence marks are text, not images
+    if ( !content.contains( "<td>&#x2718; " ) )
+    {
+        System.err.println( "dependency-convergence doesn't contain the text error mark" );
+        return false;
+    }
+    if ( content.contains( "icon_success_sml" ) || content.contains( "icon_error_sml" ) )
+    {
+        System.err.println( "dependency-convergence still uses icon images" );
         return false;
     }
 
