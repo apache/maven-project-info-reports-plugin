@@ -63,16 +63,6 @@ import org.eclipse.aether.RepositorySystem;
  */
 @Mojo(name = "dependency-convergence", aggregator = true)
 public class DependencyConvergenceReport extends AbstractProjectInfoReport {
-    /**
-     * URL for the 'icon_success_sml.gif' image
-     */
-    private static final String IMG_SUCCESS_URL = "images/icon_success_sml.gif";
-
-    /**
-     * URL for the 'icon_error_sml.gif' image
-     */
-    private static final String IMG_ERROR_URL = "images/icon_error_sml.gif";
-
     private static final int FULL_CONVERGENCE = 100;
 
     private ArtifactFilter filter = null;
@@ -616,15 +606,11 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
     }
 
     private void iconSuccess(Locale locale, Sink sink) {
-        SinkEventAttributes attributes =
-                new SinkEventAttributeSet(SinkEventAttributes.ALT, getI18nString(locale, "icon.success"));
-        sink.figureGraphics(IMG_SUCCESS_URL, attributes);
+        sink.text("\u2714 " + getI18nString(locale, "icon.success"));
     }
 
     private void iconError(Locale locale, Sink sink) {
-        SinkEventAttributes attributes =
-                new SinkEventAttributeSet(SinkEventAttributes.ALT, getI18nString(locale, "icon.error"));
-        sink.figureGraphics(IMG_ERROR_URL, attributes);
+        sink.text("\u2718 " + getI18nString(locale, "icon.error"));
     }
 
     /**
