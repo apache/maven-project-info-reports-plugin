@@ -59,7 +59,7 @@ report.mailing-lists.intro = These are the mailing lists that have been establis
 
 Extract of a custom bundle `${esc.d}{project.basedir}/src/site/custom/project-info-reports.properties` for the Apache Commons project:
 
-```unknown
+```properties
 
 report.mailing-lists.intro = These are the mailing lists that have been established for this project. For each list, there is a subscribe, unsubscribe, and an archive link.\
         <p>\
