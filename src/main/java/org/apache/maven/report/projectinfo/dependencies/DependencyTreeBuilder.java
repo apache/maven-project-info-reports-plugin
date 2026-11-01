@@ -52,7 +52,7 @@ import org.eclipse.aether.util.graph.transformer.SimpleOptionalitySelector;
 /**
  * Builds the {@link DependencyNode} trees of a project directly from Maven Resolver.
  *
- * @since 3.9.1
+ * @since 3.10.0
  */
 public final class DependencyTreeBuilder {
     private DependencyTreeBuilder() {}

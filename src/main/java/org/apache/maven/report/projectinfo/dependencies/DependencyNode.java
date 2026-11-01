@@ -28,7 +28,7 @@ import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 /**
  * A node of the dependency tree shown by the reports: an artifact and the nodes it brings in.
  *
- * @since 3.9.1
+ * @since 3.10.0
  */
 public class DependencyNode {
     private final DependencyNode parent;
