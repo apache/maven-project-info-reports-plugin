@@ -70,12 +70,22 @@ public class LicensesReport extends AbstractProjectInfoReport {
      * <br/>
      * If the system is in {@link #offline} mode, the linkOnly parameter will be always <code>true</code>.
      * <br/>
-     * The user property <code>licenses.linkOnly</code> is available since 3.9.1.
+     * The user property <code>licenses.linkOnly</code> is available since 3.10.0.
      *
      * @since 2.3
      */
     @Parameter(property = "licenses.linkOnly", defaultValue = "false")
     private boolean linkOnly;
+
+    /**
+     * Whether to download licenses given by an <code>http</code> or <code>https</code> URL and inline their text.
+     * By default such licenses are rendered as links, so that building a site does not send a request to the server
+     * hosting each license; licenses in local files are always inlined unless {@link #linkOnly} is set.
+     *
+     * @since 3.10.0
+     */
+    @Parameter(property = "licenses.downloadRemote", defaultValue = "false")
+    private boolean downloadRemoteLicenses;
 
     /**
      * Specifies the input encoding of the project's license file(s).
@@ -143,6 +153,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                 locale,
                 settings,
                 linkOnly,
+                downloadRemoteLicenses,
                 licenseFileEncoding,
                 getLicenseContentCache());
 
@@ -262,6 +273,8 @@ public class LicensesReport extends AbstractProjectInfoReport {
 
         private final boolean linkOnly;
 
+        private final boolean downloadRemoteLicenses;
+
         private final String licenseFileEncoding;
 
         /**
@@ -276,6 +289,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                 Locale locale,
                 Settings settings,
                 boolean linkOnly,
+                boolean downloadRemoteLicenses,
                 String licenseFileEncoding,
                 Map<String, Object> licenseContentCache) {
             super(sink, i18n, locale);
@@ -285,6 +299,8 @@ public class LicensesReport extends AbstractProjectInfoReport {
             this.settings = settings;
 
             this.linkOnly = linkOnly;
+
+            this.downloadRemoteLicenses = downloadRemoteLicenses;
 
             this.licenseFileEncoding = licenseFileEncoding;
 
@@ -324,7 +340,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                 // multiple licenses
                 paragraph(getI18nString("multiple"));
 
-                if (!linkOnly) {
+                if (licenses.stream().anyMatch(this::isInlined)) {
                     // add an index before licenses content
                     sink.list();
                     for (License license : licenses) {
@@ -360,7 +376,7 @@ public class LicensesReport extends AbstractProjectInfoReport {
                     try {
                         URL licenseUrl = getLicenseURL(project, url);
 
-                        if (linkOnly) {
+                        if (!isInlined(licenseUrl)) {
                             link(licenseUrl.toExternalForm(), licenseUrl.toExternalForm());
                         } else {
                             renderLicenseContent(licenseUrl);
@@ -375,6 +391,25 @@ public class LicensesReport extends AbstractProjectInfoReport {
             }
 
             endSection();
+        }
+
+        /**
+         * Whether a license's text is inlined: never with {@link #linkOnly}, and a remote license only when asked
+         * for, to spare the server hosting it.
+         */
+        private boolean isInlined(URL licenseUrl) {
+            return !linkOnly && ("file".equals(licenseUrl.getProtocol()) || downloadRemoteLicenses);
+        }
+
+        private boolean isInlined(License license) {
+            if (license.getUrl() == null) {
+                return false;
+            }
+            try {
+                return isInlined(getLicenseURL(project, license.getUrl()));
+            } catch (IOException e) {
+                return false;
+            }
         }
 
         /**

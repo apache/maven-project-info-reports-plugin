@@ -92,7 +92,24 @@ class LicensesReportTest extends AbstractProjectInfoTest {
         assertEquals(getString("report.licenses.title"), textBlocks[3].getText());
         assertEquals("The Apache Software License, Version 2.0", textBlocks[4].getText());
 
-        // only 1 link in default report
+        // a remote license is linked by default, not downloaded
+        final WebLink[] links = response.getLinks();
+        assertEquals(3, links.length);
+        assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", links[1].getURLString());
+    }
+
+    @Test
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-download.xml")
+    void testReportDownloadsRemoteLicenseWhenAskedTo(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config-download.xml");
+        mojo.execute();
+
+        URL reportURL =
+                getTestFile("target/licenses-download/licenses.html").toURI().toURL();
+        WebResponse response = WEB_CONVERSATION.getResponse(new GetMethodWebRequest(reportURL.toString()));
+        assertTrue(response.isHTML());
+
+        // the license text is inlined: the only link left is the license's own one inside the text
         final WebLink[] links = response.getLinks();
         assertEquals(2, links.length);
         assertEquals("https://maven.apache.org/", links[1].getURLString());
@@ -140,9 +157,9 @@ class LicensesReportTest extends AbstractProjectInfoTest {
      * whatever the session-scoped cache holds for the URL.
      */
     @Test
-    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config.xml")
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-download.xml")
     void testLicenseContentComesFromSessionCache(LicensesReport mojo) throws Exception {
-        readMavenProjectModel(mavenProject, "licenses-plugin-config.xml");
+        readMavenProjectModel(mavenProject, "licenses-plugin-config-download.xml");
 
         String cachedText = "License text cached earlier in this build (MPIR-586)";
         Map<String, Object> cache = new ConcurrentHashMap<>();
@@ -153,7 +170,8 @@ class LicensesReportTest extends AbstractProjectInfoTest {
 
         mojo.execute();
 
-        URL reportURL = getTestFile("target/licenses/licenses.html").toURI().toURL();
+        URL reportURL =
+                getTestFile("target/licenses-download/licenses.html").toURI().toURL();
         WebResponse response = WEB_CONVERSATION.getResponse(new GetMethodWebRequest(reportURL.toString()));
         assertTrue(response.getText().contains(cachedText), "report should render the cached license text");
         assertEquals(1, cache.size(), "no other URL should have been fetched");

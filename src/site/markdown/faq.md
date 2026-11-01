@@ -29,6 +29,7 @@ under the License.
 2. [How to exclude SCM access info?](#How_to_exclude_SCM_anonymous_access_info)
 3. [How to use developer/contributor time zone?](#How_to_use_developer.2Fcontributor_time_zone)
 4. [Is it possible to customize the reports rendering?](#Is_it_possible_to_customize_the_reports_rendering)
+5. [Why does the Licenses report link to my license instead of showing its text?](#Why_does_the_Licenses_report_link_to_my_license_instead_of_showing_its_text)
 
 <a id="Is_it_possible_to_customize_the_labels_of_the_Project_Reports_Menu"></a>
 
@@ -54,3 +55,11 @@ Please refer to the [developer section](http://maven.apache.org/pom.html#Develop
 
 Not yet, but [patches](https://github.com/apache/maven-project-info-reports-plugin/issues/) are always welcome!
 You could only [customize](./examples/custom-report.html) the texts in the reports.
+
+<a id="Why_does_the_Licenses_report_link_to_my_license_instead_of_showing_its_text"></a>
+
+### Why does the Licenses report link to my license instead of showing its text?
+
+Since version 3.10.0, a license given by an `http` or `https` URL is rendered as a link instead of being downloaded and inlined, so that building a site does not send a request to the server hosting each license. A license in a local file, for example `<url>LICENSE.txt</url>` next to the POM, is still inlined.
+
+To download remote licenses and inline their text as before, set [`downloadRemoteLicenses`](./licenses-mojo.html#downloadRemoteLicenses) to `true`, or pass `-Dlicenses.downloadRemote=true`.
