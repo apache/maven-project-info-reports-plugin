@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.sink.SinkEventAttributes;
+import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.model.Contributor;
 import org.apache.maven.model.Developer;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -312,7 +314,8 @@ public class TeamReport extends AbstractProjectInfoReport {
             if (headersMap.get(IMAGE) == Boolean.TRUE && showAvatarImages) {
                 sink.tableCell();
                 sink.figure();
-                sink.figureGraphics(avatarImages.get(member));
+                // the member's name is in the same row, so the picture is decorative
+                sink.figureGraphics(avatarImages.get(member), new SinkEventAttributeSet(SinkEventAttributes.ALT, ""));
                 sink.figure_();
                 sink.tableCell_();
             }
