@@ -78,6 +78,7 @@ class TeamReportTest extends AbstractProjectInfoTest {
         assertEquals(expectedTitle, response.getTitle());
 
         assertTrue(response.getText().contains("gravatar"));
+        assertTrue(response.getText().contains("alt=\"\""), "avatar images have an empty alt");
 
         // Test the texts
         TextBlock[] textBlocks = response.getTextBlocks();
