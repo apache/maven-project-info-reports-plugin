@@ -19,8 +19,8 @@
 
 def team = new File( basedir, 'target/site/team.html' ).text
 
-assert team.count('<figure><img src="avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg" /></figure>') == 1
-assert team.count('<figure><img src="avatars/00000000000000000000000000000000.jpg" /></figure>') == 2
+assert team.count('<figure><img src="avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg" alt="" /></figure>') == 1
+assert team.count('<figure><img src="avatars/00000000000000000000000000000000.jpg" alt="" /></figure>') == 2
 
 assert new File(basedir, 'target/site/avatars/90cc13b765c79d2d55ca64388ea2bc5f.jpg').exists()
 assert new File(basedir, 'target/site/avatars/00000000000000000000000000000000.jpg').exists()
