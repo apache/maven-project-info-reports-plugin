@@ -265,7 +265,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
      */
     private void generateDependencyDetails(Locale locale, Sink sink, List<ReverseDependencyLink> depList) {
         sink.table();
-        sink.tableRows();
+        tableRows(sink);
 
         Map<String, List<ReverseDependencyLink>> artifactMap = getSortedUniqueArtifactMap(depList);
 
@@ -280,7 +280,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
         sink.tableCell();
 
         sink.table();
-        sink.tableRows();
+        tableRows(sink);
 
         for (String version : artifactMap.keySet()) {
             sink.tableRow();
@@ -438,7 +438,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
      */
     private void generateLegend(Locale locale, Sink sink) {
         sink.table();
-        sink.tableRows();
+        tableRows(sink);
         sink.tableCaption();
         sink.bold();
         sink.text(getI18nString(locale, "legend"));
@@ -478,7 +478,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
         // Create report
         sink.table();
-        sink.tableRows();
+        tableRows(sink);
         sink.tableCaption();
         sink.bold();
         sink.text(getI18nString(locale, "stats.caption"));
@@ -603,6 +603,19 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
 
     private boolean isReactorBuild() {
         return this.reactorProjects.size() > 1;
+    }
+
+    /**
+     * Starts the rows of a table.
+     * <p>
+     * {@link Sink#tableRows()} would be the natural call, but it only exists since Doxia 2, while a report is
+     * rendered with the Doxia of the Maven Site Plugin in use, which may still be Doxia 1.
+     * {@link Sink#tableRows(int[], boolean)} exists in both.
+     *
+     * @param sink the sink to write to
+     */
+    private static void tableRows(Sink sink) {
+        sink.tableRows(null, false);
     }
 
     private void iconSuccess(Locale locale, Sink sink) {
