@@ -26,17 +26,20 @@ under the License.
 
 # Customize the SCM Report
 
-By default, the SCM Report uses the information configured (or inherited) in the `<scm>` element of `pom.xml`. To override these values, you can configure the `webAccessUrl`, `anonymousConnection` and `developerConnection` properties.
+By default, the SCM report uses the `<scm>` element of the POM, including one inherited from a parent.
+To override these values, configure the `webAccessUrl`, `anonymousConnection` and `developerConnection`
+parameters of the [scm goal](../scm-mojo.html).
 
-This feature is useful when the project website is stored in a separate module, and you want the SCM report to give instructions for checking out the project trunk.
+This helps when the site is built from a module whose `<scm>` points to a subdirectory, and the
+report should tell readers how to check out the whole repository:
 
 ```xml
 <project>
   ...
   <scm>
-    <connection>scm:svn:http://svn.example.org/repo/project/trunk/site</connection>
-    <developerConnection>scm:svn:https://svn.example.org/repo/project/trunk/site</developerConnection>
-    <url>http://svn.example.org/viewvc/project/trunk/site</url>
+    <connection>scm:git:https://github.com/example/project.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/example/project.git</developerConnection>
+    <url>https://github.com/example/project/tree/main/site</url>
   </scm>
   ...
   <reporting>
@@ -46,9 +49,9 @@ This feature is useful when the project website is stored in a separate module, 
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <webAccessUrl>http://svn.example.org/viewvc/project/trunk</webAccessUrl>
-          <anonymousConnection>scm:svn:http://svn.example.org/repo/project/trunk</anonymousConnection>
-          <developerConnection>scm:svn:https://svn.example.org/repo/project/trunk</developerConnection>
+          <webAccessUrl>https://github.com/example/project</webAccessUrl>
+          <anonymousConnection>scm:git:https://github.com/example/project.git</anonymousConnection>
+          <developerConnection>scm:git:ssh://git@github.com/example/project.git</developerConnection>
         </configuration>
       </plugin>
       ...
@@ -58,20 +61,23 @@ This feature is useful when the project website is stored in a separate module, 
 </project>
 ```
 
-# How to exclude SCM anonymous access info?
+<a id="How_to_exclude_SCM_anonymous_access_info"></a>
 
-Just do not specify the `<connection/>` tag in the `<scm/>` tag. For instance, you could have:
+${esc.h}${esc.h} How to exclude SCM anonymous access info?
+
+Leave out `<connection>` in the `<scm>` element. The report then has no Anonymous Access section:
 
 ```xml
 <project>
   ...
   <scm>
-    <!-- Unspecified <connection/> tag -->
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/</developerConnection>
-    <url>https://svn.apache.org/viewvc/maven/plugins/trunk/maven-project-info-reports-plugin/</url>
+    <!-- no <connection> -->
+    <developerConnection>scm:git:ssh://git@github.com/example/project.git</developerConnection>
+    <url>https://github.com/example/project</url>
   </scm>
   ...
 </project>
 ```
 
-**Note**: Due to [Plexus](https://codehaus-plexus.github.io/) design, it is not possible to specify an empty value using the `<anonymousConnection/>` configuration element.
+**Note:** an empty `<anonymousConnection/>` in the plugin configuration does not remove the section:
+Maven treats an empty parameter as unset and falls back to `${esc.d}{project.scm.connection}`.

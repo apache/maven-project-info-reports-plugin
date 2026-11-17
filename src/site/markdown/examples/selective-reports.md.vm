@@ -26,7 +26,9 @@ under the License.
 
 # Run Selective Reports
 
-To run the reports selectively, you can configure it to include only the reports that you prefer. Use `mvn site` to generate the selected reports.
+Without `<reportSets>`, `mvn site` runs the plugin's default set of reports. To build only some of them,
+list them in a `<reportSet>`; each `<report>` is a goal name from [Plugin Documentation](../plugin-info.html).
+Then run `mvn site` as usual.
 
 ```xml
 <project>
@@ -57,3 +59,6 @@ To run the reports selectively, you can configure it to include only the reports
   ...
 </project>
 ```
+
+A report whose POM section is empty, such as `ci-management` without `<ciManagement>`, is skipped even
+when it is listed. Set `skipEmptyReport` to `false` to generate it anyway.

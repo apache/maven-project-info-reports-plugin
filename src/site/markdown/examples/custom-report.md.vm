@@ -26,7 +26,9 @@ under the License.
 
 # Customize the Text Reports
 
-Currently, all reports have a static renderer, only texts could be changed.
+The layout of every report is fixed, but its texts come from a resource bundle that you can override.
+Put the keys you want to change in a properties file. The plugin reads
+`src/site/custom/project-info-reports.properties` by default; set `customBundle` to use another path:
 
 ```xml
 <project>
@@ -38,7 +40,7 @@ Currently, all reports have a static renderer, only texts could be changed.
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <!-- By default -->
+          <!-- this is the default value -->
           <customBundle>${esc.d}{project.basedir}/src/site/custom/project-info-reports.properties</customBundle>
         </configuration>
       </plugin>
@@ -49,47 +51,26 @@ Currently, all reports have a static renderer, only texts could be changed.
 </project>
 ```
 
-To change texts in the reports, you should import the default Project Info report bundles from [https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/](https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/) and edit them. For example, if you want to modify the Mailing Lists introduction, you should edit the `report.mailing-lists.intro` property.
-
-Extract of the default bundle [project-info-reports.properties](https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-project-info-reports-plugin/src/main/resources/project-info-reports.properties):
+Look up the keys in the default bundle
+[project-info-reports.properties](https://github.com/apache/maven-project-info-reports-plugin/blob/master/src/main/resources/project-info-reports.properties)
+(translations sit next to it in
+[src/main/resources](https://github.com/apache/maven-project-info-reports-plugin/tree/master/src/main/resources)).
+For example, the introduction of the Mailing Lists report is `report.mailing-lists.intro`:
 
 ```properties
 report.mailing-lists.intro = These are the mailing lists that have been established for this project. For each list, there is a subscribe, unsubscribe, and an archive link.
 ```
 
-Extract of a custom bundle `${esc.d}{project.basedir}/src/site/custom/project-info-reports.properties` for the Apache Commons project:
+A custom bundle that changes this introduction and renames two reports in the site menu:
 
 ```properties
-
-report.mailing-lists.intro = These are the mailing lists that have been established for this project. For each list, there is a subscribe, unsubscribe, and an archive link.\
-        <p>\
-            Questions related to the usage of Commons components should be posted to the\
-            <a href="https://mail-archives.apache.org/mod_mbox/commons-user/" class="externalLink">User List</a>.\
-            <br>\
-            The <a href="https://mail-archives.apache.org/mod_mbox/commons-dev/" class="externalLink">Developer List</a>\
-            is for questions and discussion related to the development of Commons components.\
-            <br>\
-            Please do not cross-post; developers are also subscribed to the user list.\
-            Read the archives first in case your question has already been answered.\
-            If not, then subscribe to the appropriate list and post your question.\
-        </p>\
-        <p>\
-            <strong>Note:</strong> please don't send patches or attachments to any of the mailing lists.\
-            Patches are best handled via the <i>Issue Tracking</i> system.\
-            Otherwise, please upload the file to a public server and include the URL in the mail.\
-        </p>\
-        <p>\
-            Please read the <a href="http://www.apache.org/foundation/public-archives.html" class="externalLink">Public Forum Archive Policy</a>\
-            and <a href="http://www.apache.org/dev/contrib-email-tips.html" class="externalLink">Tips for email contributors</a>.\
-            <br>\
-            For further information on Apache mailing lists please read\
-            <a href="http://www.apache.org/foundation/mailinglists.html" class="externalLink">General mailing list information</a>\
-            in particular the section entitled\
-            <a href="http://www.apache.org/foundation/mailinglists.html#subscribe" class="externalLink">Subscribing and Unsubscribing</a>\
-        </p>
+report.mailing-lists.intro = Ask usage questions on the Users list of ${esc.d}{project.name}.
+report.dependency-info.name = How to Depend on It
+report.dependencies.name = Third-Party Libraries
 ```
 
 **Notes:**
 
-1. You could also use Maven properties (i.e. `${esc.d}{project.artifactId}`) in the messages.
-1. If a bundle property is not defined in your custom bundle, the default will be displayed.
+1. Messages can use Maven properties such as `${esc.d}{project.artifactId}`.
+1. A key that is not in your custom bundle keeps its default text.
+1. A report's `name` key sets its label in the site menu.

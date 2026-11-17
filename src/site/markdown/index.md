@@ -26,54 +26,70 @@ under the License.
 -->
 
 # Apache Maven Project Info Reports Plugin
-The Maven Project Info Reports plugin is used to generate reports information about the project.
+
+The Project Info Reports Plugin turns what your POM declares into the "Project Information"
+pages of a Maven site: dependencies, Maven coordinates, team, licenses, mailing lists, source
+repository, issue tracker, continuous integration, distribution management, plugins and modules.
+
+The plugin requires Maven 3.9.0 or later and Java 8 or later.
+
+Most users come for one of these tasks:
+
+- Generate all project information pages with the rest of the site: run `mvn site` and open
+  `target/site/project-info.html`. See the [usage page](./usage.html).
+- Generate one report without building the site, for example the dependency list:
+  `mvn project-info-reports:dependencies` writes `target/reports/dependencies.html`.
+  See [Run Individual Reports](./examples/individual-reports.html).
+- Choose which reports the site contains: see [Run Selective Reports](./examples/selective-reports.html).
+- Change the texts or menu labels of the reports: see [Customize Text Reports](./examples/custom-report.html).
 
 ## Goals Overview
 
-The Project Info Reports Plugin has the following goals:
+The plugin has the following goals. Each report goal can run inside `mvn site` or on its own.
 
-- [project-info-reports:ci-management](./ci-management-mojo.html) is used to generate the Project Continuous Integration Management report.
-- [project-info-reports:dependencies](./dependencies-mojo.html) is used to generate the Project Dependencies report.
-- [project-info-reports:dependency-convergence](./dependency-convergence-mojo.html) is used to generate the Project Dependency Convergence report for (reactor) builds.
-- [project-info-reports:dependency-info](./dependency-info-mojo.html) is used to generate code snippets of the Maven coordinates to be added to build tools.
-- [project-info-reports:dependency-management](./dependency-management-mojo.html) is used to generate the Project Dependency Management report.
-- [project-info-reports:distribution-management](./distribution-management-mojo.html) is used to generate the Project Distribution Management report.
-- [project-info-reports:help](./help-mojo.html) is used to display help information on the Project Info Reports Plugin.
-- [project-info-reports:index](./index-mojo.html) is used to generate the Project index page.
-- [project-info-reports:issue-management](./issue-management-mojo.html) is used to generate the Project Issue Management report.
-- [project-info-reports:licenses](./licenses-mojo.html) is used to generate the Project Licenses report.
-- [project-info-reports:mailing-lists](./mailing-lists-mojo.html) is used to generate the Project Mailing Lists report.
-- [project-info-reports:modules](./modules-mojo.html) is used to generate the Project Modules report.
-- [project-info-reports:plugin-management](./plugin-management-mojo.html) is used to generate the Project Plugin Management report.
-- [project-info-reports:plugins](./plugins-mojo.html) is used to generate the Project Plugins report.
-- [project-info-reports:team](./team-mojo.html) is used to generate the Project Team report.
-- [project-info-reports:scm](./scm-mojo.html) is used to generate the Project Source Code Management report.
-- [project-info-reports:summary](./summary-mojo.html) is used to generate the Project Summary report.
-## Upcoming Incompatibility Notice
+- [project-info-reports:ci-management](./ci-management-mojo.html) generates the CI Management report.
+- [project-info-reports:dependencies](./dependencies-mojo.html) generates the Dependencies report.
+- [project-info-reports:dependency-convergence](./dependency-convergence-mojo.html) generates the Dependency Convergence report for a single project or a reactor build.
+- [project-info-reports:dependency-info](./dependency-info-mojo.html) generates the Maven Coordinates report: snippets for declaring the project as a dependency in Maven, Ivy, Grape, Gradle, SBT and Leiningen; for a project with `maven-plugin` packaging, the plugin declaration.
+- [project-info-reports:dependency-management](./dependency-management-mojo.html) generates the Dependency Management report.
+- [project-info-reports:distribution-management](./distribution-management-mojo.html) generates the Distribution Management report.
+- [project-info-reports:help](./help-mojo.html) displays help information on the plugin.
+- [project-info-reports:index](./index-mojo.html) generates the About page of the project.
+- [project-info-reports:issue-management](./issue-management-mojo.html) generates the Issue Management report.
+- [project-info-reports:licenses](./licenses-mojo.html) generates the Licenses report.
+- [project-info-reports:mailing-lists](./mailing-lists-mojo.html) generates the Mailing Lists report.
+- [project-info-reports:modules](./modules-mojo.html) generates the Project Modules report.
+- [project-info-reports:plugin-management](./plugin-management-mojo.html) generates the Plugin Management report.
+- [project-info-reports:plugins](./plugins-mojo.html) generates the Plugins report.
+- [project-info-reports:scm](./scm-mojo.html) generates the Source Code Management report.
+- [project-info-reports:summary](./summary-mojo.html) generates the Summary report.
+- [project-info-reports:team](./team-mojo.html) generates the Team report.
 
-With a future version mojos and output filenames will change for consistency alignment. See the following table for the upcoming changes:
-
-|Goal Name|New Goal Name|Output name|New Output Name|
-|:---:|:---:|:---:|:---:|
-|`dependency-info`|`maven-coordinates`|`dependency-info.html`|`maven-coordinates.html`|
+<a id="Upcoming_Incompatibility_Notice"></a>
+Since version 3.6.0 the `dependency-info` report is titled Maven Coordinates; the goal and its
+output file `dependency-info.html` keep their names.
 
 ## Usage
 
-General instructions on how to use the Project Info Reports Plugin can be found on the [usage page](./usage.html). Some more specific use cases are described in the examples given below.
+General instructions are on the [usage page](./usage.html), and the [FAQ](./faq.html) answers
+common questions. This plugin's own [project information pages](./project-info.html) show what
+each report looks like.
 
-In case you still have questions regarding the plugin's usage, please have a look at the [FAQ](./faq.html) and feel free to contact the [user mailing list](./mailing-lists.html). The posts to the mailing list are archived and could already contain the answer to your question as part of an older thread. Hence, it is also worth browsing/searching the [mail archive](./mailing-lists.html).
-
-If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our [issue tracker](./issue-management.html). When creating a new issue, please provide a comprehensive description of your concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason, entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated. Of course, patches are welcome, too. Contributors can check out the project from our [source repository](./scm.html) and will find supplementary information in the [guide to helping with Maven](http://maven.apache.org/guides/development/guide-helping.html).
+Ask questions on the [user mailing list](./mailing-lists.html), and report a defect or request a
+feature in the [issue tracker](./issue-management.html). For a defect, a small project that
+reproduces it helps most. To contribute a fix, see the [source repository](./scm.html) and the
+[guide to helping with Maven](https://maven.apache.org/guides/development/guide-helping.html).
 
 ## Examples
 
-To provide you with better understanding on some usages of the Maven Project Info Reports Plugin, you can take a look into the following examples:
+The following examples cover common configurations:
 
 - [Run Selective Reports](./examples/selective-reports.html)
 - [Run Individual Reports](./examples/individual-reports.html)
 - [Customize the SCM Report](./examples/scm-report.html)
-- [Overview of the reports generated for this plugin](./project-info.html)
+- [Customize Text Reports](./examples/custom-report.html)
+
 ## Related Links
 
-- [Localization of Plugins](http://maven.apache.org/plugins/localization.html)
-- [Create a layout (skin))](http://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html)
+- [Localization of plugins](https://maven.apache.org/plugins/localization.html)
+- [Creating a site skin](https://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html)
