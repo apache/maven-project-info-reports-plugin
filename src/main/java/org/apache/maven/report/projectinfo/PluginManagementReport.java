@@ -20,7 +20,6 @@ package org.apache.maven.report.projectinfo;
 
 import javax.inject.Inject;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -232,7 +231,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
             startSection(getTitle());
 
             // can't use straight artifact comparison because we want optional last
-            Collections.sort(pluginManagement, getPluginComparator());
+            pluginManagement.sort(getPluginComparator());
 
             startTable();
             tableHeader(tableHeader);

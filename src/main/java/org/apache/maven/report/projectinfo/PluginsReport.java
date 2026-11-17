@@ -21,7 +21,6 @@ package org.apache.maven.report.projectinfo;
 import javax.inject.Inject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -219,7 +218,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
                 return;
             }
 
-            Collections.sort(list, getPluginComparator());
+            list.sort(getPluginComparator());
 
             startTable();
             tableHeader(tableHeader);
@@ -279,7 +278,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
             return new String[] {groupId, artifactId, version};
         }
 
-        private static class GAV {
+        private static final class GAV {
             private final String groupId;
             private final String artifactId;
             private final String version;

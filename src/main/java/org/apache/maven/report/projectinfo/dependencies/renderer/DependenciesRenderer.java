@@ -305,7 +305,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         startSection(getI18nString("file.details.title"));
 
         List<Artifact> alldeps = dependencies.getAllDependencies();
-        Collections.sort(alldeps, getArtifactComparator());
+        alldeps.sort(getArtifactComparator());
 
         resolveAtrifacts(alldeps);
 
@@ -520,9 +520,9 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
                     boolean alreadyInsertedRowspanAttr = insertRowspanAttr
                             && (SummaryTableRowOrder.COMPILE_SCOPE.ordinal() < i
                                     && i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal());
-                    insertRowspanAttr = (SummaryTableRowOrder.COMPILE_SCOPE.ordinal() <= i
-                            && i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal());
-                    justification[column] = (insertRowspanAttr && alreadyInsertedRowspanAttr)
+                    insertRowspanAttr = SummaryTableRowOrder.COMPILE_SCOPE.ordinal() <= i
+                            && i <= SummaryTableRowOrder.SYSTEM_SCOPE.ordinal();
+                    justification[column] = insertRowspanAttr && alreadyInsertedRowspanAttr
                             ? justification[column + 1]
                             : Sink.JUSTIFY_CENTER;
                     tableRowWithRowspan(
@@ -662,7 +662,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
             String[] tableHeader = getDependencyTableHeader(withClassifier, withOptional);
 
             // can't use straight artifact comparison because we want optional last
-            Collections.sort(artifacts, getArtifactComparator());
+            artifacts.sort(getArtifactComparator());
 
             String anchorByScope = isTransitive
                     ? getI18nString("transitive.title") + "_" + scope

@@ -182,7 +182,7 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
     private void renderDependenciesForScope(String scope, List<Dependency> artifacts) {
         if (artifacts != null) {
             // can't use straight artifact comparison because we want optional last
-            Collections.sort(artifacts, getDependencyComparator());
+            artifacts.sort(getDependencyComparator());
 
             startSection(scope);
 

@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -324,7 +323,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
                     + depList.get(0).getDependency());
             return;
         }
-        Collections.sort(projectNodes, new DependencyNodeComparator());
+        projectNodes.sort(new DependencyNodeComparator());
 
         for (DependencyNode projectNode : projectNodes) {
             if (isReactorBuild()) {
@@ -544,7 +543,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
         }
         sink.nonBreakingSpace();
         sink.bold();
-        sink.text(String.valueOf(convergence) + " %");
+        sink.text(convergence + " %");
         sink.bold_();
         sink.tableCell_();
         sink.tableRow_();
