@@ -299,6 +299,7 @@ public class ProjectInfoReportUtils {
         if (conn instanceof HttpsURLConnection) {
             HostnameVerifier hostnameverifier = new HostnameVerifier() {
                 /** {@inheritDoc} */
+                @Override
                 public boolean verify(String urlHostName, SSLSession session) {
                     return true;
                 }
@@ -308,12 +309,15 @@ public class ProjectInfoReportUtils {
             TrustManager[] trustAllCerts = new TrustManager[] {
                 new X509TrustManager() {
                     /** {@inheritDoc} */
+                    @Override
                     public void checkClientTrusted(final X509Certificate[] chain, final String authType) {}
 
                     /** {@inheritDoc} */
+                    @Override
                     public void checkServerTrusted(final X509Certificate[] chain, final String authType) {}
 
                     /** {@inheritDoc} */
+                    @Override
                     public X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
