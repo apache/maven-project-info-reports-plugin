@@ -211,7 +211,7 @@ public class ModulesReport extends AbstractProjectInfoReport {
                     }
                 }
                 final String moduleName =
-                        (moduleProject.getName() == null) ? moduleProject.getArtifactId() : moduleProject.getName();
+                        moduleProject.getName() == null ? moduleProject.getArtifactId() : moduleProject.getName();
                 final String moduleHref =
                         getRelativeLink(baseUrl, getDistMgmntSiteUrl(moduleProject), moduleProject.getArtifactId());
 
