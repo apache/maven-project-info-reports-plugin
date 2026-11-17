@@ -35,7 +35,9 @@ under the License.
 
 ### Is it possible to customize the labels of the Project Reports Menu?
 
-Not yet. See the related issue: [MPIR-35](https://issues.apache.org/jira/browse/MPIR-35)
+Yes. The menu shows each report's name, which comes from the report's text bundle. Override the
+`report.<report>.name` key in a [custom bundle](./examples/custom-report.html), for example
+`report.dependencies.name = Third-Party Libraries`.
 
 <a id="How_to_exclude_SCM_anonymous_access_info"></a>
 
@@ -44,17 +46,19 @@ Not yet. See the related issue: [MPIR-35](https://issues.apache.org/jira/browse/
 See the [SCM report documentation](examples/scm-report.html#How_to_exclude_SCM_anonymous_access_info).
 
 <a id="How_to_use_developer.2Fcontributor_time_zone"></a>
+<a id="How_to_use_developercontributor_time_zone"></a>
 
 ### How to use developer/contributor time zone?
 
-Please refer to the [developer section](http://maven.apache.org/pom.html#Developers) of the POM reference.
+Set `<timezone>` on each `<developer>` or `<contributor>` in the POM, for example
+`<timezone>Europe/Berlin</timezone>`; the Team report adds a Time Zone column with the value. See the [developers section](https://maven.apache.org/pom.html#Developers) of the POM reference.
 
 <a id="Is_it_possible_to_customize_the_reports_rendering"></a>
 
 ### Is it possible to customize the reports rendering?
 
-Not yet, but [patches](https://github.com/apache/maven-project-info-reports-plugin/issues/) are always welcome!
-You could only [customize](./examples/custom-report.html) the texts in the reports.
+No. The layout of each report is fixed in the plugin; you can only [customize](./examples/custom-report.html)
+the texts. Proposals are welcome in the [issue tracker](https://github.com/apache/maven-project-info-reports-plugin/issues).
 
 <a id="Why_does_the_Licenses_report_link_to_my_license_instead_of_showing_its_text"></a>
 
