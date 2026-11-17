@@ -376,7 +376,7 @@ under the License.
           <artifactId>keytool-maven-plugin</artifactId>
           <version>2.1.0</version>
           <configuration>
-            <keystore>${basedir}/target/jetty.jks</keystore>
+            <keystore>${project.basedir}/target/jetty.jks</keystore>
             <dname>cn=jetty, ou=jetty, L=Unknown, ST=Unknown, o=Apache, c=Unknown</dname>
             <keypass>apache</keypass>
             <storepass>apache</storepass>
