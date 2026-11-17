@@ -684,6 +684,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
 
     private Comparator<Artifact> getArtifactComparator() {
         return new Comparator<Artifact>() {
+            @Override
             public int compare(Artifact a1, Artifact a2) {
                 // put optional last
                 if (a1.isOptional() && !a2.isOptional()) {
@@ -1275,6 +1276,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             if (decimalFormat != null) {

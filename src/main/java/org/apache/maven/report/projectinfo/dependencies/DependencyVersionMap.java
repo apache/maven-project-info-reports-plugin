@@ -55,6 +55,7 @@ public class DependencyVersionMap implements DependencyNodeVisitor {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean visit(DependencyNode node) {
         addDependency(node);
         return !containsConflicts(node);
@@ -63,6 +64,7 @@ public class DependencyVersionMap implements DependencyNodeVisitor {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean endVisit(DependencyNode node) {
         return true;
     }

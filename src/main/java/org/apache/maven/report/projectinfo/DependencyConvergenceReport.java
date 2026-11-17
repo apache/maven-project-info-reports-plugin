@@ -844,6 +844,7 @@ public class DependencyConvergenceReport extends AbstractProjectInfoReport {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compare(DependencyNode p1, DependencyNode p2) {
             return p1.getArtifact().getId().compareTo(p2.getArtifact().getId());
         }

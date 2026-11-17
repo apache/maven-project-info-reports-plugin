@@ -328,6 +328,7 @@ public class PluginsReport extends AbstractProjectInfoReport {
         private Comparator<GAV> getPluginComparator() {
             return new Comparator<GAV>() {
                 /** {@inheritDoc} */
+                @Override
                 public int compare(GAV a1, GAV a2) {
                     int result = a1.groupId.compareTo(a2.groupId);
                     if (result == 0) {

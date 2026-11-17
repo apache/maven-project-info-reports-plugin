@@ -100,6 +100,7 @@ public class SinkSerializingDependencyNodeVisitor implements DependencyNodeVisit
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean visit(DependencyNode node) {
         indent(node);
 
@@ -114,6 +115,7 @@ public class SinkSerializingDependencyNodeVisitor implements DependencyNodeVisit
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean endVisit(DependencyNode node) {
         depth--;
 

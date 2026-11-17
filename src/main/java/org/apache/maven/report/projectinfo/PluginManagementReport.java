@@ -302,6 +302,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
         private Comparator<Plugin> getPluginComparator() {
             return new Comparator<Plugin>() {
                 /** {@inheritDoc} */
+                @Override
                 public int compare(Plugin a1, Plugin a2) {
                     int result = a1.getGroupId().compareTo(a2.getGroupId());
                     if (result == 0) {

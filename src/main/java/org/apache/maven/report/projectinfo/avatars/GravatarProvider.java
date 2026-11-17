@@ -69,6 +69,7 @@ class GravatarProvider implements AvatarsProvider {
         this.outputDirectory = outputDirectory.toPath();
     }
 
+    @Override
     public String getAvatarUrl(String email) {
         return getAvatarUrl(email, "blank");
     }
