@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.maven.plugins.project-info-reports.its</groupId>
+  <artifactId>default-site-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Reports rendered by the Maven Site Plugin that Maven binds by default</name>
+  <description>
+    A report renders with the Doxia of the Maven Site Plugin in use, not with the Doxia this plugin is built against.
+    This project therefore declares no Maven Site Plugin version on purpose: Maven 3.9.x then binds 3.12.1, which
+    provides Doxia 1, and every report still has to be complete. A Maven that binds a Site Plugin providing Doxia 2
+    renders this project the way full-pom is rendered.
+  </description>
+  <url>https://example.org/default-site-plugin</url>
+
+  <licenses>
+    <license>
+      <name>License of the default-site-plugin IT</name>
+      <url>LICENSE.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>jdoe</id>
+      <name>Jane Doe</name>
+      <email>jdoe@example.org</email>
+    </developer>
+  </developers>
+
+  <mailingLists>
+    <mailingList>
+      <name>Users</name>
+      <subscribe>users-subscribe@example.org</subscribe>
+      <unsubscribe>users-unsubscribe@example.org</unsubscribe>
+      <post>users@example.org</post>
+      <archive>https://example.org/archive/users/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:git:https://example.org/git/default-site-plugin.git</connection>
+    <developerConnection>scm:git:https://example.org/git/default-site-plugin.git</developerConnection>
+    <url>https://example.org/browse/default-site-plugin</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://example.org/issues/default-site-plugin</url>
+  </issueManagement>
+  <ciManagement>
+    <system>GitHub</system>
+    <url>https://example.org/ci/default-site-plugin</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <address>ci@example.org</address>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <distributionManagement>
+    <site>
+      <id>site</id>
+      <url>scp://example.org/www/default-site-plugin</url>
+    </site>
+  </distributionManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-nop</artifactId>
+        <version>1.7.36</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- slf4j-simple 1.7.36 asks for slf4j-api 1.7.36: two versions of one artifact give the convergence report
+         a conflict to detail -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.30</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.36</version>
+    </dependency>
+  </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>@project.version@</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>licenses</report>
+              <report>team</report>
+              <report>scm</report>
+              <report>issue-management</report>
+              <report>mailing-lists</report>
+              <report>dependency-info</report>
+              <report>dependency-management</report>
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>ci-management</report>
+              <report>plugin-management</report>
+              <report>plugins</report>
+              <report>distribution-management</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

@@ -36,6 +36,9 @@ A report plugin does not render with its own Doxia. It renders with the Doxia th
 [Maven Site Plugin](https://maven.apache.org/plugins/maven-site-plugin/history.html#maven-site-plugin-vs-doxia-vs-doxia-sitetools)
 in use provides, so the version of the Site Plugin decides which Doxia the reports get.
 
+Since version **3.10.0** the reports are complete with Doxia 1 as well, so the Site Plugin that Maven
+binds by default works again. The rest of this section is about the versions before it.
+
 Versions **3.7.0 to 3.9.0** of this plugin are built against Doxia 2 and need
 **Maven Site Plugin 3.21.0 or newer**, which is the first version providing it.
 
@@ -50,8 +53,11 @@ please report an issue to Maven dev team.
 ```
 
 The reports affected are `ci-management`, `dependency-info`, `issue-management`, `licenses` and `scm`.
+`dependency-convergence` is affected as well where a `reportSet` lists it; its warning names
+`Sink.tableRows()` instead of `Sink.verbatim()`.
 
-To avoid it, declare the Site Plugin version explicitly rather than relying on the default:
+To avoid it with these versions, declare the Site Plugin version explicitly rather than relying
+on the default:
 
 ```xml
 <build>

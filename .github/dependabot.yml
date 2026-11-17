@@ -41,6 +41,14 @@ updates:
     # Maven 3 so use SLF4J 1.7.x
     - dependency-name: "org.slf4j:*"
       versions: [">= 2.0.0"]
+    # doxia-core 2.2.0 needs a class that only doxia-sink-api 2.2.0 has, but a
+    # report gets the Sink API of the Maven Site Plugin in use, which is Doxia 1
+    # by default in Maven 3.9.x. Both artifacts share the doxiaVersion property;
+    # lift this once src/it/default-site-plugin passes with a newer version
+    - dependency-name: org.apache.maven.doxia:doxia-core
+      versions: [">= 2.2.0"]
+    - dependency-name: org.apache.maven.doxia:doxia-sink-api
+      versions: [">= 2.2.0"]
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
