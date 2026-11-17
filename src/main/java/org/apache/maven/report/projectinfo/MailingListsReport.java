@@ -34,7 +34,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -162,25 +161,27 @@ public class MailingListsReport extends AbstractProjectInfoReport {
             for (MailingList mailingList : model.getMailingLists()) {
                 List<String> textRow = new ArrayList<>();
 
-                if (StringUtils.isNotEmpty(mailingList.getName())) {
+                if (mailingList.getName() != null && !mailingList.getName().isEmpty()) {
                     textRow.add(mailingList.getName());
                 } else {
                     textRow.add("-");
                 }
 
-                if (StringUtils.isNotEmpty(mailingList.getSubscribe())) {
+                if (mailingList.getSubscribe() != null
+                        && !mailingList.getSubscribe().isEmpty()) {
                     textRow.add(createURILinkPatternedText(subscribe, mailingList.getSubscribe()));
                 } else {
                     textRow.add("-");
                 }
 
-                if (StringUtils.isNotEmpty(mailingList.getUnsubscribe())) {
+                if (mailingList.getUnsubscribe() != null
+                        && !mailingList.getUnsubscribe().isEmpty()) {
                     textRow.add(createURILinkPatternedText(unsubscribe, mailingList.getUnsubscribe()));
                 } else {
                     textRow.add("-");
                 }
 
-                if (StringUtils.isNotEmpty(mailingList.getPost())) {
+                if (mailingList.getPost() != null && !mailingList.getPost().isEmpty()) {
                     textRow.add(createURILinkPatternedText(post, mailingList.getPost()));
                 } else {
                     textRow.add("-");
@@ -263,7 +264,7 @@ public class MailingListsReport extends AbstractProjectInfoReport {
 
             try {
                 URI hrefUri = URI.create(href);
-                if (StringUtils.isNotEmpty(hrefUri.getScheme())) {
+                if (hrefUri.getScheme() != null && !hrefUri.getScheme().isEmpty()) {
                     return createLinkPatternedText(text, href);
                 } else {
                     return createLinkPatternedText(text, "mailto:" + href);

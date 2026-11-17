@@ -46,7 +46,6 @@ import org.apache.maven.report.projectinfo.ProjectInfoReportUtils;
 import org.apache.maven.report.projectinfo.dependencies.ManagementDependencies;
 import org.apache.maven.report.projectinfo.dependencies.RepositoryUtils;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -191,7 +190,8 @@ public class DependencyManagementRenderer extends AbstractProjectInfoRenderer {
 
             boolean hasClassifier = false;
             for (Dependency dependency : artifacts) {
-                if (StringUtils.isNotEmpty(dependency.getClassifier())) {
+                if (dependency.getClassifier() != null
+                        && !dependency.getClassifier().isEmpty()) {
                     hasClassifier = true;
                     break;
                 }

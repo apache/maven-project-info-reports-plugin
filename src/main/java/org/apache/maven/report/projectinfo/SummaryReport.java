@@ -35,7 +35,6 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.aether.RepositorySystem;
 
@@ -146,7 +145,8 @@ public class SummaryReport extends AbstractProjectInfoReport {
             // download section
             DistributionManagement distributionManagement = project.getDistributionManagement();
             if (distributionManagement != null) {
-                if (StringUtils.isNotEmpty(distributionManagement.getDownloadUrl())) {
+                if (distributionManagement.getDownloadUrl() != null
+                        && !distributionManagement.getDownloadUrl().isEmpty()) {
                     startSection(getI18nString("download"));
                     link(distributionManagement.getDownloadUrl(), distributionManagement.getDownloadUrl());
                     endSection();

@@ -44,7 +44,6 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -242,7 +241,7 @@ public class PluginManagementReport extends AbstractProjectInfoReport {
 
             for (Plugin plugin : pluginManagement) {
                 VersionRange versionRange;
-                if (StringUtils.isEmpty(plugin.getVersion())) {
+                if (plugin.getVersion() == null || plugin.getVersion().isEmpty()) {
                     versionRange = VersionRange.createFromVersion(Artifact.RELEASE_VERSION);
                 } else {
                     versionRange = VersionRange.createFromVersion(plugin.getVersion());

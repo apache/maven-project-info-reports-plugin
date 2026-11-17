@@ -44,7 +44,6 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -286,7 +285,9 @@ public class PluginsReport extends AbstractProjectInfoReport {
             private GAV(Plugin plugin) {
                 groupId = plugin.getGroupId();
                 artifactId = plugin.getArtifactId();
-                version = StringUtils.isEmpty(plugin.getVersion()) ? Artifact.RELEASE_VERSION : plugin.getVersion();
+                version = plugin.getVersion() == null || plugin.getVersion().isEmpty()
+                        ? Artifact.RELEASE_VERSION
+                        : plugin.getVersion();
             }
 
             private GAV(ReportPlugin reportPlugin, MavenProject project) {

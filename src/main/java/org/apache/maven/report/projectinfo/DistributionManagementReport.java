@@ -126,7 +126,8 @@ public class DistributionManagementReport extends AbstractProjectInfoReport {
             startSection(getI18nString("overview.title"));
             paragraph(getI18nString("overview.intro"));
 
-            if (StringUtils.isNotEmpty(distributionManagement.getDownloadUrl())) {
+            if (distributionManagement.getDownloadUrl() != null
+                    && !distributionManagement.getDownloadUrl().isEmpty()) {
                 startSection(getI18nString("downloadURL"));
                 internalLink(distributionManagement.getDownloadUrl());
                 endSection();

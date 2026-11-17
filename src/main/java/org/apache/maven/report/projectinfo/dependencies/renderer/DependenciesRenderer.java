@@ -998,7 +998,7 @@ public class DependenciesRenderer extends AbstractProjectInfoRenderer {
      */
     private boolean hasClassifier(List<Artifact> artifacts) {
         for (Artifact artifact : artifacts) {
-            if (StringUtils.isNotEmpty(artifact.getClassifier())) {
+            if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
                 return true;
             }
         }
