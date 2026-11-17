@@ -494,31 +494,30 @@ public class TeamReport extends AbstractProjectInfoReport {
             for (Contributor unit : units) {
                 if (unit instanceof Developer) {
                     Developer developer = (Developer) unit;
-                    if (developer.getId() != null && !developer.getId().isEmpty()) {
+                    if (StringUtils.isNotEmpty(developer.getId())) {
                         requiredHeaders.put(ID, Boolean.TRUE);
                     }
                 }
-                if (unit.getName() != null && !unit.getName().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getName())) {
                     requiredHeaders.put(NAME, Boolean.TRUE);
                 }
-                if (unit.getEmail() != null && !unit.getEmail().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getEmail())) {
                     requiredHeaders.put(EMAIL, Boolean.TRUE);
                     requiredHeaders.put(IMAGE, Boolean.TRUE);
                 }
-                if (unit.getUrl() != null && !unit.getUrl().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getUrl())) {
                     requiredHeaders.put(URL, Boolean.TRUE);
                 }
-                if (unit.getOrganization() != null && !unit.getOrganization().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getOrganization())) {
                     requiredHeaders.put(ORGANIZATION, Boolean.TRUE);
                 }
-                if (unit.getOrganizationUrl() != null
-                        && !unit.getOrganizationUrl().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getOrganizationUrl())) {
                     requiredHeaders.put(ORGANIZATION_URL, Boolean.TRUE);
                 }
                 if (!unit.getRoles().isEmpty()) {
                     requiredHeaders.put(ROLES, Boolean.TRUE);
                 }
-                if (unit.getTimezone() != null && !unit.getTimezone().isEmpty()) {
+                if (StringUtils.isNotEmpty(unit.getTimezone())) {
                     requiredHeaders.put(TIME_ZONE, Boolean.TRUE);
                 }
                 Properties properties = unit.getProperties();

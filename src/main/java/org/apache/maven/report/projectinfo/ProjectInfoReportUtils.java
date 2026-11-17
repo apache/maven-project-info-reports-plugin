@@ -132,15 +132,13 @@ public class ProjectInfoReportUtils {
                 p.setProperty(scheme + "proxySet", "true");
                 p.setProperty(scheme + "proxyHost", host);
                 p.setProperty(scheme + "proxyPort", String.valueOf(proxy.getPort()));
-                if (!(proxy.getNonProxyHosts() == null
-                        || proxy.getNonProxyHosts().isEmpty())) {
+                if (!StringUtils.isEmpty(proxy.getNonProxyHosts())) {
                     p.setProperty(scheme + "nonProxyHosts", proxy.getNonProxyHosts());
                 }
 
                 final String userName = proxy.getUsername();
                 if (!(userName == null || userName.isEmpty())) {
-                    final String pwd =
-                            proxy.getPassword() == null || proxy.getPassword().isEmpty() ? "" : proxy.getPassword();
+                    final String pwd = StringUtils.isEmpty(proxy.getPassword()) ? "" : proxy.getPassword();
                     Authenticator.setDefault(new Authenticator() {
                         /** {@inheritDoc} */
                         @Override
@@ -286,8 +284,8 @@ public class ProjectInfoReportUtils {
             }
 
             if (server != null
-                    && (server.getUsername() != null && !server.getUsername().isEmpty())
-                    && (server.getPassword() != null && !server.getPassword().isEmpty())) {
+                    && StringUtils.isNotEmpty(server.getUsername())
+                    && StringUtils.isNotEmpty(server.getPassword())) {
                 String up =
                         server.getUsername().trim() + ":" + server.getPassword().trim();
                 String upEncoded = new String(Base64.encodeBase64Chunked(up.getBytes())).trim();

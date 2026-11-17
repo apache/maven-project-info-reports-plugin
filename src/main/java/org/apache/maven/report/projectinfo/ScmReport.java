@@ -119,7 +119,7 @@ public class ScmReport extends AbstractProjectInfoReport {
             if (result
                     && (anonymousConnection == null || anonymousConnection.isEmpty())
                     && (developerConnection == null || developerConnection.isEmpty())
-                    && (scm.getUrl() == null || scm.getUrl().isEmpty())) {
+                    && StringUtils.isEmpty(scm.getUrl())) {
                 result = false;
             }
         }
@@ -238,7 +238,7 @@ public class ScmReport extends AbstractProjectInfoReport {
             if (scm == null
                     || (anonymousConnection == null || anonymousConnection.isEmpty())
                             && (devConnection == null || devConnection.isEmpty())
-                            && (scm.getUrl() == null || scm.getUrl().isEmpty())) {
+                            && StringUtils.isEmpty(scm.getUrl())) {
                 startSection(getTitle());
 
                 paragraph(getI18nString("noscm"));
