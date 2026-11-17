@@ -32,7 +32,6 @@ import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * @since 2.1
@@ -276,7 +275,7 @@ public class Dependencies {
         if (file.isDirectory()) {
             // MPIR-322: if target/classes directory, try target/artifactId-version[-classifier].jar
             String filename = artifact.getArtifactId() + '-' + artifact.getVersion();
-            if (StringUtils.isNotEmpty(artifact.getClassifier())) {
+            if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
                 filename += '-' + artifact.getClassifier();
             }
             filename += '.' + artifact.getType();
