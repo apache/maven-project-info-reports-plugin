@@ -16,5 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File log = new File( basedir, 'build.log' )
-assert !( log.text =~ /\[WARNING\] Artifact .+ has no file and won't be listed in dependency files details\./ )
+File log = new File(basedir, 'build.log')
+assert !(log.text =~ /\[WARNING\] Artifact .+ has no file and won't be listed in dependency files details\./)

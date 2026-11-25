@@ -17,37 +17,30 @@
  * under the License.
  */
 
-File siteDir = new File( basedir, "target/site" );
+File siteDir = new File(basedir, "target/site")
 assert siteDir.isDirectory() : "Site directory not existent: " + siteDir
 
-String[] reports = [ "dependency-info",
-                     "index",
-                     "plugin-management",
-                     "plugins",
-                     "project-info",
-                     "summary"
-                   ] as String[];
+String[] reports = ["dependency-info", "index", "plugin-management", "plugins", "project-info", "summary"] as String[]
 
-String[] skippedReports = [ "dependencies",
-                            "integration",
-                            "issue-management",
-                            "licenses",
-                            "mailing-lists",
-                            "scm",
-                            "dependency-management",
-                            "team",
-                            "distribution-management",
-                            "modules"
-                          ] as String[];
+String[] skippedReports = [
+    "dependencies",
+    "integration",
+    "issue-management",
+    "licenses",
+    "mailing-lists",
+    "scm",
+    "dependency-management",
+    "team",
+    "distribution-management",
+    "modules"
+] as String[]
 
-for ( String report : reports )
-{
-    File reportFile = new File( siteDir, report + ".html" );
+for ( String report : reports ) {
+    File reportFile = new File( siteDir, report + ".html" )
     assert reportFile.isFile() : "Report file not existent: " + reportFile
 }
 
-for ( String skippedReport : skippedReports )
-{
-    File skippedReportFile = new File( siteDir, skippedReport + ".html" );
+for ( String skippedReport : skippedReports ) {
+    File skippedReportFile = new File( siteDir, skippedReport + ".html" )
     assert !skippedReportFile.isFile() : "Skipped report file existent: " + skippedReportFile
 }

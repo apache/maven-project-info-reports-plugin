@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File dependencies = new File( basedir, 'target/site/dependencies.html' )
+File dependencies = new File(basedir, 'target/site/dependencies.html')
 def mavenModel = '''\
 <tr class="a">
 <td style="text-align: left;">maven-model-3.3.9.jar</td>
@@ -39,5 +39,5 @@ def jacksonDataTypeJsr310 = '''\
 <td style="text-align: center;">Yes</td></tr>
 '''
 
-assert dependencies.text.contains( mavenModel.replaceAll( "\n", System.getProperty( "line.separator" ) ) )
-assert dependencies.text.contains( jacksonDataTypeJsr310.replaceAll( "\n", System.getProperty( "line.separator" ) ) )
+assert dependencies.text.contains(mavenModel.replaceAll("\n", System.getProperty("line.separator")))
+assert dependencies.text.contains(jacksonDataTypeJsr310.replaceAll("\n", System.getProperty("line.separator")))

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-String html = new File( basedir, 'target/reports/dependencies.html' ).text
+String html = new File(basedir, 'target/reports/dependencies.html').text
 
 // Revise after DOXIA-704
 def summaryLine = '''\
@@ -51,4 +51,4 @@ def summaryLine = '''\
 <td style="text-align: center;">1.8</td>
 <td style="text-align: right;">test: 3</td></tr>'''
 
-assert html.contains( summaryLine.replaceAll( "\n", System.lineSeparator() ) )
+assert html.contains(summaryLine.replaceAll("\n", System.lineSeparator()))

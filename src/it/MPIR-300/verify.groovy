@@ -17,18 +17,18 @@
  * under the License.
  */
 
-plugins = new File( basedir, 'target/reports/plugins.html' ).text;
+plugins = new File(basedir, 'target/reports/plugins.html').text
 
 // version of maven-invoker-plugin is defined in pluginManagement
-assert plugins.contains( '<td>1.invoker-pluginManagement</td>' );
+assert plugins.contains('<td>1.invoker-pluginManagement</td>')
 
 // version of maven-javadoc-plugin is defined in plugins (overriding pluginManagement)
-assert plugins.contains( '<td>2.javadoc-plugin</td>' );
+assert plugins.contains('<td>2.javadoc-plugin</td>')
 
 // version of maven-checkstyle-plugin is defined in plugins
-assert plugins.contains( '<td>2.checkstyle-plugin</td>' );
+assert plugins.contains('<td>2.checkstyle-plugin</td>')
 
 // version of maven-changes-plugin is defined in reporting (overriding pluginManagement and plugins)
-assert plugins.contains( '<td>3.changes-reporting</td>' );
+assert plugins.contains('<td>3.changes-reporting</td>')
 
-return true;
+return true

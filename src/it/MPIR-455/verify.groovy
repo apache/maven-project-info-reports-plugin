@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-String html = new File( basedir, 'target/reports/dependencies.html' ).text.normalize()
+String html = new File(basedir, 'target/reports/dependencies.html').text.normalize()
 
 def summaryLine = '''\
 <tr class="b">
@@ -116,4 +116,4 @@ def summaryLine = '''\
 <td style="text-align: center;">11</td>
 <td style="text-align: center;">Yes</td></tr>'''
 
-assert html.contains( summaryLine.normalize() )
+assert html.contains(summaryLine.normalize())
