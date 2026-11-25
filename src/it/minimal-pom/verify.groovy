@@ -17,63 +17,37 @@
  * under the License.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+File siteDir = new File( basedir, "target/site" );
+assert siteDir.isDirectory() : "Site directory not existent: " + siteDir
 
-try
+String[] reports = [ "dependency-info",
+                     "index",
+                     "plugin-management",
+                     "plugins",
+                     "project-info",
+                     "summary"
+                   ] as String[];
+
+String[] skippedReports = [ "dependencies",
+                            "integration",
+                            "issue-management",
+                            "licenses",
+                            "mailing-lists",
+                            "scm",
+                            "dependency-management",
+                            "team",
+                            "distribution-management",
+                            "modules"
+                          ] as String[];
+
+for ( String report : reports )
 {
-    File siteDir = new File( basedir, "target/site" );
-    if ( !siteDir.isDirectory() )
-    {
-        System.out.println( "Site directory not existent: " + siteDir );
-        return false;
-    }
-
-    String[] reports = [ "dependency-info",
-                         "index",
-                         "plugin-management",
-                         "plugins",
-                         "project-info",
-                         "summary"
-                       ] as String[];
-
-    String[] skippedReports = [ "dependencies",
-                                "integration",
-                                "issue-management",
-                                "licenses",
-                                "mailing-lists",
-                                "scm",
-                                "dependency-management",
-                                "team",
-                                "distribution-management",
-                                "modules"
-                              ] as String[];
-
-    for ( String report : reports )
-    {
-        File reportFile = new File( siteDir, report + ".html" );
-        if ( !reportFile.isFile() )
-        {
-            System.out.println( "Report file not existent: " + reportFile );
-            return false;
-        }
-    }
-
-    for ( String skippedReport : skippedReports )
-    {
-        File skippedReportFile = new File( siteDir, skippedReport + ".html" );
-        if ( skippedReportFile.isFile() )
-        {
-            System.out.println( "Skipped report file existent: " + skippedReportFile );
-            return false;
-        }
-    }
-}
-catch( Throwable t )
-{
-    t.printStackTrace();
-    return false;
+    File reportFile = new File( siteDir, report + ".html" );
+    assert reportFile.isFile() : "Report file not existent: " + reportFile
 }
 
-return true;
+for ( String skippedReport : skippedReports )
+{
+    File skippedReportFile = new File( siteDir, skippedReport + ".html" );
+    assert !skippedReportFile.isFile() : "Skipped report file existent: " + skippedReportFile
+}
