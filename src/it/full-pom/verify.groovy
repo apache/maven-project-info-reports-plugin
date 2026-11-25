@@ -17,159 +17,87 @@
  * under the License.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
-import org.codehaus.plexus.util.*;
+File siteDir = new File( basedir, "target/site" );
+assert siteDir.isDirectory() : "Site directory not existent: " + siteDir
+String[] reports = [ "index",                  // <report>index</report>
+                     "summary",                // <report>summary</report>
+                     "licenses",               // <report>licenses</report>
+                     "team",                   // <report>team</report>
+                     "scm",                    // <report>scm</report>
+                     "issue-management",       // <report>issue-management</report>
+                     "mailing-lists",          // <report>mailing-lists</report>
+                     "dependency-info",        // <report>dependency-info</report>
+                     "dependency-management",  // <report>dependency-management</report>
+                     "dependencies",           // <report>dependencies</report>
+                     "dependency-convergence", // <report>dependency-convergence</report>
+                     "ci-management",          // <report>ci-management</report>
+                     "plugin-management",      // <report>plugin-management</report>
+                     "plugins",                // <report>plugins</report>
+                     "distribution-management" // <report>distribution-management</report>
+                   ] as String[];
 
-try
+String info = new File( siteDir, "project-info.html" ).getText( 'UTF-8' );
+
+int index1 = 10;
+int index2 = 10;
+String previousReportLink;
+
+// MPIR-182: verify order of reports
+for ( String report : reports )
 {
-    File siteDir = new File( basedir, "target/site" );
-    if ( !siteDir.isDirectory() )
-    {
-        System.out.println( "Site directory not existent: " + siteDir );
-        return false;
-    }
+    File reportFile = new File( siteDir, report + ".html" );
+    assert reportFile.isFile() : "Report file not existent: " + reportFile
 
-    String[] reports = [ "index",                  // <report>index</report>
-                         "summary",                // <report>summary</report>
-                         "licenses",               // <report>licenses</report>
-                         "team",                   // <report>team</report>
-                         "scm",                    // <report>scm</report>
-                         "issue-management",       // <report>issue-management</report>
-                         "mailing-lists",          // <report>mailing-lists</report>
-                         "dependency-info",        // <report>dependency-info</report>
-                         "dependency-management",  // <report>dependency-management</report>
-                         "dependencies",           // <report>dependencies</report>
-                         "dependency-convergence", // <report>dependency-convergence</report>
-                         "ci-management",          // <report>ci-management</report>
-                         "plugin-management",      // <report>plugin-management</report>
-                         "plugins",                // <report>plugins</report>
-                         "distribution-management" // <report>distribution-management</report>
-                       ] as String[];
-    String info = FileUtils.fileRead( new File( siteDir, "project-info.html"), "UTF-8" );
-    int index1 = 10;
-    int index2 = 10;
-    String previousReportLink;
-    // MPIR-182: verify order of reports
-    for ( String report : reports )
-    {
-        File reportFile = new File( siteDir, report + ".html" );
-        if ( !reportFile.isFile() )
-        {
-            System.out.println( "Report file not existent: " + reportFile );
-            return false;
-        }
+    String link = "<a href=\"" + reportFile.getName() + "\"";
+    int i1 = info.indexOf( link );
+    int i2 = info.indexOf( link, i1 + 1 );
 
-        String link = "<a href=\"" + reportFile.getName() + "\"";
-        int i1 = info.indexOf( link );
-        int i2 = info.indexOf( link, i1 + 1 );
-        if ( i1 < index1 )
-        {
-            System.out.println( "Wrong order for first report link: expected " + previousReportLink + " -> " + link + ", but found " + i1 + " < " + index1 );
-            System.out.println( "   previous report link: " + info.substring( index1 - 10, index1 + 70 ) );
-            System.out.println( "     actual report link: " + info.substring( i1 - 10, i1 + 70 ) );
-            return false;
-        }
-        if ( i2 < index2 )
-        {
-            System.out.println( "Wrong order for second report link: expected " + previousReportLink + " -> " + link + ", but found " + i2 + " < " + index2 );
-            System.out.println( "   previous report link: " + info.substring( index2 - 10, index2 + 70 ) );
-            System.out.println( "     actual report link: " + info.substring( i2 - 10, i2 + 70 ) );
-            return false;
-        }
-        index1 = i1;
-        index2 = i2;
-        previousReportLink = link;
-    }
+    assert i1 >= index1 : "Wrong order for first report link: expected " + previousReportLink + " -> " + link + ", but found " + i1 + " < " + index1 +
+        "\n   previous report link: " + info.substring( index1 - 10, index1 + 70 ) +
+        "\n     actual report link: " + info.substring( i1 - 10, i1 + 70 )
+    assert i2 >= index2 : "Wrong order for second report link: expected " + previousReportLink + " -> " + link + ", but found " + i2 + " < " + index2 +
+        "\n   previous report link: " + info.substring( index2 - 10, index2 + 70 ) +
+        "\n     actual report link: " + info.substring( i2 - 10, i2 + 70 )
 
-    File mailinglists = new File( siteDir, "mailing-lists.html");
-    String content = FileUtils.fileRead( mailinglists, "UTF-8" );
-    if ( !content.contains( "mail list intro text foo" ) )
-    {
-        System.err.println( "mailing-lists.html doesn't contain mail list intro text foo" );
-        return false;
-    }
-
-    mailinglists = new File( siteDir, "de/mailing-lists.html");
-    content = FileUtils.fileRead( mailinglists, "UTF-8" );
-    if ( !content.contains( "mail list intro text foo (&quot;de&quot;)" ) )
-    {
-        System.err.println( "de/mailing-lists.html doesn't contain mail list intro text foo (\"de\")" );
-        return false;
-    }
-
-    mailinglists = new File( siteDir, "fr/mailing-lists.html");
-    content = FileUtils.fileRead( mailinglists, "UTF-8" );
-    if ( !content.contains( "mail list intro text foo (&quot;fr&quot;)" ) )
-    {
-        System.err.println( "fr/mailing-lists.html doesn't contain mail list intro text foo (\"fr\")" );
-        return false;
-    }
-
-    mailinglists = new File( siteDir, "sv/mailing-lists.html");
-    content = FileUtils.fileRead( mailinglists, "UTF-8" );
-    if ( !content.contains( "mail list intro text foo" ) )
-    {
-        System.err.println( "sv/mailing-lists.html doesn't contain mail list intro text foo" );
-        return false;
-    }
-
-    File dependencies = new File( siteDir, "dependencies.html");
-    content = FileUtils.fileRead( dependencies, "UTF-8" );
-    if ( !content.contains( "doxia-core-1.2.jar" ) )
-    {
-        System.err.println( "dependencies.html doesn't contain doxia-core-1.2.jar" );
-        return false;
-    }
-
-    // MPIR #687: tree details use <details>/<summary>, no images or JavaScript
-    if ( !content.contains( "<details><summary>" ) || !content.contains( "</details>" ) )
-    {
-        System.err.println( "dependencies.html doesn't contain <details><summary> for the dependency tree" );
-        return false;
-    }
-    if ( content.contains( "toggleDependencyDetails" ) || content.contains( "icon_info_sml" ) || content.contains( "close.gif" ) )
-    {
-        System.err.println( "dependencies.html still uses images or JavaScript for dependency details" );
-        return false;
-    }
-
-    // MPIR-216: dependency with range
-    File dependencyMgmt = new File( siteDir, "dependency-management.html");
-    content = FileUtils.fileRead( dependencyMgmt, "UTF-8" );
-    if ( !content.contains( "https://maven.apache.org/doxia/doxia/doxia-sink-api/" ) )
-    {
-        System.err.println( "MPIR-216: dependency-management doesn't contain doxia-sink-api url https://maven.apache.org/doxia/doxia/doxia-sink-api/" );
-        return false;
-    }
-
-    File dependencyConvergence = new File( siteDir, "dependency-convergence.html");
-    content = FileUtils.fileRead( dependencyConvergence, "UTF-8" );
-
-    if ( !content.contains( "You do not have 100% convergence." ) )
-    {
-        System.err.println( "dependency-convergence not rendered correctly" );
-        return false;
-    }
-
-    // MPIR #687: convergence marks are text, not images
-    if ( !content.contains( "<td>&#x2718; " ) )
-    {
-        System.err.println( "dependency-convergence doesn't contain the text error mark" );
-        return false;
-    }
-    if ( content.contains( "icon_success_sml" ) || content.contains( "icon_error_sml" ) )
-    {
-        System.err.println( "dependency-convergence still uses icon images" );
-        return false;
-    }
-
-}
-catch ( Throwable t )
-{
-    t.printStackTrace();
-    return false;
+    index1 = i1;
+    index2 = i2;
+    previousReportLink = link;
 }
 
-return true;
+File mailinglists = new File( siteDir, "mailing-lists.html");
+String content = mailinglists.getText( 'UTF-8' );
+assert content.contains( "mail list intro text foo" ) : "mailing-lists.html doesn't contain mail list intro text foo"
+
+mailinglists = new File( siteDir, "de/mailing-lists.html");
+content = mailinglists.getText( 'UTF-8' );
+assert content.contains( "mail list intro text foo (&quot;de&quot;)" ) : "de/mailing-lists.html doesn't contain mail list intro text foo (\"de\")"
+
+mailinglists = new File( siteDir, "fr/mailing-lists.html");
+content = mailinglists.getText( 'UTF-8' );
+assert content.contains( "mail list intro text foo (&quot;fr&quot;)" ) : "fr/mailing-lists.html doesn't contain mail list intro text foo (\"fr\")"
+
+mailinglists = new File( siteDir, "sv/mailing-lists.html");
+content = mailinglists.getText( 'UTF-8' );
+assert content.contains( "mail list intro text foo" ) : "sv/mailing-lists.html doesn't contain mail list intro text foo"
+
+File dependencies = new File( siteDir, "dependencies.html");
+content = dependencies.getText( 'UTF-8' );
+assert content.contains( "doxia-core-1.2.jar" ) : "dependencies.html doesn't contain doxia-core-1.2.jar"
+
+// MPIR #687: tree details use <details>/<summary>, no images or JavaScript
+assert content.contains( "<details><summary>" ) && content.contains( "</details>" ) : "dependencies.html doesn't contain <details><summary> for the dependency tree"
+assert !( content.contains( "toggleDependencyDetails" ) || content.contains( "icon_info_sml" ) || content.contains( "close.gif" ) ) : "dependencies.html still uses images or JavaScript for dependency details"
+
+// MPIR-216: dependency with range
+File dependencyMgmt = new File( siteDir, "dependency-management.html");
+content = dependencyMgmt.getText( 'UTF-8' );
+assert content.contains( "https://maven.apache.org/doxia/doxia/doxia-sink-api/" ) : "MPIR-216: dependency-management doesn't contain doxia-sink-api url https://maven.apache.org/doxia/doxia/doxia-sink-api/"
+
+File dependencyConvergence = new File( siteDir, "dependency-convergence.html");
+content = dependencyConvergence.getText( 'UTF-8' );
+
+assert content.contains( "You do not have 100% convergence." ) : "dependency-convergence not rendered correctly"
+
+// MPIR #687: convergence marks are text, not images
+assert content.contains( "<td>&#x2718; " ) : "dependency-convergence doesn't contain the text error mark"
+assert !( content.contains( "icon_success_sml" ) || content.contains( "icon_error_sml" ) ) : "dependency-convergence still uses icon images"
