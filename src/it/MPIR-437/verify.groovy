@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File dependencies = new File( basedir, 'target/reports/dependencies.html' )
+File dependencies = new File(basedir, 'target/reports/dependencies.html')
 def summaryRow = '''\
 <tr class="b">
 <td style="text-align: right;">1</td>
@@ -28,4 +28,4 @@ def summaryRow = '''\
 <td style="text-align: right;">-</td></tr>
 '''
 
-assert dependencies.text.contains( summaryRow.replaceAll( "\n", System.lineSeparator() ) )
+assert dependencies.text.contains(summaryRow.replaceAll("\n", System.lineSeparator()))

@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File log = new File( basedir, 'build.log' );
-assert !( log.text.contains("org.eclipse.aether.transfer.ArtifactNotFoundException: Failure to find org.eclipse.m2e:lifecycle-mapping:pom") );
+File log = new File(basedir, 'build.log')
+assert !(log.text.contains("org.eclipse.aether.transfer.ArtifactNotFoundException: Failure to find org.eclipse.m2e:lifecycle-mapping:pom"))
 
-plugins = new File( basedir, 'target/reports/plugin-management.html' ).text;
+plugins = new File(basedir, 'target/reports/plugin-management.html').text
 
 // maven-javadoc-plugin is defined in pluginManagement and not excluded
-assert plugins.contains( 'maven-javadoc-plugin' );
+assert plugins.contains('maven-javadoc-plugin')
 
 // org.eclipse.m2e:lifecycle-mapping plugin is excluded
-assert !( plugins.contains( 'org.eclipse.m2e' ) );
-assert !( plugins.contains( 'lifecycle-mapping' ) );
+assert !(plugins.contains('org.eclipse.m2e'))
+assert !(plugins.contains('lifecycle-mapping'))

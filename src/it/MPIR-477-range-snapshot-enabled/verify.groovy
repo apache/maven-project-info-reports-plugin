@@ -19,5 +19,5 @@
 String html = new File(basedir, "target/reports/dependency-management.html").text.normalize()
 // assert the resolved version by using the <url> of the dependency in its pom.xml file, since the version is not printed in the reportR
 assert html.contains("https://mpir477.example.org/snapshot-1.2") :
-    "range [1.0,) against a repository with snapshots enabled should resolve to 1.2-SNAPSHOT"
+"range [1.0,) against a repository with snapshots enabled should resolve to 1.2-SNAPSHOT"
 assert !html.contains("release-1.1")

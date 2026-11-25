@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File file = new File( basedir, "build.log" )
+File file = new File(basedir, "build.log")
 assert file.exists()
 
-String buildLog = file.getText( "UTF-8" )
-// Dependency zzz.not.existing:artifact shouldn't be downloaded from the repository apache.snapshots, 
-// configured only in dependency maven-reporting-api handled before.  
+String buildLog = file.getText("UTF-8")
+// Dependency zzz.not.existing:artifact shouldn't be downloaded from the repository apache.snapshots,
+// configured only in dependency maven-reporting-api handled before.
 assert !buildLog.contains('[INFO] Downloading from apache.snapshots: https://repository.apache.org/snapshots/zzz/not/existing/artifact/1.2.3-SNAPSHOT/artifact-1.2.3-SNAPSHOT.pom')
 
 return true

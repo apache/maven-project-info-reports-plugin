@@ -16,5 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-File modulesPage = new File( basedir, 'target/site/modules.html' )
-assert modulesPage.text.contains( '<a href="mpir-229-module1-1.0-SNAPSHOT/index.html">mpir-229-module1</a>' )
+File modulesPage = new File(basedir, 'target/site/modules.html')
+assert modulesPage.text.contains('<a href="mpir-229-module1-1.0-SNAPSHOT/index.html">mpir-229-module1</a>')
