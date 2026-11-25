@@ -468,7 +468,6 @@ under the License.
             <artifactId>maven-invoker-plugin</artifactId>
             <configuration>
               <ignoreFailures>${maven.invoker.failure.ignore}</ignoreFailures>
-              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
               <pomIncludes>
                 <pomInclude>*/pom.xml</pomInclude>
                 <pomInclude>*/parent/pom.xml</pomInclude>
@@ -476,7 +475,6 @@ under the License.
               <pomExcludes>
                 <pomExclude>pom.xml</pomExclude>
               </pomExcludes>
-              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <goals>
                 <goal>site</goal>
               </goals>
