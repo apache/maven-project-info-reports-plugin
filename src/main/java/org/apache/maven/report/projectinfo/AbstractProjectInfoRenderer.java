@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.reporting.AbstractMavenReportRenderer;
 import org.codehaus.plexus.i18n.I18N;
 
@@ -88,6 +89,42 @@ public abstract class AbstractProjectInfoRenderer extends AbstractMavenReportRen
             } else {
                 sink.text(text);
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Overridden because Maven Reporting Impl 4.0.0 calls {@link Sink#verbatim()}, which only exists since Doxia 2,
+     * while a report is rendered with the Doxia of the Maven Site Plugin in use, which may still be Doxia 1. Only
+     * {@link Sink#verbatim(SinkEventAttributes)} exists in both. The fix merged upstream as
+     * apache/maven-reporting-impl#243 (not released yet, expected in 4.0.1) does the same, so this override can go
+     * once a release containing it is used.
+     */
+    @Override
+    protected void verbatimText(String text) {
+        sink.verbatim((SinkEventAttributes) null);
+
+        text(text);
+
+        sink.verbatim_();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Overridden for the same reason as {@link #verbatimText(String)}.
+     */
+    @Override
+    protected void verbatimLink(String text, String href) {
+        if (href == null || href.isEmpty()) {
+            verbatimText(text);
+        } else {
+            sink.verbatim((SinkEventAttributes) null);
+
+            link(href, text);
+
+            sink.verbatim_();
         }
     }
 
