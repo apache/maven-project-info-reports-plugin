@@ -46,12 +46,17 @@ final class JarFixtures {
 
         /** A class file; {@code internalName} is e.g. {@code p/Foo}, {@code major} 52 is Java 8. */
         static Entry classFile(String path, String internalName, int major) throws IOException {
-            return new Entry(path, classBytes(internalName, major, false));
+            return new Entry(path, classBytes(internalName, major, false, false));
+        }
+
+        /** A class file whose one method has a line number table, which the jar analysis reports as debug information. */
+        static Entry classFileWithDebugInfo(String path, String internalName, int major) throws IOException {
+            return new Entry(path, classBytes(internalName, major, false, true));
         }
 
         /** A {@code module-info.class}. */
         static Entry moduleInfo(String path, int major) throws IOException {
-            return new Entry(path, classBytes("module-info", major, true));
+            return new Entry(path, classBytes("module-info", major, true, false));
         }
 
         static Entry manifest(String... lines) {
@@ -109,7 +114,7 @@ final class JarFixtures {
     }
 
     /** The smallest valid class file: no fields, no methods, only a name and {@code java/lang/Object}. */
-    private static byte[] classBytes(String internalName, int major, boolean module) throws IOException {
+    private static byte[] classBytes(String internalName, int major, boolean module, boolean debug) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bytes);
         out.writeInt(0xCAFEBABE);
@@ -147,7 +152,8 @@ final class JarFixtures {
             out.writeShort(0); // provides
         } else {
             // 1 Utf8 name, 2 Class, 3 Utf8 java/lang/Object, 4 Class
-            out.writeShort(5);
+            // with debug information: 5 Utf8 m, 6 Utf8 ()V, 7 Utf8 Code, 8 Utf8 LineNumberTable
+            out.writeShort(debug ? 9 : 5);
             out.writeByte(1);
             out.writeUTF(internalName);
             out.writeByte(7);
@@ -156,12 +162,39 @@ final class JarFixtures {
             out.writeUTF("java/lang/Object");
             out.writeByte(7);
             out.writeShort(3);
+            if (debug) {
+                for (String utf8 : new String[] {"m", "()V", "Code", "LineNumberTable"}) {
+                    out.writeByte(1);
+                    out.writeUTF(utf8);
+                }
+            }
             out.writeShort(0x0021); // public super
             out.writeShort(2); // this_class
             out.writeShort(4); // super_class
             out.writeShort(0); // interfaces
             out.writeShort(0); // fields
-            out.writeShort(0); // methods
+            if (debug) {
+                out.writeShort(1); // methods
+                out.writeShort(0x0009); // public static
+                out.writeShort(5); // name
+                out.writeShort(6); // descriptor
+                out.writeShort(1); // attributes: Code
+                out.writeShort(7);
+                out.writeInt(25);
+                out.writeShort(0); // max_stack
+                out.writeShort(0); // max_locals
+                out.writeInt(1); // code_length
+                out.writeByte(0xB1); // return
+                out.writeShort(0); // exception table
+                out.writeShort(1); // attributes: LineNumberTable
+                out.writeShort(8);
+                out.writeInt(6);
+                out.writeShort(1); // one entry
+                out.writeShort(0); // start_pc
+                out.writeShort(1); // line_number
+            } else {
+                out.writeShort(0); // methods
+            }
             out.writeShort(0); // attributes
         }
         out.flush();
