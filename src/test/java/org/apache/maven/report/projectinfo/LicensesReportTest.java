@@ -22,6 +22,8 @@ import javax.inject.Inject;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -201,5 +203,27 @@ class LicensesReportTest extends AbstractProjectInfoTest {
         assertTrue(
                 ((String) cache.get(expectedKey)).contains("Local license text for MPIR-586"),
                 "cached text should be the license file content");
+    }
+
+    /**
+     * MPIR-242: a license file in a non-UTF-8 encoding is decoded with licenseFileEncoding. Doxia writes the Cyrillic
+     * text as character references, so the report has the same characters whatever the platform encoding is.
+     */
+    @Test
+    @InjectMojo(goal = "licenses", pom = "licenses-plugin-config-encoding.xml")
+    void testLicenseFileEncodingIsHonoured(LicensesReport mojo) throws Exception {
+        readMavenProjectModel(mavenProject, "licenses-plugin-config-encoding.xml");
+
+        mojo.execute();
+
+        String html = new String(
+                Files.readAllBytes(
+                        getTestFile("target/licenses-encoding/licenses.html").toPath()),
+                StandardCharsets.UTF_8);
+        // "Свобода всему коду!"
+        assertTrue(
+                html.contains("&#x421;&#x432;&#x43e;&#x431;&#x43e;&#x434;&#x430; "
+                        + "&#x432;&#x441;&#x435;&#x43c;&#x443; &#x43a;&#x43e;&#x434;&#x443;!"),
+                html);
     }
 }

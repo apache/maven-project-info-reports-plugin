@@ -21,6 +21,8 @@ package org.apache.maven.report.projectinfo;
 import javax.inject.Inject;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.TextBlock;
@@ -117,5 +119,18 @@ class DependenciesReportTest extends AbstractProjectInfoTest {
         assertEquals(getString("report.dependencies.graph.title"), textBlocks[8].getText());
         assertEquals(getString("report.dependencies.graph.tree.title"), textBlocks[9].getText());
         assertEquals(getString("report.dependencies.graph.tables.licenses"), textBlocks[10].getText());
+    }
+
+    /**
+     * MPIR-407: the licenseMappings configured in the POM reach the report as a map from each name to its target.
+     */
+    @Test
+    @InjectMojo(goal = "dependencies", pom = "dependencies-plugin-config-license-mappings.xml")
+    void testLicenseMappingsAreReadFromTheConfiguration(DependenciesReport mojo) {
+        Map<String, String> expected = new HashMap<>();
+        expected.put("The Apache Software License, Version 2.0", "Apache License, Version 2.0");
+        expected.put("Apache Public License 2.0", "Apache License, Version 2.0");
+
+        assertEquals(expected, mojo.getLicenseMappings());
     }
 }
