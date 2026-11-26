@@ -268,6 +268,50 @@ class DependenciesRendererTest {
     }
 
     /**
+     * The debug information cell says "Yes" for a jar whose classes have line numbers, "No" for one without, and the
+     * summary counts the jars that have it, per scope.
+     */
+    @Test
+    void debugInformationIsReportedPerJarAndCountedInTheSummary() throws Exception {
+        Artifact withDebug =
+                artifact("compile", "with-debug", jar("with-debug.jar", 2_000, debugClass("p/WithDebug", 52)));
+        Artifact withoutDebug =
+                artifact("compile", "without-debug", jar("without-debug.jar", 2_000, clazz("p/Plain", 52)));
+
+        String html = render(true, withDebug, withoutDebug);
+
+        assertRows(
+                html,
+                row(
+                        left("with-debug.jar"),
+                        right("2 kB"),
+                        right("2"),
+                        right("1"),
+                        right("1"),
+                        center("1.8"),
+                        center("Yes")),
+                row(
+                        left("without-debug.jar"),
+                        right("2 kB"),
+                        right("2"),
+                        right("1"),
+                        right("1"),
+                        center("1.8"),
+                        center("No")));
+        assertRows(
+                html,
+                row(right("2"), right("4 kB"), right("4"), right("2"), right("2"), center("1.8"), right("1")),
+                row(
+                        right("compile: 2"),
+                        right("compile: 4 kB"),
+                        right("compile: 4"),
+                        right("compile: 2"),
+                        right("compile: 2"),
+                        center("1.8"),
+                        right("compile: 1")));
+    }
+
+    /**
      * MPIR-407: a license name that has a mapping is shown under the mapped name in the dependency tables, the
      * dependency details and the license listing; one without a mapping is left alone.
      */
@@ -314,6 +358,10 @@ class DependenciesRendererTest {
                 "org.example", artifactId, "1.0", scope, "jar", null, new DefaultArtifactHandler("jar"));
         artifact.setFile(file);
         return artifact;
+    }
+
+    private static Entry debugClass(String internalName, int major) throws Exception {
+        return Entry.classFileWithDebugInfo(internalName + ".class", internalName, major);
     }
 
     private static Entry clazz(String internalName, int major) throws Exception {
